@@ -1,0 +1,33 @@
+[
+  {
+    "kind": "dummyType",
+    "fields": [
+      {
+        "name": "n1",
+        "type": "string"
+      },
+      {
+        "name": "n2",
+        "type": "string"
+      },
+      {
+        "name": "subType",
+        "type": "globArray",
+        "kind": "dummySubType"
+      }
+    ]
+  },
+  {
+    "kind": "dummySubType",
+    "fields": [
+      {
+        "name": "s1",
+        "type": "string"
+      },
+      {
+        "name": "s2",
+        "type": "string"
+      }
+    ]
+  }
+]

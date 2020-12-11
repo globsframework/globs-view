@@ -1,0 +1,340 @@
+{
+  "order": {
+    "id": 2456168398932,
+    "email": "arthur.nimhauser@gmail.com",
+    "closed_at": null,
+    "created_at": "2020-07-15T21:21:08+02:00",
+    "updated_at": "2020-07-16T03:41:23+02:00",
+    "number": 30726,
+    "note": "Préparation EN PRODUCTION: ADS_PB_FCO200716032222922.xml - 16\/07\/2020 00:00:00",
+    "token": "0830388a2cfc6ffdeb6b35d67dc8213e",
+    "gateway": "adyen",
+    "test": false,
+    "total_price": "75.00",
+    "subtotal_price": "75.00",
+    "total_weight": 250,
+    "total_tax": "12.50",
+    "taxes_included": true,
+    "currency": "EUR",
+    "financial_status": "paid",
+    "confirmed": true,
+    "total_discounts": "0.00",
+    "total_line_items_price": "75.00",
+    "cart_token": "ec50e200719c095c2590c18a29719d4f",
+    "buyer_accepts_marketing": false,
+    "name": "PB31726",
+    "referring_site": "",
+    "landing_site": "\/collections\/pret-a-porter\/products\/pull-gilet-nina",
+    "cancelled_at": null,
+    "cancel_reason": null,
+    "total_price_usd": "85.58",
+    "checkout_token": "418e2fb62fd861c0292cb7a1f4ff58b8",
+    "reference": null,
+    "user_id": null,
+    "location_id": null,
+    "source_identifier": null,
+    "source_url": null,
+    "processed_at": "2020-07-15T21:21:07+02:00",
+    "device_id": null,
+    "phone": null,
+    "customer_locale": "fr",
+    "app_id": 580111,
+    "browser_ip": "82.255.94.72",
+    "landing_site_ref": null,
+    "order_number": 31726,
+    "discount_applications": [],
+    "discount_codes": [],
+    "note_attributes": [],
+    "payment_gateway_names": [
+      "adyen"
+    ],
+    "processing_method": "direct",
+    "checkout_id": 13511640678484,
+    "source_name": "web",
+    "fulfillment_status": null,
+    "tax_lines": [
+      {
+        "price": "12.50",
+        "rate": 0.2,
+        "title": "TVA",
+        "price_set": {
+          "shop_money": {
+            "amount": "12.50",
+            "currency_code": "EUR"
+          },
+          "presentment_money": {
+            "amount": "12.50",
+            "currency_code": "EUR"
+          }
+        }
+      }
+    ],
+    "tags": "TV_EMITTED",
+    "contact_email": "arthur.nimhauser@gmail.com",
+    "order_status_url": "https:\/\/pablo.fr\/26949288020\/orders\/0830388a2cfc6ffdeb6b35d67dc8213e\/authenticate?key=30db718877b1234879e22cdd9f2ce066",
+    "presentment_currency": "EUR",
+    "total_line_items_price_set": {
+      "shop_money": {
+        "amount": "75.00",
+        "currency_code": "EUR"
+      },
+      "presentment_money": {
+        "amount": "75.00",
+        "currency_code": "EUR"
+      }
+    },
+    "total_discounts_set": {
+      "shop_money": {
+        "amount": "0.00",
+        "currency_code": "EUR"
+      },
+      "presentment_money": {
+        "amount": "0.00",
+        "currency_code": "EUR"
+      }
+    },
+    "total_shipping_price_set": {
+      "shop_money": {
+        "amount": "0.00",
+        "currency_code": "EUR"
+      },
+      "presentment_money": {
+        "amount": "0.00",
+        "currency_code": "EUR"
+      }
+    },
+    "subtotal_price_set": {
+      "shop_money": {
+        "amount": "75.00",
+        "currency_code": "EUR"
+      },
+      "presentment_money": {
+        "amount": "75.00",
+        "currency_code": "EUR"
+      }
+    },
+    "total_price_set": {
+      "shop_money": {
+        "amount": "75.00",
+        "currency_code": "EUR"
+      },
+      "presentment_money": {
+        "amount": "75.00",
+        "currency_code": "EUR"
+      }
+    },
+    "total_tax_set": {
+      "shop_money": {
+        "amount": "12.50",
+        "currency_code": "EUR"
+      },
+      "presentment_money": {
+        "amount": "12.50",
+        "currency_code": "EUR"
+      }
+    },
+    "line_items": [
+      {
+        "id": 5291743871060,
+        "variant_id": 32246352642132,
+        "title": "Pull col polo en maille de point ajouré",
+        "quantity": 1,
+        "sku": "PMU05M613\\3",
+        "variant_title": "T3 \/ Rose clair",
+        "vendor": "PB",
+        "fulfillment_service": "manual",
+        "product_id": 4607739166804,
+        "requires_shipping": true,
+        "taxable": true,
+        "gift_card": false,
+        "name": "Pull col polo en maille de point ajouré - T3 \/ Rose clair",
+        "variant_inventory_management": "shopify",
+        "properties": [],
+        "product_exists": true,
+        "fulfillable_quantity": 1,
+        "grams": 250,
+        "price": "75.00",
+        "total_discount": "0.00",
+        "fulfillment_status": null,
+        "price_set": {
+          "shop_money": {
+            "amount": "75.00",
+            "currency_code": "EUR"
+          },
+          "presentment_money": {
+            "amount": "75.00",
+            "currency_code": "EUR"
+          }
+        },
+        "total_discount_set": {
+          "shop_money": {
+            "amount": "0.00",
+            "currency_code": "EUR"
+          },
+          "presentment_money": {
+            "amount": "0.00",
+            "currency_code": "EUR"
+          }
+        },
+        "discount_allocations": [],
+        "tax_lines": [
+          {
+            "title": "TVA",
+            "price": "12.50",
+            "rate": 0.2,
+            "price_set": {
+              "shop_money": {
+                "amount": "12.50",
+                "currency_code": "EUR"
+              },
+              "presentment_money": {
+                "amount": "12.50",
+                "currency_code": "EUR"
+              }
+            }
+          }
+        ],
+        "origin_location": {
+          "id": 1551373729876,
+          "country_code": "FR",
+          "province_code": "",
+          "name": "Pablo",
+          "address1": "127, avenue Ledru-Rollin",
+          "address2": "",
+          "city": "Paris",
+          "zip": "75011"
+        }
+      }
+    ],
+    "fulfillments": [],
+    "refunds": [],
+    "total_tip_received": "0.0",
+    "shipping_lines": [
+      {
+        "id": 2020357898324,
+        "title": "Colissimo Domicile : 3-4 jours ouvrés",
+        "price": "0.00",
+        "code": "Colissimo Domicile : 3-4 jours ouvrés",
+        "source": "shopify",
+        "phone": null,
+        "requested_fulfillment_service_id": null,
+        "delivery_category": null,
+        "carrier_identifier": null,
+        "discounted_price": "0.00",
+        "price_set": {
+          "shop_money": {
+            "amount": "0.00",
+            "currency_code": "EUR"
+          },
+          "presentment_money": {
+            "amount": "0.00",
+            "currency_code": "EUR"
+          }
+        },
+        "discounted_price_set": {
+          "shop_money": {
+            "amount": "0.00",
+            "currency_code": "EUR"
+          },
+          "presentment_money": {
+            "amount": "0.00",
+            "currency_code": "EUR"
+          }
+        },
+        "discount_allocations": [],
+        "tax_lines": []
+      }
+    ],
+    "billing_address": {
+      "first_name": "Cécile",
+      "address1": "546 Chemin des Caminets",
+      "phone": "06 88 45 24 86",
+      "city": "Entrecasteaux",
+      "zip": "83570",
+      "province": null,
+      "country": "France",
+      "last_name": "Nimhauser",
+      "address2": "",
+      "company": "",
+      "latitude": 43.5189796,
+      "longitude": 6.2258193,
+      "name": "Cécile Nimhauser",
+      "country_code": "FR",
+      "province_code": null
+    },
+    "shipping_address": {
+      "first_name": "Cécile",
+      "address1": "546 Chemin des Caminets",
+      "phone": "06 88 45 24 86",
+      "city": "Entrecasteaux",
+      "zip": "83570",
+      "province": null,
+      "country": "France",
+      "last_name": "Nimhauser",
+      "address2": "",
+      "company": "",
+      "latitude": 43.5189796,
+      "longitude": 6.2258193,
+      "name": "Cécile Nimhauser",
+      "country_code": "FR",
+      "province_code": null
+    },
+    "client_details": {
+      "browser_ip": "82.255.94.72",
+      "accept_language": "fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7,de;q=0.6",
+      "user_agent": "Mozilla\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/83.0.4103.116 Safari\/537.36",
+      "session_hash": null,
+      "browser_width": 1903,
+      "browser_height": 937
+    },
+    "payment_details": {
+      "credit_card_bin": "497301",
+      "avs_result_code": null,
+      "cvv_result_code": null,
+      "credit_card_number": "•••• •••• •••• 3353",
+      "credit_card_company": "Visa"
+    },
+    "customer": {
+      "id": 3596155846740,
+      "email": "arthur.nimhauser@gmail.com",
+      "accepts_marketing": false,
+      "created_at": "2020-07-15T21:19:28+02:00",
+      "updated_at": "2020-07-15T21:21:08+02:00",
+      "first_name": "Cécile",
+      "last_name": "Nimhauser",
+      "orders_count": 1,
+      "state": "disabled",
+      "total_spent": "75.00",
+      "last_order_id": 2456168398932,
+      "note": null,
+      "verified_email": true,
+      "multipass_identifier": null,
+      "tax_exempt": false,
+      "phone": null,
+      "tags": "",
+      "last_order_name": "PB31726",
+      "currency": "EUR",
+      "accepts_marketing_updated_at": "2020-07-15T21:19:28+02:00",
+      "marketing_opt_in_level": null,
+      "default_address": {
+        "id": 3568890052692,
+        "customer_id": 3596155846740,
+        "first_name": "Cécile",
+        "last_name": "Nimhauser",
+        "company": "",
+        "address1": "546 Chemin des Caminets",
+        "address2": "",
+        "city": "Entrecasteaux",
+        "province": null,
+        "country": "France",
+        "zip": "83570",
+        "phone": "06 88 45 24 86",
+        "name": "Cécile Nimhauser",
+        "province_code": null,
+        "country_code": "FR",
+        "country_name": "France",
+        "default": true
+      }
+    }
+  }
+}
