@@ -1,11 +1,9 @@
 package org.globsframework.view;
 
-import com.google.gson.Gson;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 import org.globsframework.http.GlobFile;
 import org.globsframework.json.GSonUtils;
-import org.globsframework.json.GlobTypeResolver;
 import org.globsframework.metamodel.GlobType;
 import org.globsframework.metamodel.GlobTypeLoaderFactory;
 import org.globsframework.metamodel.annotations.Target;
@@ -15,14 +13,11 @@ import org.globsframework.metamodel.fields.GlobField;
 import org.globsframework.metamodel.fields.StringField;
 import org.globsframework.model.Glob;
 import org.globsframework.model.MutableGlob;
-import org.globsframework.sqlstreams.constraints.Constraint;
-import org.globsframework.sqlstreams.constraints.Constraints;
-import org.globsframework.sqlstreams.json.JSonConstraintTypeAdapter;
 import org.globsframework.utils.Files;
 import org.globsframework.view.filter.model.EqualType;
 import org.globsframework.view.filter.model.FilterType;
 import org.globsframework.view.model.*;
-import org.globsframework.view.server.HttpServer;
+import org.globsframework.view.server.HttpViewServer;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -463,7 +458,7 @@ public class ViewEngineImplTest extends TestCase {
         appender.add(d2);
         appender.complete();
         Glob viewAsGlob = view.toGlob();
-        Glob result = HttpServer.dumpInCsv(viewRequest, viewAsGlob, false);
+        Glob result = HttpViewServer.dumpInCsv(viewRequest, viewAsGlob, false);
 
         String str = Files.read(new FileInputStream(result.get(GlobFile.file)), StandardCharsets.UTF_8);
 
@@ -509,7 +504,7 @@ public class ViewEngineImplTest extends TestCase {
         appender.add(d2);
         appender.complete();
         Glob viewAsGlob = view.toGlob();
-        Glob result = HttpServer.dumpInCsv(viewRequest, viewAsGlob, true);
+        Glob result = HttpViewServer.dumpInCsv(viewRequest, viewAsGlob, true);
 
         String str = Files.read(new FileInputStream(result.get(GlobFile.file)), StandardCharsets.UTF_8);
 

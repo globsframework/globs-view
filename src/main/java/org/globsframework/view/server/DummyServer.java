@@ -58,13 +58,13 @@ EOF
  */
 
 public class DummyServer implements DataAccessor {
-    private final HttpServer httpServer;
+    private final HttpViewServer httpViewServer;
     private final GlobType rootType;
     private final Glob[] data;
     private Source source;
 
     public DummyServer(Glob httpOption, Glob dummyServerOptions) throws InterruptedException, IOException {
-        httpServer = new HttpServer(httpOption, this);
+        httpViewServer = new HttpViewServer(httpOption, this);
         Gson gson = GlobsGson.create(GlobTypeResolver.chain(AllAnnotations.MODEL::getType));
         String fileName = dummyServerOptions.get(Options.typeFileName);
         Reader reader;
@@ -134,7 +134,7 @@ public class DummyServer implements DataAccessor {
 
     public static void main(String[] args) throws InterruptedException, IOException {
         List<String> argsList = new ArrayList<>(Arrays.asList(args));
-        Glob httpOptions = ParseCommandLine.parse(HttpServer.Options.TYPE, argsList, true);
+        Glob httpOptions = ParseCommandLine.parse(HttpViewServer.Options.TYPE, argsList, true);
         Glob serverOptions = ParseCommandLine.parse(DummyServer.Options.TYPE, argsList, false);
         DummyServer dummyServer = new DummyServer(httpOptions, serverOptions);
         dummyServer.run();

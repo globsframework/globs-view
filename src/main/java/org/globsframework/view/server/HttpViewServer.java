@@ -40,16 +40,16 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-public class HttpServer {
+public class HttpViewServer {
     public static final int EXPIRATION = 1000 * 60 * 20; // => cache 20 min
-    private static final Logger LOGGER = LoggerFactory.getLogger(HttpServer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(HttpViewServer.class);
     private final Glob options;
     private final DataAccessor dataAccessor;
     private final int port;
     private final org.apache.http.impl.nio.bootstrap.HttpServer httpServer;
     private final Map<String, Pair<Long, Source>> sourceCache = new ConcurrentHashMap<>();
 
-    public HttpServer(Glob options, DataAccessor dataAccessor) throws InterruptedException, IOException {
+    public HttpViewServer(Glob options, DataAccessor dataAccessor) throws InterruptedException, IOException {
         this.options = options;
         this.dataAccessor = dataAccessor;
 
@@ -63,7 +63,7 @@ public class HttpServer {
                 .setIOReactorConfig(config)
                 .setExceptionLogger(new StdErrorExceptionLogger(LOGGER));
 
-        HttpServerRegister httpServerRegister = new HttpServerRegister("ImageOrderService/1.1");
+        HttpServerRegister httpServerRegister = new HttpServerRegister("viewServer/1.1");
         httpServerRegister.register("/sources", null)
                 .get(null, new HttpTreatment() {
                     public CompletableFuture<Glob> consume(Glob body, Glob url, Glob queryParameters) {
