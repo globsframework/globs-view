@@ -1,16 +1,11 @@
 package org.globsframework.view;
 
-import com.google.gson.Gson;
 import org.apache.logging.log4j.util.Strings;
-import org.globsframework.json.GlobTypeResolver;
-import org.globsframework.json.GlobsGson;
 import org.globsframework.metamodel.Field;
 import org.globsframework.metamodel.GlobType;
 import org.globsframework.metamodel.fields.*;
 import org.globsframework.model.Glob;
 import org.globsframework.model.MutableGlob;
-import org.globsframework.sqlstreams.constraints.Constraint;
-import org.globsframework.sqlstreams.json.JSonConstraintTypeAdapter;
 import org.globsframework.utils.Ref;
 import org.globsframework.utils.collections.Pair;
 import org.globsframework.view.filter.Filter;
@@ -490,11 +485,11 @@ public class PathBaseViewImpl implements View {
                     GlobType type;
 
                     public void visitGlob(GlobField field) throws Exception {
-                        type = field.getType();
+                        type = field.getTargetType();
                     }
 
                     public void visitGlobArray(GlobArrayField field) throws Exception {
-                        type = field.getType();
+                        type = field.getTargetType();
                     }
                 }).type;
                 previousPath = previousPath.newPath(field.getName(), currentType);

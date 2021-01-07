@@ -42,11 +42,11 @@ public class ViewEngineImpl implements ViewEngine {
                 );
             } else if (field instanceof GlobArrayField) {
                 path.addLast(field);
-                extract(((GlobArrayField) field).getType(), breakdowns, path);
+                extract(((GlobArrayField) field).getTargetType(), breakdowns, path);
                 path.removeLast();
             } else if (field instanceof GlobField) {
                 path.addLast(field);
-                extract(((GlobField) field).getType(), breakdowns, path);
+                extract(((GlobField) field).getTargetType(), breakdowns, path);
                 path.removeLast();
             }
         }

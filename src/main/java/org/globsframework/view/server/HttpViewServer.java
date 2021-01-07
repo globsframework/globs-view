@@ -154,7 +154,7 @@ public class HttpViewServer {
         }
         GlobType viewType = root.getType();
         GlobField outputField = (GlobField) viewType.getField(ViewBuilderImpl.OUTPUT);
-        GlobType outputType = outputField.getType();
+        GlobType outputType = outputField.getTargetType();
         List<Pair<Field, Field>> copy = new ArrayList<>();
         for (Glob o : output) {
             Field field = outputType.getField(o.get(ViewOutput.name));

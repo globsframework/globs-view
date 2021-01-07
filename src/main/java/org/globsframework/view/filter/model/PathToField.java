@@ -45,7 +45,7 @@ public class PathToField {
                             return glob.get(((GlobField) field));
                         }
                     };
-                    lastType = ((GlobField) field).getType();
+                    lastType = ((GlobField) field).getTargetType();
                 } else {
                     throw new RuntimeException("Navigation in array type no developed " + field.getFullName());
                 }
