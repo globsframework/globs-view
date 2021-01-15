@@ -45,6 +45,7 @@ public class PathBaseViewImpl implements View {
         nodeNameField = breakdownDownType.getField(ViewBuilderImpl.NODE_NAME).asStringField();
         this.dictionary = dictionary;
         aliasToDico = initWanted();
+        registerWantedField(aliasToDico);
     }
 
     public Append getAppender(GlobType globType) {
@@ -97,15 +98,19 @@ public class PathBaseViewImpl implements View {
                 throw new RuntimeException(message);
             }
         }
-
-        registerWantedField(aliasToDico, viewRequestType.getOrEmpty(ViewRequestType.breakdowns));
         return aliasToDico;
     }
 
-    private void registerWantedField(Map<String, Glob> aliasToDico, Glob[] breakdowns) {
+    private void registerWantedField(Map<String, Glob> aliasToDico) {
+        Glob[] breakdowns = viewRequestType.getOrEmpty(ViewRequestType.breakdowns);
         for (Glob breakdown : breakdowns) {
             Ref<SimpleGraph<Boolean>> tmp = new Ref<>(wanted);
             Glob br = aliasToDico.get(breakdown.get(ViewBreakdown.uniqueName));
+            if (br == null) {
+                String message = "Breakdown " + breakdown.get(ViewBreakdown.uniqueName) + " not found.";
+                LOGGER.error(message);
+                throw new RuntimeException(message);
+            }
             Stream.concat(Arrays.stream(br.getOrEmpty(SimpleBreakdown.path)), Stream.of(br.get(SimpleBreakdown.fieldName))).forEach(s -> {
                 tmp.set(tmp.get().getOrCreate(s, Boolean.TRUE));
             });
@@ -114,6 +119,11 @@ public class PathBaseViewImpl implements View {
         for (Glob out : outs) {
             Ref<SimpleGraph<Boolean>> tmp = new Ref<>(wanted);
             Glob brk = aliasToDico.get(out.get(ViewOutput.uniqueName));
+            if (brk == null) {
+                String message = "Output " + out.get(ViewBreakdown.uniqueName) + " not found.";
+                LOGGER.error(message);
+                throw new RuntimeException(message);
+            }
             Stream.concat(Arrays.stream(brk.getOrEmpty(SimpleBreakdown.path)), Stream.of(brk.get(SimpleBreakdown.fieldName))).forEach(s -> {
                 tmp.set(tmp.get().getOrCreate(s, Boolean.TRUE));
             });
