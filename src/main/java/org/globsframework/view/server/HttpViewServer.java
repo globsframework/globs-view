@@ -55,7 +55,6 @@ public class HttpViewServer {
 
         final IOReactorConfig config = IOReactorConfig.custom()
                 .setSoReuseAddress(true)
-                .setSoTimeout(120000)
                 .setTcpNoDelay(true)
                 .build();
         ServerBootstrap serverBootstrap = ServerBootstrap.bootstrap()
