@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 
 public class ViewEngineImpl implements ViewEngine {
-    public static final Logger LOGGER = LoggerFactory.getLogger(ViewEngineImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ViewEngineImpl.class);
     public ViewBuilder buildView(Glob dictionary, Glob viewRequestType) {
         return new ViewBuilderImpl(dictionary, viewRequestType);
     }
