@@ -38,7 +38,7 @@ public class ViewBuilderImpl implements ViewBuilder {
                         throw new RuntimeException(msg);
                     });
             String outputAlias = o.get(ViewOutput.name);
-            outputTypeBuilder.declare(outputAlias, DataType.valueOf(type.get(SimpleBreakdown.nativeType)),
+            outputTypeBuilder.declare(outputAlias, DataType.valueOf(type.get(SimpleBreakdown.outputTypeName, type.get(SimpleBreakdown.nativeType))),
                     Collections.emptyList());
         }
         GlobTypeBuilder nodeTypeBuilder = new DefaultGlobTypeBuilder("Node");

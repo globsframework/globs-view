@@ -18,7 +18,7 @@ public class DefaultNodeCreator implements NodeCreator, Function<Object, Node> {
         this.field = field;
     }
 
-    public synchronized Node getOrCreate(Node parent, Glob value) {
+    public Node getOrCreate(Node parent, Glob value) {
         return parent.getOrCreate(value.getValue(field), this);
     }
 

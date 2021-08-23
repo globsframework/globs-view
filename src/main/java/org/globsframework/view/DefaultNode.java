@@ -8,9 +8,9 @@ import java.util.Map;
 import java.util.function.Function;
 
 public class DefaultNode implements Node {
-    private String nodeName;
     private final Object key;
     private final String strValue;
+    private String nodeName;
     private Map<Object, Node> children;
     private MutableGlob output;
 

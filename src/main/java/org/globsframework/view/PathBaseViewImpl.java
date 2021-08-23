@@ -1,6 +1,7 @@
 package org.globsframework.view;
 
 import org.apache.logging.log4j.util.Strings;
+import org.globsframework.json.GSonUtils;
 import org.globsframework.metamodel.Field;
 import org.globsframework.metamodel.GlobType;
 import org.globsframework.metamodel.fields.*;
@@ -55,10 +56,9 @@ public class PathBaseViewImpl implements View {
         Glob[] breakdowns = viewRequestType.getOrEmpty(ViewRequestType.breakdowns);
 
         Glob globFilter = viewRequestType.get(ViewRequestType.filter);
-        if (globFilter!= null) {
+        if (globFilter != null) {
             filter = new FilterImpl(globType, globFilter, aliasToDico);
-        }
-        else {
+        } else {
             filter = source -> true;
         }
 
@@ -180,22 +180,6 @@ public class PathBaseViewImpl implements View {
         return gl;
     }
 
-    static class Path {
-        GlobType globType;
-        String[] path;
-
-        public Path(String[] path, GlobType type) {
-            this.path = path;
-            globType = type;
-        }
-
-        public Path newPath(String name, GlobType currentType) {
-            String[] ts = Arrays.copyOf(path, path.length + 1);
-            ts[ts.length -1] = name;
-            return new Path(ts, currentType);
-        }
-    }
-
     private NextPath createNodeBuilder(Map<String, Glob> dictionary, int index, Glob[] breakdowns, ArrayDeque<Path> stackType) {
         if (index == breakdowns.length) {
             FillOutput outputFiller = createOutputFiller(viewRequestType.getOrEmpty(ViewRequestType.output), outputType, stackType, dictionary);
@@ -313,31 +297,27 @@ public class PathBaseViewImpl implements View {
         return new ArraysFillOutput(fillOutputs.toArray(FillOutput[]::new));
     }
 
-    // si la stack index != du dernier => il faudrait fournir ces chifres qu'a ce niveau: sinon les totaux sont faux.
-
-
-    interface FillDirectOutput {
-        void fill(MutableGlob output, Glob data);
-    }
-
-
     private FillOutput extractOutput(String[] pathTo, String typeName, String fieldName, ArrayDeque<Path> stackType, Field field) {
         int stackIndex = 0;
         for (Path globType : stackType) {
             if (Arrays.equals(globType.path, pathTo)) {
                 Field sourceField = globType.globType.getField(fieldName);
 //                for (Field sourceField : globType.getFields()) {
-                    if (sourceField.getName().equals(fieldName)) {
-                        if (field instanceof DoubleField) {
-                            return new InStackDoubleFillOutput(stackIndex, sourceField.asDoubleField(), field.asDoubleField());
-                        } else if (field instanceof IntegerField) {
-                            return new InStackIntegerFillOutput(stackIndex, sourceField.asIntegerField(), field.asIntegerField());
-                        } else if (field instanceof LongField) {
-                            return new InStackLongFillOutput( stackIndex, sourceField.asLongField(), field.asLongField());
+                if (sourceField.getName().equals(fieldName)) {
+                    if (field instanceof DoubleField) {
+                        if (sourceField instanceof StringField && sourceField.hasAnnotation(StringAsDouble.key)) {
+                            return new InStackStringToDoubleFillOutput(stackIndex, sourceField.asStringField(), field.asDoubleField());
                         } else {
-                            throw new RuntimeException("Aggregation on " + field.getDataType() + " not implemented.");
+                            return new InStackDoubleFillOutput(stackIndex, sourceField.asDoubleField(), field.asDoubleField());
                         }
+                    } else if (field instanceof IntegerField) {
+                        return new InStackIntegerFillOutput(stackIndex, sourceField.asIntegerField(), field.asIntegerField());
+                    } else if (field instanceof LongField) {
+                        return new InStackLongFillOutput(stackIndex, sourceField.asLongField(), field.asLongField());
+                    } else {
+                        throw new RuntimeException("Aggregation on " + field.getDataType() + " not implemented.");
                     }
+                }
 //                }
             }
             stackIndex++;
@@ -363,20 +343,49 @@ public class PathBaseViewImpl implements View {
         Field sourceField = path.getLast().getSecond().globType.getField(fieldName);
         if (sourceField instanceof DoubleField) {
             fillOutput = new OnOutputScan() {
+                private DoubleField outField = field.asDoubleField();
+                private DoubleField srcField = sourceField.asDoubleField();
+
                 public void scan(MutableGlob output, Glob data) {
-                    output.set(field.asDoubleField(), data.get(sourceField.asDoubleField(), 0.) + output.get(field.asDoubleField(), 0.));
+                    output.set(outField, data.get(srcField, 0.) + output.get(outField, 0.));
+
                 }
             };
         } else if (sourceField instanceof IntegerField) {
             fillOutput = new OnOutputScan() {
+                private final IntegerField outField = field.asIntegerField();
+                private final IntegerField src = sourceField.asIntegerField();
+
                 public void scan(MutableGlob output, Glob data) {
-                    output.set(field.asIntegerField(), data.get(sourceField.asIntegerField(), 0) + output.get(field.asIntegerField(), 0));
+                    output.set(outField, data.get(src, 0) + output.get(outField, 0));
                 }
             };
         } else if (sourceField instanceof LongField) {
             fillOutput = new OnOutputScan() {
+                private final LongField outField = field.asLongField();
+                private final LongField src = sourceField.asLongField();
                 public void scan(MutableGlob output, Glob data) {
-                    output.set(field.asLongField(), data.get(sourceField.asLongField(), 0) + output.get(field.asLongField(), 0));
+                    output.set(outField, data.get(src, 0) + output.get(outField, 0));
+
+                }
+            };
+        } else if (sourceField instanceof StringField && sourceField.hasAnnotation(StringAsDouble.key)) {
+            fillOutput = new OnOutputScan() {
+                private DoubleField outField = field.asDoubleField();
+                private StringField srcField = sourceField.asStringField();
+
+                public void scan(MutableGlob output, Glob data) {
+                    String value = data.get(srcField);
+                    if (Strings.isEmpty(value)) {
+                        return;
+                    }
+                    double v = 0.;
+                    try {
+                        v = Double.parseDouble(value);
+                    } catch (NumberFormatException e) {
+                        LOGGER.error("Fail to parse " + value +" on " + GSonUtils.encode(data, true), e);
+                    }
+                    output.set(outField, v + output.get(outField, 0.));
                 }
             };
         } else {
@@ -392,6 +401,72 @@ public class PathBaseViewImpl implements View {
         return new StartOnOutputScan(scanForOutput(fields, 0, fillOutput), globStartIndex);
     }
 
+    // si la stack index != du dernier => il faudrait fournir ces chifres qu'a ce niveau: sinon les totaux sont faux.
+
+    private OnOutputScan scanForOutput(Field[] fields, int fieldLevel, OnOutputScan fillOutput) {
+        if (fields.length == fieldLevel) {
+            return fillOutput;
+        } else {
+            Field field = fields[fieldLevel];
+            if (field instanceof GlobField) {
+                return new OnGlobFieldOutputScan(scanForOutput(fields, fieldLevel + 1, fillOutput), (GlobField) field);
+            } else if (field instanceof GlobArrayField) {
+                return new OnGlobArrayFieldOutputScan(scanForOutput(fields, fieldLevel + 1, fillOutput), (GlobArrayField) field);
+            } else {
+                throw new RuntimeException("BUG");
+            }
+        }
+    }
+
+    private AggOutput createAgg(GlobType outputType) {
+        List<AggOutput> aggOutputs = new ArrayList<>();
+        for (Field field : outputType.getFields()) {
+            if (field instanceof DoubleField) {
+                aggOutputs.add(new DoubleAggOutput((DoubleField) field));
+            } else if (field instanceof IntegerField) {
+                aggOutputs.add(new IntegerAggOutput((IntegerField) field));
+            } else if (field instanceof LongField) {
+                aggOutputs.add(new LongAggOutput((LongField) field));
+            } else {
+                throw new RuntimeException("No aggregation for " + field.getName());
+            }
+        }
+        return new ArrayAggOutput(aggOutputs.toArray(AggOutput[]::new));
+    }
+
+    private static boolean findPathTo(Path currentPath, String[] pathFromRoot, Deque<Pair<Field, Path>> path) {
+        if (Arrays.equals(currentPath.path, 0, currentPath.path.length, pathFromRoot, 0, currentPath.path.length)) {
+
+            GlobType currentType = currentPath.globType;
+            Path previousPath = currentPath;
+
+            for (int i = currentPath.path.length; i < pathFromRoot.length; i++) {
+                String s = pathFromRoot[i];
+                Field field = currentType.getField(s);
+                currentType = field.safeVisit(new FieldVisitor.AbstractWithErrorVisitor() {
+                    GlobType type;
+
+                    public void visitGlob(GlobField field) throws Exception {
+                        type = field.getTargetType();
+                    }
+
+                    public void visitGlobArray(GlobArrayField field) throws Exception {
+                        type = field.getTargetType();
+                    }
+                }).type;
+                previousPath = previousPath.newPath(field.getName(), currentType);
+                path.addLast(Pair.makePair(field, previousPath));
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    interface FillDirectOutput {
+        void fill(MutableGlob output, Glob data);
+    }
+
     interface OnField {
         void scan(Glob current, Node node, Glob[] stack);
     }
@@ -399,6 +474,42 @@ public class PathBaseViewImpl implements View {
     interface OnOutputScan {
 
         void scan(MutableGlob output, Glob current);
+    }
+
+    interface NodeBuilder {
+        void push(Node rootNode, Glob[] stack);
+    }
+
+
+    private interface NextPath {
+        void push(Node node, Glob[] stack);
+    }
+
+
+    interface FillOutput {
+        void fill(MutableGlob output, Glob[] stack);
+    }
+
+    interface AggOutput {
+        void reset(MutableGlob output);
+
+        void fill(MutableGlob output, Glob input);
+    }
+
+    static class Path {
+        GlobType globType;
+        String[] path;
+
+        public Path(String[] path, GlobType type) {
+            this.path = path;
+            globType = type;
+        }
+
+        public Path newPath(String name, GlobType currentType) {
+            String[] ts = Arrays.copyOf(path, path.length + 1);
+            ts[ts.length - 1] = name;
+            return new Path(ts, currentType);
+        }
     }
 
     static class StartOnOutputScan implements FillOutput {
@@ -449,89 +560,7 @@ public class PathBaseViewImpl implements View {
         }
     }
 
-
-    private OnOutputScan scanForOutput(Field[] fields, int fieldLevel, OnOutputScan fillOutput) {
-        if (fields.length == fieldLevel) {
-            return fillOutput;
-        } else {
-            Field field = fields[fieldLevel];
-            if (field instanceof GlobField) {
-                return new OnGlobFieldOutputScan(scanForOutput(fields, fieldLevel + 1, fillOutput), (GlobField) field);
-            } else if (field instanceof GlobArrayField) {
-                return new OnGlobArrayFieldOutputScan(scanForOutput(fields, fieldLevel + 1, fillOutput), (GlobArrayField) field);
-            } else {
-                throw new RuntimeException("BUG");
-            }
-        }
-    }
-
-
-    private AggOutput createAgg(GlobType outputType) {
-        List<AggOutput> aggOutputs = new ArrayList<>();
-        for (Field field : outputType.getFields()) {
-            if (field instanceof DoubleField) {
-                aggOutputs.add(new DoubleAggOutput((DoubleField) field));
-            } else if (field instanceof IntegerField) {
-                aggOutputs.add(new IntegerAggOutput((IntegerField) field));
-            } else if (field instanceof LongField) {
-                aggOutputs.add(new LongAggOutput((LongField) field));
-            } else {
-                throw new RuntimeException("No aggregation for " + field.getName());
-            }
-        }
-        return new ArrayAggOutput(aggOutputs.toArray(AggOutput[]::new));
-    }
-
-    private static boolean findPathTo(Path currentPath, String[] pathFromRoot, Deque<Pair<Field, Path>> path) {
-        if (Arrays.equals(currentPath.path, 0, currentPath.path.length, pathFromRoot, 0, currentPath.path.length)) {
-
-            GlobType currentType = currentPath.globType;
-            Path previousPath = currentPath;
-
-            for (int i = currentPath.path.length; i < pathFromRoot.length; i++) {
-                String s = pathFromRoot[i];
-                Field field = currentType.getField(s);
-                currentType = field.safeVisit(new FieldVisitor.AbstractWithErrorVisitor(){
-                    GlobType type;
-
-                    public void visitGlob(GlobField field) throws Exception {
-                        type = field.getTargetType();
-                    }
-
-                    public void visitGlobArray(GlobArrayField field) throws Exception {
-                        type = field.getTargetType();
-                    }
-                }).type;
-                previousPath = previousPath.newPath(field.getName(), currentType);
-                path.addLast(Pair.makePair(field, previousPath));
-            }
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-
-    interface NodeBuilder {
-        void push(Node rootNode, Glob[] stack);
-    }
-
-    private interface NextPath {
-        void push(Node node, Glob[] stack);
-    }
-
-    interface FillOutput {
-        void fill(MutableGlob output, Glob[] stack);
-    }
-
-    interface AggOutput {
-        void reset(MutableGlob output);
-
-        void fill(MutableGlob output, Glob input);
-    }
-
     static class InStackDoubleFillOutput implements FillOutput {
-
         final int stackPos;
         final DoubleField field;
         final DoubleField outputField;
@@ -543,9 +572,37 @@ public class PathBaseViewImpl implements View {
         }
 
         public void fill(MutableGlob output, Glob[] stack) {
-            output.set(outputField, stack[stackPos].get(field, 0.) + output.get(outputField, 0.));
+            double value = stack[stackPos].get(field, 0.);
+            output.set(outputField, value + output.get(outputField, 0.));
+
         }
     }
+
+    private class InStackStringToDoubleFillOutput implements FillOutput {
+        private final int stackIndex;
+        private final StringField sourceField;
+        private final DoubleField outputField;
+
+        public InStackStringToDoubleFillOutput(int stackIndex, StringField sourceField, DoubleField outputField) {
+            this.stackIndex = stackIndex;
+            this.sourceField = sourceField;
+            this.outputField = outputField;
+        }
+        public void fill(MutableGlob output, Glob[] stack) {
+            String value = stack[stackIndex].get(sourceField);
+            if (Strings.isEmpty(value)) {
+                return;
+            }
+            double v = 0;
+            try {
+                v = Double.parseDouble(value);
+            } catch (NumberFormatException e) {
+                LOGGER.error("Fail to convert " + value + " to double on " + GSonUtils.encode(stack[stackIndex], true), e);
+            }
+            output.set(outputField, v + output.get(outputField, 0.));
+        }
+    }
+
 
     static class InStackIntegerFillOutput implements FillOutput {
         final int stackPos;
@@ -559,7 +616,9 @@ public class PathBaseViewImpl implements View {
         }
 
         public void fill(MutableGlob output, Glob[] stack) {
-            output.set(outputField, stack[stackPos].get(field, 0) + output.get(outputField, 0));
+            int value = stack[stackPos].get(field, 0);
+            output.set(outputField, value + output.get(outputField, 0));
+
         }
     }
 
@@ -575,7 +634,9 @@ public class PathBaseViewImpl implements View {
         }
 
         public void fill(MutableGlob output, Glob[] stack) {
-            output.set(outputField, stack[stackPos].get(field, 0) + output.get(outputField, 0));
+            long value = stack[stackPos].get(field, 0);
+            output.set(outputField, value + output.get(outputField, 0));
+
         }
     }
 
@@ -836,4 +897,5 @@ public class PathBaseViewImpl implements View {
             }
         }
     }
+
 }

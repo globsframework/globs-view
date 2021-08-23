@@ -620,6 +620,54 @@ public class ViewEngineImplTest extends TestCase {
                 "}\n"), GSonUtils.normalize(actual));
     }
 
+    public void testWithConvertStringToDouble() {
+        ViewEngine viewEngine = new ViewEngineImpl();
+
+        Glob dictionary = viewEngine.createDictionary(ViewType1.TYPE);
+
+        MutableGlob viewRequest = ViewRequestType.TYPE.instantiate();
+        Glob[] breakdowns = dictionary.get(DictionaryType.breakdowns);
+        viewRequest.set(ViewRequestType.breakdowns, new Glob[]{
+                br("Name1", breakdowns)
+        })
+                .set(ViewRequestType.output, new Glob[]{
+                        ViewOutput.TYPE.instantiate().set(ViewOutput.name, "strValue")
+                        .set(ViewOutput.uniqueName, br("strValue", breakdowns).get(ViewBreakdown.uniqueName))
+                });
+        ViewBuilder viewBuilder = viewEngine.buildView(dictionary, viewRequest);
+
+
+        MutableGlob d1 = ViewType1.TYPE.instantiate()
+                .set(ViewType1.Name1, "n1")
+                .set(ViewType1.strValue, "11");
+        MutableGlob d2 = ViewType1.TYPE.instantiate()
+                .set(ViewType1.Name1, "n1")
+                .set(ViewType1.strValue, "44");
+        View view = viewBuilder.createView();
+        View.Append appender = view.getAppender(ViewType1.TYPE);
+        appender.add(d1);
+        appender.add(d2);
+        appender.complete();
+        Glob viewAsGlob = view.toGlob();
+        String actual = GSonUtils.encode(viewAsGlob, false);
+
+        Assert.assertEquals(GSonUtils.normalize("{\n" +
+                "  \"name\": \"\",\n" +
+                "  \"nodeName\": \"root\",\n" +
+                "  \"__children__\": [\n" +
+                "    {\n" +
+                "      \"name\": \"n1\",\n" +
+                "      \"nodeName\": \"Name1\",\n" +
+                "      \"output\": {\n" +
+                "        \"strValue\": 55.0\n" +
+                "      }\n" +
+                "    }\n" +
+                "  ],\n" +
+                "  \"output\": {\n" +
+                "    \"strValue\": 55.0\n" +
+                "  }\n" +
+                "}"), GSonUtils.normalize(actual));
+    }
 
     public void testFilter() {
         ViewEngine viewEngine = new ViewEngineImpl();
@@ -684,7 +732,7 @@ public class ViewEngineImplTest extends TestCase {
                 "}"), GSonUtils.normalize(actual));
     }
 
-    private Glob br(String name, Glob[] breakdowns) {
+    public static Glob br(String name, Glob[] breakdowns) {
         for (Glob breakdown : breakdowns) {
             if (breakdown.get(SimpleBreakdown.fieldName).equals(name)) {
                 return ViewBreakdown.TYPE.instantiate().set(ViewBreakdown.uniqueName,
@@ -702,6 +750,9 @@ public class ViewEngineImplTest extends TestCase {
         public static GlobField SUB1;
         @Target(SubType2.class)
         public static GlobArrayField SUB2;
+
+        @_StringAsDouble
+        public static StringField strValue;
 
         static {
             GlobTypeLoaderFactory.create(ViewType1.class).load();

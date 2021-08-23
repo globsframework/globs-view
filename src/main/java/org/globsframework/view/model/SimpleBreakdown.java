@@ -16,6 +16,8 @@ public class SimpleBreakdown {
 
     public static StringField typeName;
 
+    public static StringField outputTypeName;
+
     public static StringField fieldName;
 
     public static StringField nativeType;

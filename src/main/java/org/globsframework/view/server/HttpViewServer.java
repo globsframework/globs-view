@@ -2,6 +2,7 @@ package org.globsframework.view.server;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.http.ExceptionLogger;
+import org.apache.http.impl.nio.bootstrap.HttpServer;
 import org.apache.http.impl.nio.bootstrap.ServerBootstrap;
 import org.apache.http.impl.nio.reactor.IOReactorConfig;
 import org.apache.http.nio.reactor.ListenerEndpoint;
@@ -63,6 +64,7 @@ public class HttpViewServer {
                 .setExceptionLogger(new StdErrorExceptionLogger(LOGGER));
 
         HttpServerRegister httpServerRegister = new HttpServerRegister("viewServer/1.1");
+        httpServerRegister.registerOpenApi();
         httpServerRegister.register("/sources", null)
                 .get(null, new HttpTreatment() {
                     public CompletableFuture<Glob> consume(Glob body, Glob url, Glob queryParameters) {
@@ -107,7 +109,7 @@ public class HttpViewServer {
                         Glob dictionary = viewEngine.createDictionary(src.getOutputType());
                         ViewBuilder viewBuilder = viewEngine.buildView(dictionary, viewRequest);
                         View view = viewBuilder.createView();
-                        Source optimizedSrc = dataAccessor.getSource(source);
+                        Source optimizedSrc = src; //dataAccessor.getSource(source);
                         Source.DataConsumer dataConsumer = optimizedSrc.create(view.getAccepter());
                         View.Append appender = view.getAppender(dataConsumer.getOutputType());
                         dataConsumer.getAll(appender::add);
@@ -120,12 +122,9 @@ public class HttpViewServer {
                     }
                 });
 
-        httpServer = httpServerRegister.init(serverBootstrap);
-
-        httpServer.start();
-        ListenerEndpoint endpoint = httpServer.getEndpoint();
-        endpoint.waitFor();
-        port = ((InetSocketAddress) endpoint.getAddress()).getPort();
+        Pair<HttpServer, Integer> httpServerIntegerPair = httpServerRegister.startAndWaitForStartup(serverBootstrap);
+        httpServer = httpServerIntegerPair.getFirst();
+        port = httpServerIntegerPair.getSecond();
         System.out.println("PORT: " + port);
         LOGGER.info("http port : " + port);
     }

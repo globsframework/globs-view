@@ -4,9 +4,12 @@ import org.globsframework.metamodel.Field;
 import org.globsframework.metamodel.GlobType;
 import org.globsframework.metamodel.fields.GlobArrayField;
 import org.globsframework.metamodel.fields.GlobField;
+import org.globsframework.metamodel.type.DataType;
 import org.globsframework.model.Glob;
+import org.globsframework.model.MutableGlob;
 import org.globsframework.view.model.DictionaryType;
 import org.globsframework.view.model.SimpleBreakdown;
+import org.globsframework.view.model.StringAsDouble;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,14 +35,17 @@ public class ViewEngineImpl implements ViewEngine {
                 String[] strings = path.stream().map(Field::getName).toArray(String[]::new);
                 String join = String.join(".", strings);
                 String uniqueName = join + (join.isEmpty() ? "" : ".") + field.getName();
-                breakdowns.add(SimpleBreakdown.TYPE.instantiate()
+                MutableGlob brk = SimpleBreakdown.TYPE.instantiate()
                         .set(SimpleBreakdown.path, strings)
                         .set(SimpleBreakdown.uniqueName, uniqueName)
                         .set(SimpleBreakdown.aliasName, uniqueName)
                         .set(SimpleBreakdown.typeName, globType.getName())
                         .set(SimpleBreakdown.fieldName, field.getName())
-                        .set(SimpleBreakdown.nativeType, field.getDataType().name())
-                );
+                        .set(SimpleBreakdown.nativeType, field.getDataType().name());
+                if (field.hasAnnotation(StringAsDouble.key)) {
+                    brk.set(SimpleBreakdown.outputTypeName, DataType.Double.name());
+                }
+                breakdowns.add(brk);
             } else if (field instanceof GlobArrayField) {
                 path.addLast(field);
                 extract(((GlobArrayField) field).getTargetType(), breakdowns, path);
