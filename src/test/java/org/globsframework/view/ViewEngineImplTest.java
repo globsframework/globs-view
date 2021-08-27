@@ -14,8 +14,10 @@ import org.globsframework.metamodel.fields.StringField;
 import org.globsframework.model.Glob;
 import org.globsframework.model.MutableGlob;
 import org.globsframework.utils.Files;
+import org.globsframework.view.filter.model.AndFilterType;
 import org.globsframework.view.filter.model.EqualType;
 import org.globsframework.view.filter.model.FilterType;
+import org.globsframework.view.filter.model.GreaterOrEqualType;
 import org.globsframework.view.model.*;
 import org.globsframework.view.server.HttpViewServer;
 
@@ -685,12 +687,20 @@ public class ViewEngineImplTest extends TestCase {
         });
 
         viewRequest.set(ViewRequestType.filter, FilterType.TYPE.instantiate()
-        .set(FilterType.filter, EqualType.TYPE.instantiate()
-                .set(EqualType.uniqueName, br("Name2", breakdowns).get(ViewBreakdown.uniqueName))
-                .set(EqualType.value, "n11")
+        .set(FilterType.filter,
+                AndFilterType.TYPE.instantiate()
+                                .set(AndFilterType.filters, new Glob[]{
+                                        EqualType.TYPE.instantiate()
+                                                .set(EqualType.uniqueName, br("Name2", breakdowns).get(ViewBreakdown.uniqueName))
+                                                .set(EqualType.value, "n11"),
+                                        GreaterOrEqualType.TYPE.instantiate()
+                                                .set(GreaterOrEqualType.uniqueName,
+                                                        br("Name1", breakdowns).get(ViewBreakdown.uniqueName))
+                                                .set(GreaterOrEqualType.value, "a")
+                                })
         ));
 
-//        System.out.println(GSonUtils.encode(viewRequest, true));
+        System.out.println(GSonUtils.encode(viewRequest, true));
 
         ViewBuilder viewBuilder = viewEngine.buildView(dictionary, viewRequest);
 

@@ -68,6 +68,16 @@ public class StrictlyLessType {
                                 return value < compareTo;
                             };
                         }
+                        if (field instanceof StringField) {
+                            String compareTo = filter.get(value);
+                            return glob -> {
+                                String value = jump.from(glob).get(((StringField) field));
+                                if (value == null) {
+                                    return false;
+                                }
+                                return value.compareToIgnoreCase(compareTo) < 0;
+                            };
+                        }
                         String msg = "Field " + field.getFullName() + " of type " + field.getValueClass() + " not managed";
                         LOGGER.error(msg);
                         throw new RuntimeException(msg);

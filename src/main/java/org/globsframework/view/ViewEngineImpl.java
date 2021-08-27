@@ -8,6 +8,7 @@ import org.globsframework.metamodel.type.DataType;
 import org.globsframework.model.Glob;
 import org.globsframework.model.MutableGlob;
 import org.globsframework.view.model.DictionaryType;
+import org.globsframework.view.model.IsSensibleData;
 import org.globsframework.view.model.SimpleBreakdown;
 import org.globsframework.view.model.StringAsDouble;
 import org.slf4j.Logger;
@@ -41,6 +42,7 @@ public class ViewEngineImpl implements ViewEngine {
                         .set(SimpleBreakdown.aliasName, uniqueName)
                         .set(SimpleBreakdown.typeName, globType.getName())
                         .set(SimpleBreakdown.fieldName, field.getName())
+                        .set(SimpleBreakdown.isSensibleData, field.hasAnnotation(IsSensibleData.key))
                         .set(SimpleBreakdown.nativeType, field.getDataType().name());
                 if (field.hasAnnotation(StringAsDouble.key)) {
                     brk.set(SimpleBreakdown.outputTypeName, DataType.Double.name());
