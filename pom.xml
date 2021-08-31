@@ -7,22 +7,38 @@
     <packaging>jar</packaging>
     <artifactId>globs-view</artifactId>
     <name>breakdown glob to create views</name>
-    <version>1.0</version>
+    <version>1.1-SNAPSHOT</version>
 
     <repositories>
         <repository>
-            <id>gitlab-maven</id>
-            <url>${CI_API_V4_URL}/groups/12606202/-/packages/maven</url>
+            <id>github</id>
+            <url>https://maven.pkg.github.com/mathieu-chauvet/*</url>
+        </repository>
+        <repository>
+            <id>github-marc</id>
+            <url>https://maven.pkg.github.com/MarcGuiot/*</url>
+        </repository>
+        <repository>
+            <id>github-theoz</id>
+            <url>https://maven.pkg.github.com/The-Other-Store/*</url>
+        </repository>
+        <repository>
+            <id>central</id>
+            <url>https://repo1.maven.org/maven2</url>
         </repository>
     </repositories>
+
     <distributionManagement>
         <repository>
-            <id>gitlab-maven</id>
-            <url>${CI_API_V4_URL}/projects/${env.CI_PROJECT_ID}/packages/maven</url>
+            <id>github</id>
+            <name>GitHub Packages</name>
+            <!--            <url>https://maven.pkg.github.com/${env.GITHUB_ACTOR}/globs-db</url>-->
+            <url>https://maven.pkg.github.com/${env.GITHUB_REPOSITORY}</url>
         </repository>
         <snapshotRepository>
-            <id>gitlab-maven</id>
-            <url>${CI_API_V4_URL}/projects/${env.CI_PROJECT_ID}/packages/maven</url>
+            <id>github</id>
+            <name>GitHub Packages</name>
+            <url>https://maven.pkg.github.com/${env.GITHUB_REPOSITORY}</url>
         </snapshotRepository>
     </distributionManagement>
 
@@ -116,7 +132,7 @@
         <dependency>
             <groupId>org.globsframework</groupId>
             <artifactId>globs</artifactId>
-            <version>3.0</version>
+            <version>3.0-RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.globsframework</groupId>
@@ -136,7 +152,7 @@
         <dependency>
             <groupId>org.globsframework</groupId>
             <artifactId>globs-http</artifactId>
-            <version>3.0</version>
+            <version>3.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.globsframework.export</groupId>
