@@ -435,7 +435,7 @@ public class PathBaseViewImpl implements View {
     }
 
     private static boolean findPathTo(Path currentPath, String[] pathFromRoot, Deque<Pair<Field, Path>> path) {
-        if (Arrays.equals(currentPath.path, 0, currentPath.path.length, pathFromRoot, 0, currentPath.path.length)) {
+        if (pathFromRoot.length >= currentPath.path.length && Arrays.equals(currentPath.path, 0, currentPath.path.length, pathFromRoot, 0, currentPath.path.length)) {
 
             GlobType currentType = currentPath.globType;
             Path previousPath = currentPath;
