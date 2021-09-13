@@ -11,6 +11,7 @@ import org.globsframework.utils.Ref;
 import org.globsframework.utils.collections.Pair;
 import org.globsframework.view.filter.Filter;
 import org.globsframework.view.filter.FilterImpl;
+import org.globsframework.view.filter.WantedField;
 import org.globsframework.view.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -104,30 +105,32 @@ public class PathBaseViewImpl implements View {
     private void registerWantedField(Map<String, Glob> aliasToDico) {
         Glob[] breakdowns = viewRequestType.getOrEmpty(ViewRequestType.breakdowns);
         for (Glob breakdown : breakdowns) {
-            Ref<SimpleGraph<Boolean>> tmp = new Ref<>(wanted);
-            Glob br = aliasToDico.get(breakdown.get(ViewBreakdown.uniqueName));
-            if (br == null) {
-                String message = "Breakdown " + breakdown.get(ViewBreakdown.uniqueName) + " not found.";
-                LOGGER.error(message);
-                throw new RuntimeException(message);
-            }
-            Stream.concat(Arrays.stream(br.getOrEmpty(SimpleBreakdown.path)), Stream.of(br.get(SimpleBreakdown.fieldName))).forEach(s -> {
-                tmp.set(tmp.get().getOrCreate(s, Boolean.TRUE));
-            });
+            extractFieldToScan(aliasToDico, wanted, breakdown.get(ViewBreakdown.uniqueName), "Breakdown ");
         }
         Glob[] outs = viewRequestType.getOrEmpty(ViewRequestType.output);
         for (Glob out : outs) {
-            Ref<SimpleGraph<Boolean>> tmp = new Ref<>(wanted);
-            Glob brk = aliasToDico.get(out.get(ViewOutput.uniqueName));
-            if (brk == null) {
-                String message = "Output " + out.get(ViewBreakdown.uniqueName) + " not found.";
-                LOGGER.error(message);
-                throw new RuntimeException(message);
-            }
-            Stream.concat(Arrays.stream(brk.getOrEmpty(SimpleBreakdown.path)), Stream.of(brk.get(SimpleBreakdown.fieldName))).forEach(s -> {
-                tmp.set(tmp.get().getOrCreate(s, Boolean.TRUE));
+            String uniqueName = out.get(ViewOutput.uniqueName);
+            extractFieldToScan(aliasToDico, wanted, uniqueName, "Output ");
+        }
+        Glob filter = viewRequestType.get(ViewRequestType.filter);
+        if (filter != null) {
+            filter.getType().getRegistered(WantedField.class).wanted(filter, s -> {
+                extractFieldToScan(aliasToDico, wanted, s, "Filter ");
             });
         }
+    }
+
+    private void extractFieldToScan(Map<String, Glob> aliasToDico, SimpleGraph<Boolean> root, String uniqueName, String debugInfo) {
+        Ref<SimpleGraph<Boolean>> tmp = new Ref<>(root);
+        Glob brk = aliasToDico.get(uniqueName);
+        if (brk == null) {
+            String message = debugInfo + uniqueName + " not found.";
+            LOGGER.error(message);
+            throw new RuntimeException(message);
+        }
+        Stream.concat(Arrays.stream(brk.getOrEmpty(SimpleBreakdown.path)), Stream.of(brk.get(SimpleBreakdown.fieldName))).forEach(s -> {
+            tmp.set(tmp.get().getOrCreate(s, Boolean.TRUE));
+        });
     }
 
     public Node getRootNode() {

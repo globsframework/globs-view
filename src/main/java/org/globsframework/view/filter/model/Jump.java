@@ -2,6 +2,9 @@ package org.globsframework.view.filter.model;
 
 import org.globsframework.model.Glob;
 
+import java.util.Optional;
+import java.util.stream.Stream;
+
 interface Jump {
-    Glob from(Glob glob);
+    Stream<Glob> from(Glob glob);
 }

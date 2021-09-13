@@ -8,8 +8,12 @@ import org.globsframework.metamodel.fields.GlobUnionField;
 import org.globsframework.model.Glob;
 import org.globsframework.view.filter.FilterBuilder;
 import org.globsframework.view.filter.FilterImpl;
+import org.globsframework.view.filter.WantedField;
 
+import java.util.Arrays;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 public class FilterType {
     public static GlobType TYPE;
@@ -21,6 +25,13 @@ public class FilterType {
 
     static {
         GlobTypeLoaderFactory.create(FilterType.class)
+                .register(WantedField.class, new WantedField() {
+                    public void wanted(Glob f, Consumer<String> wantedUniqueName) {
+                        Stream.ofNullable(f.get(filter))
+                                .forEach(glob -> glob.getType().getRegistered(WantedField.class)
+                                        .wanted(glob, wantedUniqueName));
+                    }
+                })
                 .register(FilterBuilder.class, new FilterBuilder() {
                     public FilterImpl.IsSelected create(Glob globFilter, GlobType rootType, Map<String, Glob> dico) {
                         Glob glob = globFilter.get(filter);

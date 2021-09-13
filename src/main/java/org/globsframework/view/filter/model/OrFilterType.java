@@ -7,8 +7,11 @@ import org.globsframework.metamodel.fields.GlobArrayUnionField;
 import org.globsframework.model.Glob;
 import org.globsframework.view.filter.FilterBuilder;
 import org.globsframework.view.filter.FilterImpl;
+import org.globsframework.view.filter.WantedField;
 
+import java.util.Arrays;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class OrFilterType {
     public static GlobType TYPE;
@@ -20,6 +23,13 @@ public class OrFilterType {
 
     static {
         GlobTypeLoaderFactory.create(OrFilterType.class)
+                .register(WantedField.class, new WantedField() {
+                    public void wanted(Glob filter, Consumer<String> wantedUniqueName) {
+                        Arrays.stream(filter.getOrEmpty(filters))
+                                .forEach(glob -> glob.getType().getRegistered(WantedField.class)
+                                        .wanted(glob, wantedUniqueName));
+                    }
+                })
                 .register(FilterBuilder.class, new FilterBuilder() {
                     public FilterImpl.IsSelected create(Glob filter, GlobType rootType, Map<String, Glob> dico){
                         Glob[] globs = filter.get(filters);

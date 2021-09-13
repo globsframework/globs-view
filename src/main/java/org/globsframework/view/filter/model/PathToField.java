@@ -2,11 +2,13 @@ package org.globsframework.view.filter.model;
 
 import org.globsframework.metamodel.Field;
 import org.globsframework.metamodel.GlobType;
+import org.globsframework.metamodel.fields.GlobArrayField;
 import org.globsframework.metamodel.fields.GlobField;
 import org.globsframework.model.Glob;
 import org.globsframework.view.model.SimpleBreakdown;
 
 import java.util.Map;
+import java.util.stream.Stream;
 
 public class PathToField {
     private Glob filter;
@@ -38,26 +40,37 @@ public class PathToField {
             Jump[] jumps = new Jump[strings.length];
             for (int i = 0, stringsLength = strings.length; i < stringsLength; i++) {
                 String string = strings[i];
-                field = lastType.getField(string);
+                Field field = lastType.getField(string);
                 if (field instanceof GlobField) {
                     jumps[i] = new Jump() {
-                        public Glob from(Glob glob) {
-                            return glob.get(((GlobField) field));
+                        public Stream<Glob> from(Glob glob) {
+                            Glob ch = glob.get(((GlobField) field));
+                            return ch == null ? Stream.empty() : Stream.of(ch);
                         }
                     };
                     lastType = ((GlobField) field).getTargetType();
+                } else if (field instanceof GlobArrayField) {
+                    jumps[i] = new Jump() {
+                        public Stream<Glob> from(Glob glob) {
+                            Glob[] ch = glob.get(((GlobArrayField) field));
+                            return ch == null || ch.length == 0 ? Stream.empty() : Stream.of(ch);
+                        }
+                    };
+                    lastType = ((GlobArrayField) field).getTargetType();
                 } else {
-                    throw new RuntimeException("Navigation in array type no developed " + field.getFullName());
+                    throw new RuntimeException("Navigation in union type no developed " + field.getFullName());
                 }
+                this.field = field;
             }
             jump = glob -> {
-                for (Jump jump1 : jumps) {
-                    glob = jump1.from(glob);
+                Stream<Glob> current = Stream.of(glob);
+                for (Jump jp : jumps) {
+                    current = current.flatMap(jp::from);
                 }
-                return glob;
+                return current;
             };
         } else {
-            jump = glob -> glob;
+            jump = Stream::of;
         }
         field = lastType.getField(breakdown.get(SimpleBreakdown.fieldName));
         return this;

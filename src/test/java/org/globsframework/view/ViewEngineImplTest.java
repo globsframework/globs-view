@@ -742,6 +742,98 @@ public class ViewEngineImplTest extends TestCase {
                 "}"), GSonUtils.normalize(actual));
     }
 
+
+    public void testFilterOnArrayOfGlob() {
+        ViewEngine viewEngine = new ViewEngineImpl();
+
+        Glob dictionary = viewEngine.createDictionary(ViewType1.TYPE);
+
+        MutableGlob viewRequest = ViewRequestType.TYPE.instantiate();
+        Glob[] breakdowns = dictionary.get(DictionaryType.breakdowns);
+        viewRequest.set(ViewRequestType.breakdowns, new Glob[]{
+                br("Name1", breakdowns)
+        });
+        viewRequest.set(ViewRequestType.output, new Glob[]{
+                ViewOutput.TYPE.instantiate().set(ViewOutput.name, "total")
+                        .set(ViewOutput.uniqueName, br("qty", breakdowns).get(ViewBreakdown.uniqueName))
+        });
+
+        viewRequest.set(ViewRequestType.filter, FilterType.TYPE.instantiate()
+                .set(FilterType.filter,
+                        AndFilterType.TYPE.instantiate()
+                                .set(AndFilterType.filters, new Glob[]{
+                                        EqualType.TYPE.instantiate()
+                                                .set(EqualType.uniqueName, br("NameSub2", breakdowns).get(ViewBreakdown.uniqueName))
+                                                .set(EqualType.value, "bad name")
+                                })
+                ));
+
+        System.out.println(GSonUtils.encode(viewRequest, true));
+
+        ViewBuilder viewBuilder = viewEngine.buildView(dictionary, viewRequest);
+
+//        String encode = GSonUtils.encode(dictionary, false);
+//        System.out.println(encode);
+
+        MutableGlob d1 = ViewType1.TYPE.instantiate()
+                .set(ViewType1.Name1, "n1")
+                .set(ViewType1.Name2, "n11")
+                .set(ViewType1.SUB2, new Glob[]{SubType2.TYPE.instantiate().set(SubType2.NameSub2, "good name")});
+        MutableGlob d2 = ViewType1.TYPE.instantiate()
+                .set(ViewType1.Name1, "n2")
+                .set(ViewType1.Name2, "n22")
+                .set(ViewType1.SUB2, new Glob[]{SubType2.TYPE.instantiate().set(SubType2.NameSub2, "bad name")});
+
+        View view = viewBuilder.createView();
+
+        View.Accepted accepter = view.getAccepter();
+
+        accepter.enter(ViewType1.Name1.getName());
+        Assert.assertTrue(accepter.wanted());
+        accepter.leave();
+
+        accepter.enter(ViewType1.Name2.getName());
+        Assert.assertFalse(accepter.wanted());
+        accepter.leave();
+
+        accepter.enter(ViewType1.SUB2.getName());
+        Assert.assertTrue(accepter.wanted());
+
+        accepter.enter(SubType2.NameSub3.getName());
+        Assert.assertFalse(accepter.wanted());
+        accepter.leave();
+
+        accepter.enter(SubType2.NameSub2.getName());
+        Assert.assertTrue(accepter.wanted());
+        accepter.leave();
+
+        accepter.leave();
+
+        View.Append appender = view.getAppender(ViewType1.TYPE);
+        appender.add(d1);
+        appender.add(d2);
+        appender.complete();
+        Glob viewAsGlob = view.toGlob();
+        String actual = GSonUtils.encode(viewAsGlob, false);
+
+        Assert.assertEquals(GSonUtils.normalize("{\n" +
+                "  \"name\": \"\",\n" +
+                "  \"nodeName\": \"root\",\n" +
+                "  \"__children__\": [\n" +
+                "    {\n" +
+                "      \"name\": \"n2\",\n" +
+                "      \"nodeName\": \"Name1\",\n" +
+                "      \"output\": {\n" +
+                "        \"total\": 0.0\n" +
+                "      }\n" +
+                "    }\n" +
+                "  ],\n" +
+                "  \"output\": {\n" +
+                "    \"total\": 0.0\n" +
+                "  }\n" +
+                "}"), GSonUtils.normalize(actual));
+    }
+
     public static Glob br(String name, Glob[] breakdowns) {
         for (Glob breakdown : breakdowns) {
             if (breakdown.get(SimpleBreakdown.fieldName).equals(name)) {

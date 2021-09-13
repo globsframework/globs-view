@@ -7,12 +7,15 @@ import org.globsframework.metamodel.fields.*;
 import org.globsframework.model.Glob;
 import org.globsframework.view.filter.FilterBuilder;
 import org.globsframework.view.filter.FilterImpl;
+import org.globsframework.view.filter.WantedField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.Map;
+import java.util.Objects;
+import java.util.function.Consumer;
 
 public class GreaterOrEqualType {
     static private final Logger LOGGER = LoggerFactory.getLogger(GreaterOrEqualType.class);
@@ -24,6 +27,11 @@ public class GreaterOrEqualType {
 
     static {
         GlobTypeLoaderFactory.create(GreaterOrEqualType.class)
+                .register(WantedField.class, new WantedField() {
+                    public void wanted(Glob filter, Consumer<String> wantedUniqueName) {
+                        wantedUniqueName.accept(filter.get(uniqueName));
+                    }
+                })
                 .register(FilterBuilder.class, new FilterBuilder() {
                     public FilterImpl.IsSelected create(Glob filter, GlobType rootType, Map<String, Glob> dico) {
                         PathToField pathToField = new PathToField(filter.get(uniqueName), rootType, dico).invoke();
@@ -32,51 +40,45 @@ public class GreaterOrEqualType {
 
                         if (field instanceof DateTimeField) {
                             ZonedDateTime compareTo = ZonedDateTime.parse(filter.get(value));
-                            return glob -> !compareTo.isAfter(jump.from(glob).get(((DateTimeField) field)));
+                            return glob -> jump.from(glob)
+                                    .map(((DateTimeField) field))
+                                    .filter(Objects::nonNull)
+                                    .anyMatch(zonedDateTime -> !compareTo.isAfter(zonedDateTime));
                         }
                         if (field instanceof DateField) {
                             LocalDate compareTo = LocalDate.parse(filter.get(value));
-                            return glob -> !compareTo.isAfter(jump.from(glob).get(((DateField) field)));
+                            return glob -> jump.from(glob)
+                                    .map(((DateField) field))
+                                    .filter(Objects::nonNull)
+                                    .anyMatch(value -> !compareTo.isAfter(value));
                         }
                         if (field instanceof IntegerField) {
                             int compareTo = Integer.parseInt(filter.get(value));
-                            return glob -> {
-                                Integer value = jump.from(glob).get(((IntegerField) field));
-                                if (value == null) {
-                                    return false;
-                                }
-                                return value >= compareTo;
-                            };
+                            return glob -> jump.from(glob)
+                                    .map(((IntegerField) field))
+                                    .filter(Objects::nonNull)
+                                    .anyMatch(value -> value >= compareTo);
                         }
                         if (field instanceof LongField) {
                             long compareTo = Long.parseLong(filter.get(value));
-                            return glob -> {
-                                Long value = jump.from(glob).get(((LongField) field));
-                                if (value == null) {
-                                    return false;
-                                }
-                                return value >= compareTo;
-                            };
+                            return glob -> jump.from(glob)
+                                    .map(((LongField) field))
+                                    .filter(Objects::nonNull)
+                                    .anyMatch(value -> value >= compareTo);
                         }
                         if (field instanceof DoubleField) {
                             double compareTo = Double.parseDouble(filter.get(value));
-                            return glob -> {
-                                Double value = jump.from(glob).get(((DoubleField) field));
-                                if (value == null) {
-                                    return false;
-                                }
-                                return value >= compareTo;
-                            };
+                            return glob -> jump.from(glob)
+                                    .map(((DoubleField) field))
+                                    .filter(Objects::nonNull)
+                                    .anyMatch(value -> value >= compareTo);
                         }
                         if (field instanceof StringField) {
                             String compareTo = filter.get(value);
-                            return glob -> {
-                                String value = jump.from(glob).get(((StringField) field));
-                                if (value == null) {
-                                    return false;
-                                }
-                                return value.compareToIgnoreCase(compareTo) >= 0;
-                            };
+                            return glob -> jump.from(glob)
+                                    .map(((StringField) field))
+                                    .filter(Objects::nonNull)
+                                    .anyMatch(value -> value.compareToIgnoreCase(compareTo) >= 0);
                         }
                         String msg = "Field " + field.getFullName() + " of type " + field.getValueClass() + " not managed";
                         LOGGER.error(msg);

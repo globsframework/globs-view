@@ -7,10 +7,13 @@ import org.globsframework.metamodel.fields.*;
 import org.globsframework.model.Glob;
 import org.globsframework.view.filter.FilterBuilder;
 import org.globsframework.view.filter.FilterImpl;
+import org.globsframework.view.filter.WantedField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
+import java.util.Objects;
+import java.util.function.Consumer;
 
 public class ContainsType {
     static private final Logger LOGGER = LoggerFactory.getLogger(ContainsType.class);
@@ -22,6 +25,11 @@ public class ContainsType {
 
     static {
         GlobTypeLoaderFactory.create(ContainsType.class)
+                .register(WantedField.class, new WantedField() {
+                    public void wanted(Glob filter, Consumer<String> wantedUniqueName) {
+                        wantedUniqueName.accept(filter.get(uniqueName));
+                    }
+                })
                 .register(FilterBuilder.class, new FilterBuilder() {
                     public FilterImpl.IsSelected create(Glob filter, GlobType rootType, Map<String, Glob> dico) {
                         PathToField pathToField = new PathToField(filter.get(uniqueName), rootType, dico).invoke();
@@ -29,13 +37,10 @@ public class ContainsType {
                         Field field = pathToField.getField();
                         if (field instanceof StringField) {
                             String compareTo = filter.get(value);
-                            return glob -> {
-                                String value = jump.from(glob).get(((StringField) field));
-                                if (value == null) {
-                                    return false;
-                                }
-                                return value.contains(compareTo);
-                            };
+                            return glob -> jump.from(glob)
+                                    .map(((StringField) field))
+                                    .filter(Objects::nonNull)
+                                    .anyMatch(s -> s.contains(compareTo));
                         }
                         String msg = "Field " + field.getFullName() + " of type " + field.getValueClass() + " not managed";
                         LOGGER.error(msg);
