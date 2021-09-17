@@ -8,6 +8,7 @@ import org.globsframework.model.Glob;
 import org.globsframework.view.filter.FilterBuilder;
 import org.globsframework.view.filter.FilterImpl;
 import org.globsframework.view.filter.WantedField;
+import org.globsframework.view.model.StringAsDouble;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,6 +76,16 @@ public class LessOrEqualType {
                         }
                         if (field instanceof StringField) {
                             String compareTo = filter.get(value);
+                            if (field.hasAnnotation(StringAsDouble.key)) {
+                                double dbl = Double.parseDouble(filter.get(value));
+                                StringField dblField = (StringField) field;
+                                return glob -> jump.from(glob)
+                                        .map(dblField)
+                                        .map(StrictlyGreaterType::parseDouble)
+                                        .filter(Objects::nonNull)
+                                        .anyMatch(value -> value <= dbl);
+
+                            }
                             return glob -> jump.from(glob)
                                     .map(((StringField) field))
                                     .filter(Objects::nonNull)

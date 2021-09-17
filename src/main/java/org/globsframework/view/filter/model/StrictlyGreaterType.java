@@ -8,6 +8,7 @@ import org.globsframework.model.Glob;
 import org.globsframework.view.filter.FilterBuilder;
 import org.globsframework.view.filter.FilterImpl;
 import org.globsframework.view.filter.WantedField;
+import org.globsframework.view.model.StringAsDouble;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,6 +17,7 @@ import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class StrictlyGreaterType {
     static private final Logger LOGGER = LoggerFactory.getLogger(StrictlyGreaterType.class);
@@ -44,14 +46,14 @@ public class StrictlyGreaterType {
                             return glob -> jump.from(glob)
                                     .map(((DateTimeField) field))
                                     .filter(Objects::nonNull)
-                                    .anyMatch(compareTo::isAfter);
+                                    .anyMatch(d -> d.isAfter(compareTo));
                         }
                         if (field instanceof DateField) {
                             LocalDate compareTo = LocalDate.parse(filter.get(value));
                             return glob -> jump.from(glob)
                                     .map(((DateField) field))
                                     .filter(Objects::nonNull)
-                                    .anyMatch(compareTo::isAfter);
+                                    .anyMatch(d -> d.isAfter(compareTo));
                         }
                         if (field instanceof IntegerField) {
                             int compareTo = Integer.parseInt(filter.get(value));
@@ -69,13 +71,24 @@ public class StrictlyGreaterType {
                         }
                         if (field instanceof DoubleField) {
                             double compareTo = Double.parseDouble(filter.get(value));
+                            DoubleField dblField = (DoubleField) field;
                             return glob -> jump.from(glob)
-                                    .map(((DoubleField) field))
+                                    .map(dblField)
                                     .filter(Objects::nonNull)
                                     .anyMatch(value -> value > compareTo);
                         }
                         if (field instanceof StringField) {
                             String compareTo = filter.get(value);
+                            if (field.hasAnnotation(StringAsDouble.key)) {
+                                double dbl = Double.parseDouble(filter.get(value));
+                                StringField dblField = (StringField) field;
+                                return glob -> jump.from(glob)
+                                        .map(dblField)
+                                        .map(StrictlyGreaterType::parseDouble)
+                                        .filter(Objects::nonNull)
+                                        .anyMatch(value -> value > dbl);
+
+                            }
                             return glob -> jump.from(glob)
                                     .map(((StringField) field))
                                     .filter(Objects::nonNull)
@@ -86,5 +99,13 @@ public class StrictlyGreaterType {
                         throw new RuntimeException(msg);
                     }
                 }).load();
+    }
+
+    public static Double parseDouble(String dbl) {
+        try {
+            return dbl == null || dbl.length() == 0 ? null : Double.parseDouble(dbl);
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 }
