@@ -14,6 +14,7 @@ import org.globsframework.metamodel.Field;
 import org.globsframework.metamodel.GlobType;
 import org.globsframework.metamodel.GlobTypeBuilder;
 import org.globsframework.metamodel.GlobTypeLoaderFactory;
+import org.globsframework.metamodel.annotations.Comment_;
 import org.globsframework.metamodel.annotations.Target;
 import org.globsframework.metamodel.fields.*;
 import org.globsframework.metamodel.impl.DefaultGlobTypeBuilder;
@@ -229,6 +230,7 @@ public class HttpViewServer {
         public static StringField source;
 
         //json or csv
+        @Comment_("json or csv")
         public static StringField outputType;
 
         public static BooleanField leafOnly;
