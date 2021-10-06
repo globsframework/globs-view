@@ -15,9 +15,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ViewEngineImpl implements ViewEngine {
     private static final Logger LOGGER = LoggerFactory.getLogger(ViewEngineImpl.class);
+    public static final int VIEW_MAX_DEPTH = Integer.getInteger("globs.view.max.depth", 10);
+
     public ViewBuilder buildView(Glob dictionary, Glob viewRequestType) {
         return new ViewBuilderImpl(dictionary, viewRequestType);
     }
@@ -30,6 +33,10 @@ public class ViewEngineImpl implements ViewEngine {
 
     private void extract(GlobType globType, List<Glob> breakdowns, ArrayDeque<Field> path) {
         LOGGER.debug("extract " + globType.getName());
+        if (path.size() > VIEW_MAX_DEPTH) {
+            LOGGER.warn("Stop drilling down to deep in fields : " + path.stream().map(Field::getName).collect(Collectors.joining("/")));
+            return;
+        }
         Field[] fields = globType.getFields();
         for (Field field : fields) {
             if (field.getDataType().isPrimive() && !field.getDataType().isArray()) {
