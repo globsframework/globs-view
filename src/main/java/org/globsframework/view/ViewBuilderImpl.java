@@ -37,7 +37,7 @@ public class ViewBuilderImpl implements ViewBuilder {
                         LOGGER.error(msg);
                         throw new RuntimeException(msg);
                     });
-            String outputAlias = o.get(ViewOutput.name);
+            String outputAlias = o.get(ViewOutput.name, o.get(ViewOutput.uniqueName));
             outputTypeBuilder.declare(outputAlias, DataType.valueOf(type.get(SimpleBreakdown.outputTypeName, type.get(SimpleBreakdown.nativeType))),
                     Collections.emptyList());
         }
