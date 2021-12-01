@@ -33,7 +33,6 @@ public class PathBaseViewImpl implements View {
     private final GlobType outputType;
     private final GlobField outputField;
     private final GlobArrayField childrenField;
-    private Filter filter;
 
     public PathBaseViewImpl(Glob viewRequestType, GlobType breakdownDownType, GlobType outputType, Glob dictionary) {
         this.viewRequestType = viewRequestType;
@@ -57,6 +56,7 @@ public class PathBaseViewImpl implements View {
         Glob[] breakdowns = viewRequestType.getOrEmpty(ViewRequestType.breakdowns);
 
         Glob globFilter = viewRequestType.get(ViewRequestType.filter);
+        Filter filter;
         if (globFilter != null) {
             filter = new FilterImpl(globType, globFilter, aliasToDico);
         } else {
@@ -84,7 +84,6 @@ public class PathBaseViewImpl implements View {
             }
 
             public void complete() {
-
             }
         };
     }
@@ -169,11 +168,12 @@ public class PathBaseViewImpl implements View {
             agg.reset(output);
             Glob[] sub = new Glob[children.size()];
             int i = 0;
-            Object[] key = children.keySet().toArray();
-            Arrays.sort(key, (o1, o2) -> o1 != null && o2 != null ? ((Comparable) o1).compareTo(o2) : (o1 == null ? (o2 == null ? 0 : -1) : 1));
+           Object[] key = children.entrySet().toArray();
+            Arrays.sort(key, (o1, o2) -> o1 != null && o2 != null ? ((Map.Entry<Object, Node>) o1).getValue().getKeyAsString()
+                    .compareTo(((Map.Entry<Object, Node>) o2).getValue().getKeyAsString()) : (o1 == null ? (o2 == null ? 0 : -1) : 1));
 
             for (Object k : key) {
-                Glob glh = computeOutput(children.get(k));
+                Glob glh = computeOutput(((Map.Entry<Object, Node>) k).getValue());
                 sub[i++] = glh;
                 agg.fill(output, glh.get(outputField));
             }
@@ -236,22 +236,22 @@ public class PathBaseViewImpl implements View {
                 i++;
             }
             {
-                ArrayDeque<Pair<Field, Path>> path = new ArrayDeque<>();
+                ArrayDeque<Pair<PathElement, Path>> path = new ArrayDeque<>();
                 int globStartIndex = stackType.size();
                 for (Iterator<Path> iterator = stackType.descendingIterator(); iterator.hasNext(); ) {
                     Path type = iterator.next();
-                    findPathTo(type, pathFromRoot, path);
                     globStartIndex--;
-                    if (!path.isEmpty()) {
+                    if (findPathTo(type, pathFromRoot, path)) {
+//                    if (!path.isEmpty()) {
                         break;
                     }
                 }
                 if (path.isEmpty()) {
                     return null;
                 }
-                Field[] fields = new Field[path.size()];
+                PathElement[] fields = new PathElement[path.size()];
                 int k = 0;
-                for (Pair<Field, Path> typePair : path) {
+                for (Pair<PathElement, Path> typePair : path) {
                     stackType.add(typePair.getSecond());
                     fields[k] = typePair.getFirst();
                     ++k;
@@ -327,7 +327,7 @@ public class PathBaseViewImpl implements View {
         }
 
         // on cherche comment accéder a l'object a partir de la stack
-        ArrayDeque<Pair<Field, Path>> path = new ArrayDeque<>();
+        ArrayDeque<Pair<PathElement, Path>> path = new ArrayDeque<>();
         int globStartIndex = stackType.size();
         for (Iterator<Path> iterator = stackType.descendingIterator(); iterator.hasNext(); ) {
             Path type = iterator.next();
@@ -395,9 +395,9 @@ public class PathBaseViewImpl implements View {
             throw new RuntimeException("Aggregation on " + field.getDataType() + " not implemented.");
         }
 
-        Field[] fields = new Field[path.size()];
+        PathElement[] fields = new PathElement[path.size()];
         int k = 0;
-        for (Pair<Field, Path> typePair : path) {
+        for (Pair<PathElement, Path> typePair : path) {
             fields[k] = typePair.getFirst();
             ++k;
         }
@@ -406,11 +406,11 @@ public class PathBaseViewImpl implements View {
 
     // si la stack index != du dernier => il faudrait fournir ces chifres qu'a ce niveau: sinon les totaux sont faux.
 
-    private OnOutputScan scanForOutput(Field[] fields, int fieldLevel, OnOutputScan fillOutput) {
+    private OnOutputScan scanForOutput(PathElement[] fields, int fieldLevel, OnOutputScan fillOutput) {
         if (fields.length == fieldLevel) {
             return fillOutput;
         } else {
-            Field field = fields[fieldLevel];
+            Field field = fields[fieldLevel].field;
             if (field instanceof GlobField) {
                 return new OnGlobFieldOutputScan(scanForOutput(fields, fieldLevel + 1, fillOutput), (GlobField) field);
             } else if (field instanceof GlobArrayField) {
@@ -437,34 +437,51 @@ public class PathBaseViewImpl implements View {
         return new ArrayAggOutput(aggOutputs.toArray(AggOutput[]::new));
     }
 
-    private static boolean findPathTo(Path currentPath, String[] pathFromRoot, Deque<Pair<Field, Path>> path) {
+    private static boolean findPathTo(Path currentPath, String[] pathFromRoot, Deque<Pair<PathElement, Path>> path) {
         if (pathFromRoot.length >= currentPath.path.length && Arrays.equals(currentPath.path, 0, currentPath.path.length, pathFromRoot, 0, currentPath.path.length)) {
-
             GlobType currentType = currentPath.globType;
+            if (currentType == null) { // pour les union le niveau intermediaire est null
+                return false;
+            }
             Path previousPath = currentPath;
 
             for (int i = currentPath.path.length; i < pathFromRoot.length; i++) {
                 String s = pathFromRoot[i];
                 Field field = currentType.getField(s);
-                currentType = field.safeVisit(new FieldVisitor.AbstractWithErrorVisitor() {
-                    GlobType type;
-
-                    public void visitGlob(GlobField field) throws Exception {
-                        type = field.getTargetType();
-                    }
-
-                    public void visitGlobArray(GlobArrayField field) throws Exception {
-                        type = field.getTargetType();
-                    }
-                }).type;
-                previousPath = previousPath.newPath(field.getName(), currentType);
-                path.addLast(Pair.makePair(field, previousPath));
+                ExtractType visitor = new ExtractType(pathFromRoot, i, previousPath, path);
+                currentType = field.safeVisit(visitor).type;
+                i = visitor.index;
+                previousPath = visitor.previousPath;
+//                path.addLast(Pair.makePair(field, previousPath));
             }
             return true;
         } else {
             return false;
         }
     }
+
+    static class PathElement {
+        private Field field;
+        private GlobType typeName;
+
+        public PathElement(Field field) {
+            this.field = field;
+        }
+
+        public PathElement(GlobType typeName) {
+            this.typeName = typeName;
+        }
+
+        public static PathElement create(Field field) {
+            return new PathElement(field);
+        }
+
+        public static PathElement create(GlobType typeName) {
+            return new PathElement(typeName);
+        }
+    }
+
+
 
     interface FillDirectOutput {
         void fill(MutableGlob output, Glob data);
@@ -581,6 +598,53 @@ public class PathBaseViewImpl implements View {
         }
     }
 
+
+
+    private static class ExtractType extends FieldVisitor.AbstractWithErrorVisitor {
+        private final String[] pathFromRoot;
+        private int index;
+        private Path previousPath;
+        private Deque<Pair<PathElement, Path>> path;
+        GlobType type;
+
+        public ExtractType(String[] pathFromRoot, int index, Path previousPath, Deque<Pair<PathElement, Path>> path) {
+            this.pathFromRoot = pathFromRoot;
+            this.index = index;
+            this.previousPath = previousPath;
+            this.path = path;
+        }
+
+        public void visitGlob(GlobField field) throws Exception {
+            type = field.getTargetType();
+            previousPath = previousPath.newPath(field.getName(), type);
+            path.addLast(Pair.makePair(PathElement.create(field), previousPath));
+        }
+
+        public void visitGlobArray(GlobArrayField field) throws Exception {
+            type = field.getTargetType();
+            previousPath = previousPath.newPath(field.getName(), type);
+            path.addLast(Pair.makePair(PathElement.create(field), previousPath));
+        }
+
+        public void visitUnionGlob(GlobUnionField field) throws Exception {
+            String typeName = pathFromRoot[++index];
+            type = field.getTargetType(typeName);
+            Path p = previousPath.newPath(field.getName(), null);
+            path.addLast(Pair.makePair(PathElement.create(field), p));
+            previousPath = p.newPath(typeName, type);
+            path.addLast(Pair.makePair(PathElement.create(type), previousPath));
+        }
+
+        public void visitUnionGlobArray(GlobArrayUnionField field) throws Exception {
+            String typeName = pathFromRoot[++index];
+            type = field.getTargetType(typeName);
+            Path p = previousPath.newPath(field.getName(), null);
+            path.addLast(Pair.makePair(PathElement.create(field), p));
+            previousPath = p.newPath(typeName, type);
+            path.addLast(Pair.makePair(PathElement.create(type), previousPath));
+        }
+    }
+
     private class InStackStringToDoubleFillOutput implements FillOutput {
         private final int stackIndex;
         private final StringField sourceField;
@@ -657,12 +721,12 @@ public class PathBaseViewImpl implements View {
 
     private static class MultiLevelPath implements NextPath {
         final int level;
-        final Field[] fields;
+        final PathElement[] fields;
         final NodeBuilder nodeBuilder;
         final PathBaseViewImpl.OnField onField;
         private int fromLevel;
 
-        public MultiLevelPath(int fromLevel, int level, Field[] fields, NodeBuilder nodeBuilder) {
+        public MultiLevelPath(int fromLevel, int level, PathElement[] fields, NodeBuilder nodeBuilder) {
             this.fromLevel = fromLevel;
             this.level = level;
             this.fields = fields;
@@ -676,15 +740,21 @@ public class PathBaseViewImpl implements View {
             stack[level] = null;
         }
 
-        private PathBaseViewImpl.OnField scan(Field[] fields, int fieldLevel, int stackLevel) {
+        private PathBaseViewImpl.OnField scan(PathElement[] fields, int fieldLevel, int stackLevel) {
             if (fields.length == fieldLevel) {
                 return new GlobOnField(nodeBuilder);
             } else {
-                Field field = fields[fieldLevel];
+                Field field = fields[fieldLevel].field;
                 if (field instanceof GlobField) {
                     return new PathBaseViewImpl.FieldOnField(scan(fields, fieldLevel + 1, stackLevel + 1), (GlobField) field, stackLevel);
                 } else if (field instanceof GlobArrayField) {
                     return new PathBaseViewImpl.FieldArrayOnField(scan(fields, fieldLevel + 1, stackLevel + 1), (GlobArrayField) field, stackLevel);
+                } else if (field instanceof GlobUnionField) {
+                    return new PathBaseViewImpl.FieldUnionOnField(scan(fields, fieldLevel + 2, stackLevel + 2),
+                            (GlobUnionField) field, stackLevel, fields[fieldLevel + 1].typeName);
+                } else if (field instanceof GlobArrayUnionField) {
+                    return new PathBaseViewImpl.FieldArrayUnionOnField(scan(fields, fieldLevel + 2, stackLevel + 2),
+                            (GlobArrayUnionField) field, stackLevel, fields[fieldLevel + 1].typeName);
                 } else {
                     throw new RuntimeException("BUG");
                 }
@@ -879,6 +949,32 @@ public class PathBaseViewImpl implements View {
             stack[stackLevel] = null;
         }
     }
+    static class FieldUnionOnField implements OnField {
+        final OnField next;
+        final GlobUnionField field;
+        final int stackLevel;
+        private GlobType typeName;
+
+        FieldUnionOnField(OnField next, GlobUnionField field, int stackLevel, GlobType typeName) {
+            this.next = next;
+            this.field = field;
+            this.stackLevel = stackLevel;
+            this.typeName = typeName;
+        }
+
+        public void scan(Glob current, Node node, Glob[] stack) {
+            Glob glob = current.get(field);
+            if (glob == null) {
+                return;
+            }
+            if (glob.getType() == typeName) {
+                stack[stackLevel] = null;
+                stack[stackLevel + 1] = glob;
+                next.scan(glob, node, stack);
+                stack[stackLevel + 1] = null;
+            }
+        }
+    }
 
     static class FieldArrayOnField implements OnField {
         final OnField next;
@@ -897,6 +993,32 @@ public class PathBaseViewImpl implements View {
                 stack[stackLevel] = glob;
                 next.scan(glob, node, stack);
                 stack[stackLevel] = null;
+            }
+        }
+    }
+
+    static class FieldArrayUnionOnField implements OnField {
+        final OnField next;
+        final GlobArrayUnionField field;
+        final int stackLevel;
+        private GlobType typeName;
+
+        FieldArrayUnionOnField(OnField next, GlobArrayUnionField field, int stackLevel, GlobType typeName) {
+            this.next = next;
+            this.field = field;
+            this.stackLevel = stackLevel;
+            this.typeName = typeName;
+        }
+
+        public void scan(Glob current, Node node, Glob[] stack) {
+            Glob[] globs = current.getOrEmpty(field);
+            for (Glob glob : globs) {
+                if (glob.getType() == typeName) {
+                    stack[stackLevel] = null;
+                    stack[stackLevel + 1] = glob;
+                    next.scan(glob, node, stack);
+                    stack[stackLevel + 1] = null;
+                }
             }
         }
     }

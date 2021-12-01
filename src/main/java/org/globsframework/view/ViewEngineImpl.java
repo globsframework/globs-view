@@ -2,8 +2,7 @@ package org.globsframework.view;
 
 import org.globsframework.metamodel.Field;
 import org.globsframework.metamodel.GlobType;
-import org.globsframework.metamodel.fields.GlobArrayField;
-import org.globsframework.metamodel.fields.GlobField;
+import org.globsframework.metamodel.fields.*;
 import org.globsframework.metamodel.type.DataType;
 import org.globsframework.model.Glob;
 import org.globsframework.model.MutableGlob;
@@ -31,16 +30,16 @@ public class ViewEngineImpl implements ViewEngine {
         return DictionaryType.TYPE.instantiate().set(DictionaryType.breakdowns, breakdowns.toArray(new Glob[0]));
     }
 
-    private void extract(GlobType globType, List<Glob> breakdowns, ArrayDeque<Field> path) {
+    private void extract(GlobType globType, List<Glob> breakdowns, ArrayDeque<String> path) {
         LOGGER.debug("extract " + globType.getName());
         if (path.size() > VIEW_MAX_DEPTH) {
-            LOGGER.warn("Stop drilling down to deep in fields : " + path.stream().map(Field::getName).collect(Collectors.joining("/")));
+            LOGGER.warn("Stop drilling down to deep in fields : " + path.stream().collect(Collectors.joining("/")));
             return;
         }
         Field[] fields = globType.getFields();
         for (Field field : fields) {
-            if (field.getDataType().isPrimive() && !field.getDataType().isArray()) {
-                String[] strings = path.stream().map(Field::getName).toArray(String[]::new);
+            if (field.getDataType().isPrimive() /*&& !field.getDataType().isArray() */) {
+                String[] strings = path.toArray(String[]::new);
                 String join = String.join(".", strings);
                 String uniqueName = join + (join.isEmpty() ? "" : ".") + field.getName();
                 MutableGlob brk = SimpleBreakdown.TYPE.instantiate()
@@ -56,12 +55,28 @@ public class ViewEngineImpl implements ViewEngine {
                 }
                 breakdowns.add(brk);
             } else if (field instanceof GlobArrayField) {
-                path.addLast(field);
+                path.addLast(field.getName());
                 extract(((GlobArrayField) field).getTargetType(), breakdowns, path);
                 path.removeLast();
             } else if (field instanceof GlobField) {
-                path.addLast(field);
+                path.addLast(field.getName());
                 extract(((GlobField) field).getTargetType(), breakdowns, path);
+                path.removeLast();
+            } else if (field instanceof GlobUnionField) {
+                path.addLast(field.getName());
+                for (GlobType targetType : ((GlobUnionField) field).getTargetTypes()) {
+                    path.addLast(targetType.getName());
+                    extract(targetType, breakdowns, path);
+                    path.removeLast();
+                }
+                path.removeLast();
+            } else if (field instanceof GlobArrayUnionField) {
+                path.addLast(field.getName());
+                for (GlobType targetType : ((GlobArrayUnionField) field).getTargetTypes()) {
+                    path.addLast(targetType.getName());
+                    extract(targetType, breakdowns, path);
+                    path.removeLast();
+                }
                 path.removeLast();
             }
         }
