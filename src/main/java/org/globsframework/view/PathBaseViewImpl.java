@@ -942,7 +942,7 @@ public class PathBaseViewImpl implements View {
         public void scan(Glob current, Node node, Glob[] stack) {
             Glob glob = current.get(field);
             if (glob == null) {
-                return;
+                glob = field.getTargetType().instantiate();
             }
             stack[stackLevel] = glob;
             next.scan(glob, node, stack);
@@ -965,7 +965,7 @@ public class PathBaseViewImpl implements View {
         public void scan(Glob current, Node node, Glob[] stack) {
             Glob glob = current.get(field);
             if (glob == null) {
-                return;
+                glob = typeName.instantiate();
             }
             if (glob.getType() == typeName) {
                 stack[stackLevel] = null;
@@ -989,6 +989,12 @@ public class PathBaseViewImpl implements View {
 
         public void scan(Glob current, Node node, Glob[] stack) {
             Glob[] globs = current.getOrEmpty(field);
+            if (globs.length == 0) {
+                Glob glob = field.getTargetType().instantiate();
+                stack[stackLevel] = glob;
+                next.scan(glob, node, stack);
+                stack[stackLevel] = null;
+            }
             for (Glob glob : globs) {
                 stack[stackLevel] = glob;
                 next.scan(glob, node, stack);
@@ -1012,6 +1018,12 @@ public class PathBaseViewImpl implements View {
 
         public void scan(Glob current, Node node, Glob[] stack) {
             Glob[] globs = current.getOrEmpty(field);
+            if (globs.length == 0) {
+                Glob glob = typeName.instantiate();
+                stack[stackLevel] = glob;
+                next.scan(glob, node, stack);
+                stack[stackLevel] = null;
+            }
             for (Glob glob : globs) {
                 if (glob.getType() == typeName) {
                     stack[stackLevel] = null;

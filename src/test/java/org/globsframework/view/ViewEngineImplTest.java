@@ -577,6 +577,16 @@ public class ViewEngineImplTest extends TestCase {
                 "      \"nodeName\": \"Name1\",\n" +
                 "      \"__children__\": [\n" +
                 "        {\n" +
+                "          \"name\": \"null\",\n" +
+                "          \"nodeName\": \"SUB2.SUB3.NameSub4\",\n" +
+                "          \"__children__\": [\n" +
+                "            {\n" +
+                "              \"name\": \"null\",\n" +
+                "              \"nodeName\": \"SUB2.SUB3.NameSub5\"\n" +
+                "            }\n" +
+                "          ]\n" +
+                "        },\n" +
+                "        {\n" +
                 "          \"name\": \"s41\",\n" +
                 "          \"nodeName\": \"SUB2.SUB3.NameSub4\",\n" +
                 "          \"__children__\": [\n" +
