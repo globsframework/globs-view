@@ -1,8 +1,7 @@
 package org.globsframework.view;
 
 import com.google.gson.Gson;
-import org.globsframework.json.GSonUtils;
-import org.globsframework.json.GlobTypeResolver;
+import org.globsframework.metamodel.GlobTypeResolver;
 import org.globsframework.json.GlobsGson;
 import org.globsframework.metamodel.GlobType;
 import org.globsframework.metamodel.GlobTypeLoaderFactory;

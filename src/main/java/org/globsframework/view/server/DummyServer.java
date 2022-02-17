@@ -2,7 +2,7 @@ package org.globsframework.view.server;
 
 import com.google.gson.Gson;
 import org.globsframework.commandline.ParseCommandLine;
-import org.globsframework.json.GlobTypeResolver;
+import org.globsframework.metamodel.GlobTypeResolver;
 import org.globsframework.json.GlobTypeSet;
 import org.globsframework.json.GlobsGson;
 import org.globsframework.metamodel.GlobModel;
