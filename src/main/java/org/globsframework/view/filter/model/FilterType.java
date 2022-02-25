@@ -35,6 +35,9 @@ public class FilterType {
                 .register(FilterBuilder.class, new FilterBuilder() {
                     public FilterImpl.IsSelected create(Glob globFilter, GlobType rootType, Map<String, Glob> dico) {
                         Glob glob = globFilter.get(filter);
+                        if (glob == null) {
+                            return glob1 -> true;
+                        }
                         return glob.getType().getRegistered(FilterBuilder.class)
                                 .create(glob, rootType, dico);
                     }

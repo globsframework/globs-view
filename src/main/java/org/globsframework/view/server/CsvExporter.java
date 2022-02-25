@@ -18,9 +18,7 @@ import org.globsframework.view.model.ViewRequestType;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class CsvExporter {
@@ -48,9 +46,17 @@ public class CsvExporter {
         Glob[] output = request.getOrEmpty(ViewRequestType.output);
         GlobTypeBuilder globTypeBuilder = new DefaultGlobTypeBuilder("CSV");
         StringField[] breakdownFields = new StringField[breakdowns.length];
+        Set<String> uniqueName = new HashSet<>();
         for (int i = 0; i < breakdowns.length; i++) {
             Glob breakdown = breakdowns[i];
-            breakdownFields[i] = globTypeBuilder.declareStringField(breakdown.get(ViewBreakdown.aliasName, breakdown.get(ViewBreakdown.uniqueName)));
+            StringField useField;
+            if (uniqueName.add(breakdown.get(ViewBreakdown.aliasName))) {
+                useField = ViewBreakdown.aliasName;
+            }
+            else {
+                useField = ViewBreakdown.uniqueName;
+            }
+            breakdownFields[i] = globTypeBuilder.declareStringField(breakdown.get(useField));
         }
         GlobType viewType = root.getType();
         GlobField outputField = (GlobField) viewType.getField(ViewBuilderImpl.OUTPUT);
