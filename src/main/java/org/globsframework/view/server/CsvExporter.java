@@ -49,8 +49,9 @@ public class CsvExporter {
         Set<String> uniqueName = new HashSet<>();
         for (int i = 0; i < breakdowns.length; i++) {
             Glob breakdown = breakdowns[i];
+//            breakdownFields[i] = globTypeBuilder.declareStringField(breakdown.get(ViewBreakdown.aliasName, breakdown.get(ViewBreakdown.uniqueName)));
             StringField useField;
-            if (uniqueName.add(breakdown.get(ViewBreakdown.aliasName))) {
+            if (breakdown.get(ViewBreakdown.aliasName) != null && uniqueName.add(breakdown.get(ViewBreakdown.aliasName))) {
                 useField = ViewBreakdown.aliasName;
             }
             else {
