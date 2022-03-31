@@ -1,6 +1,5 @@
 package org.globsframework.view;
 
-import org.apache.logging.log4j.util.Strings;
 import org.globsframework.json.GSonUtils;
 import org.globsframework.metamodel.Field;
 import org.globsframework.metamodel.GlobType;
@@ -8,6 +7,7 @@ import org.globsframework.metamodel.fields.*;
 import org.globsframework.model.Glob;
 import org.globsframework.model.MutableGlob;
 import org.globsframework.utils.Ref;
+import org.globsframework.utils.Strings;
 import org.globsframework.utils.collections.Pair;
 import org.globsframework.view.filter.Filter;
 import org.globsframework.view.filter.FilterImpl;
@@ -279,7 +279,7 @@ public class PathBaseViewImpl implements View {
         String nodeName = breakdown.get(SimpleBreakdown.aliasName);
         String typeName = breakdown.get(SimpleBreakdown.typeName);
         String fieldName = breakdown.get(SimpleBreakdown.fieldName);
-        return new DefaultNodeCreator(outputType, Strings.isEmpty(nodeName) ? typeName + ":" + fieldName : nodeName, field);
+        return new DefaultNodeCreator(outputType, Strings.isNullOrEmpty(nodeName) ? typeName + ":" + fieldName : nodeName, field);
     }
 
     private FillOutput createOutputFiller(Glob[] viewOutput, GlobType outputType, ArrayDeque<Path> stackType, Map<String, Glob> dictionary) {
@@ -379,7 +379,7 @@ public class PathBaseViewImpl implements View {
 
                 public void scan(MutableGlob output, Glob data) {
                     String value = data.get(srcField);
-                    if (Strings.isEmpty(value)) {
+                    if (Strings.isNullOrEmpty(value)) {
                         return;
                     }
                     double v = 0.;
@@ -657,7 +657,7 @@ public class PathBaseViewImpl implements View {
         }
         public void fill(MutableGlob output, Glob[] stack) {
             String value = stack[stackIndex].get(sourceField);
-            if (Strings.isEmpty(value)) {
+            if (Strings.isNullOrEmpty(value)) {
                 return;
             }
             double v = 0;
