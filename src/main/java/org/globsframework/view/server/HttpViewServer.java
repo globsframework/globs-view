@@ -13,15 +13,23 @@ import org.globsframework.metamodel.GlobType;
 import org.globsframework.metamodel.GlobTypeLoaderFactory;
 import org.globsframework.metamodel.annotations.Comment_;
 import org.globsframework.metamodel.annotations.Target;
-import org.globsframework.metamodel.fields.*;
+import org.globsframework.metamodel.fields.BooleanField;
+import org.globsframework.metamodel.fields.GlobArrayField;
+import org.globsframework.metamodel.fields.IntegerField;
+import org.globsframework.metamodel.fields.StringField;
 import org.globsframework.model.Glob;
+import org.globsframework.utils.Strings;
 import org.globsframework.utils.collections.Pair;
-import org.globsframework.view.*;
+import org.globsframework.view.View;
+import org.globsframework.view.ViewBuilder;
+import org.globsframework.view.ViewEngine;
+import org.globsframework.view.ViewEngineImpl;
 import org.globsframework.view.model.ViewRequestType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -33,22 +41,27 @@ import java.util.concurrent.TimeUnit;
 public class HttpViewServer {
     public static final int EXPIRATION = 1000 * 60 * 20; // => cache 20 min
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpViewServer.class);
-    private final Glob options;
     private final DataAccessor dataAccessor;
     private final int port;
     private final org.apache.http.impl.nio.bootstrap.HttpServer httpServer;
     private final Map<String, Pair<Long, Source>> sourceCache = new ConcurrentHashMap<>();
 
     public HttpViewServer(Glob options, DataAccessor dataAccessor) throws InterruptedException, IOException {
-        this.options = options;
+        this(options.get(Options.localViewAddress), options.get(Options.httpPort, 0), dataAccessor);
+    }
+
+    public HttpViewServer(String localAddress, int httpPort, DataAccessor dataAccessor) throws InterruptedException, IOException {
         this.dataAccessor = dataAccessor;
 
         final IOReactorConfig config = IOReactorConfig.custom()
                 .setSoReuseAddress(true)
-                .setTcpNoDelay(true)
                 .build();
-        ServerBootstrap serverBootstrap = ServerBootstrap.bootstrap()
-                .setListenerPort(options.get(Options.httpPort, 0))
+        ServerBootstrap bootstrap = ServerBootstrap.bootstrap();
+        if (Strings.isNotEmpty(localAddress)) {
+            bootstrap.setLocalAddress(InetAddress.getByName(localAddress));
+        }
+        ServerBootstrap serverBootstrap = bootstrap
+                .setListenerPort(httpPort)
                 .setIOReactorConfig(config)
                 .setExceptionLogger(new StdErrorExceptionLogger(LOGGER));
 
@@ -118,18 +131,6 @@ public class HttpViewServer {
         LOGGER.info("http port : " + port);
     }
 
-    public int getPort() {
-        return port;
-    }
-
-    public void end() {
-        httpServer.shutdown(1, TimeUnit.SECONDS);
-    }
-
-    public void waitEnd() throws InterruptedException {
-        httpServer.awaitTermination(10, TimeUnit.SECONDS);
-    }
-
     public static Glob dumpInCsv(Glob request, Glob root, boolean leafOnly) throws IOException {
         Path content = Files.createTempFile("viewContent", ".csv");
         File file = content.toFile();
@@ -144,6 +145,18 @@ public class HttpViewServer {
                 .set(GlobFile.mimeType, "text/csv")
                 .set(GlobFile.file, file.getAbsolutePath());
 
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public void end() {
+        httpServer.shutdown(1, TimeUnit.SECONDS);
+    }
+
+    public void waitEnd() throws InterruptedException {
+        httpServer.awaitTermination(10, TimeUnit.SECONDS);
     }
 
     static public class ParamType {
@@ -176,6 +189,8 @@ public class HttpViewServer {
 
     static public class Options {
         public static GlobType TYPE;
+
+        public static StringField localViewAddress;
 
         public static IntegerField httpPort;
 
