@@ -82,17 +82,30 @@ public class CsvExporter {
     private void scan(MutableGlob current, Glob node, int level) {
         MutableGlob sub = current.duplicate();
         if (level >= 0) {
-            sub.setValue(breakdownFields[level], node.getValue(breakdownField));
+            Object value = node.getValue(breakdownField);
+            if (value != null) {
+                sub.setValue(breakdownFields[level], value);
+            }
+            else {
+                sub.unset(breakdownFields[level]);
+            }
         }
         if (!leafOnly || breakdownFields.length == level + 1) {
             Glob output = node.get(outputField);
             if (output != null) {
                 for (Pair<Field, Field> fieldFieldPair : copy) {
-                    sub.setValue(fieldFieldPair.getSecond(), output.getValue(fieldFieldPair.getFirst()));
+                    Object value = output.getValue(fieldFieldPair.getFirst());
+                    if (value != null) {
+                        sub.setValue(fieldFieldPair.getSecond(), value);
+                    }
+                    else {
+                        sub.unset(fieldFieldPair.getSecond());
+                    }
                 }
             } else {
                 for (Pair<Field, Field> fieldFieldPair : copy) {
-                    sub.setValue(fieldFieldPair.getSecond(), null);
+                    sub.unset(fieldFieldPair.getSecond());
+//                    sub.setValue(fieldFieldPair.getSecond(), null);
                 }
             }
             export.accept(sub);
