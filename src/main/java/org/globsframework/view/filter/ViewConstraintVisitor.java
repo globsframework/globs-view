@@ -234,11 +234,20 @@ public class ViewConstraintVisitor implements ConstraintVisitor {
         isSelected = glob -> !values.contains(glob.getValue(field));
     }
 
-    public void visitContains(Field field, String s, boolean b) {
-        if (b) {
-            isSelected = glob -> Objects.equals(glob.getValue(field), s);
-        } else {
-            isSelected = glob -> !Objects.equals(glob.getValue(field), s);
+    public void visitContains(Field field, String s, boolean b, boolean startWith) {
+        if (startWith) {
+            if (b) {
+                isSelected = glob -> glob.get(field.asStringField(), "").startsWith(s);
+            } else {
+                isSelected = glob -> !glob.get(field.asStringField(), "").startsWith(s);
+            }
+        }
+        else {
+            if (b) {
+                isSelected = glob -> Objects.equals(glob.getValue(field), s);
+            } else {
+                isSelected = glob -> !Objects.equals(glob.getValue(field), s);
+            }
         }
     }
 
