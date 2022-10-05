@@ -244,9 +244,9 @@ public class ViewConstraintVisitor implements ConstraintVisitor {
         }
         else {
             if (b) {
-                isSelected = glob -> Objects.equals(glob.getValue(field), s);
+                isSelected = glob -> glob.get(field.asStringField(), "").contains(s);
             } else {
-                isSelected = glob -> !Objects.equals(glob.getValue(field), s);
+                isSelected = glob -> !glob.get(field.asStringField(), "").contains(s);
             }
         }
     }
