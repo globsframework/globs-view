@@ -4,5 +4,5 @@ import org.globsframework.model.Glob;
 
 public interface NodeCreator {
 
-    Node getOrCreate(Node parent, Glob data);
+    Node getOrCreate(Node parent, Glob data) throws TooManyNodeException;
 }

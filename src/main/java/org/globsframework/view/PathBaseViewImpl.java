@@ -28,13 +28,15 @@ public class PathBaseViewImpl implements View {
     private final SimpleGraph<Boolean> wanted = new SimpleGraph<>("", true);
     private final Map<String, Glob> aliasToDico;
     private final Glob dictionary;
+    private int maxNodeCount;
     private final Glob viewRequestType;
     private final GlobType breakdownDownType;
     private final GlobType outputType;
     private final GlobField outputField;
     private final GlobArrayField childrenField;
+    private int nodeCount;
 
-    public PathBaseViewImpl(Glob viewRequestType, GlobType breakdownDownType, GlobType outputType, Glob dictionary) {
+    public PathBaseViewImpl(Glob viewRequestType, GlobType breakdownDownType, GlobType outputType, Glob dictionary, int maxNodeCount) {
         this.viewRequestType = viewRequestType;
         this.breakdownDownType = breakdownDownType;
         this.outputType = outputType;
@@ -45,6 +47,7 @@ public class PathBaseViewImpl implements View {
         nameField = breakdownDownType.getField(ViewBuilderImpl.NAME).asStringField();
         nodeNameField = breakdownDownType.getField(ViewBuilderImpl.NODE_NAME).asStringField();
         this.dictionary = dictionary;
+        this.maxNodeCount = maxNodeCount;
         aliasToDico = initWanted();
         registerWantedField(aliasToDico);
     }
@@ -275,11 +278,25 @@ public class PathBaseViewImpl implements View {
         }
     }
 
+
+    interface NotifyNode {
+        void newNode() throws TooManyNodeException;
+    }
+
+    class MaxNode implements NotifyNode {
+        public void newNode() throws TooManyNodeException {
+            nodeCount++;
+            if (nodeCount > maxNodeCount) {
+                throw TooManyNodeException.tooManyNodeException;
+            }
+        }
+    }
+
     private NodeCreator createNodeCreator(Glob breakdown, Field field) {
         String nodeName = breakdown.get(SimpleBreakdown.aliasName);
         String typeName = breakdown.get(SimpleBreakdown.typeName);
         String fieldName = breakdown.get(SimpleBreakdown.fieldName);
-        return new DefaultNodeCreator(outputType, Strings.isNullOrEmpty(nodeName) ? typeName + ":" + fieldName : nodeName, field);
+        return new DefaultNodeCreator(outputType, Strings.isNullOrEmpty(nodeName) ? typeName + ":" + fieldName : nodeName, field, new MaxNode());
     }
 
     private FillOutput createOutputFiller(Glob[] viewOutput, GlobType outputType, ArrayDeque<Path> stackType, Map<String, Glob> dictionary) {
@@ -497,7 +514,7 @@ public class PathBaseViewImpl implements View {
     }
 
     interface NodeBuilder {
-        void push(Node rootNode, Glob[] stack);
+        void push(Node rootNode, Glob[] stack) throws TooManyNodeException;
     }
 
 

@@ -20,8 +20,8 @@ public class ViewEngineImpl implements ViewEngine {
     private static final Logger LOGGER = LoggerFactory.getLogger(ViewEngineImpl.class);
     public static final int VIEW_MAX_DEPTH = Integer.getInteger("globs.view.max.depth", 10);
 
-    public ViewBuilder buildView(Glob dictionary, Glob viewRequestType) {
-        return new ViewBuilderImpl(dictionary, viewRequestType);
+    public ViewBuilder buildView(Glob dictionary, Glob viewRequestType, int maxNodeCount) {
+        return new ViewBuilderImpl(dictionary, viewRequestType, maxNodeCount);
     }
 
     public Glob createDictionary(GlobType globType) {

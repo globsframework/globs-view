@@ -43,7 +43,7 @@ public class DefaultNode implements Node {
 
     public Node getOrCreate(Object value, Function<Object, Node> create) {
         if (children == null) {
-            children = new HashMap<>();
+            children = new HashMap<>(2);
         }
         return children.computeIfAbsent(value, create);
     }

@@ -2,7 +2,6 @@ package org.globsframework.view;
 
 import org.globsframework.metamodel.Field;
 import org.globsframework.metamodel.GlobType;
-import org.globsframework.metamodel.fields.FieldValueVisitor;
 import org.globsframework.metamodel.fields.FieldVisitor;
 import org.globsframework.metamodel.fields.IntegerArrayField;
 import org.globsframework.metamodel.fields.StringArrayField;
@@ -16,13 +15,15 @@ public class DefaultNodeCreator implements NodeCreator, Function<Object, Node> {
     private final GlobType outputType;
     private final String nodeName;
     private final Field field;
+    private PathBaseViewImpl.NotifyNode notifyNode;
     private final ToString toString;
     private final ToValue toValue;
 
-    public DefaultNodeCreator(GlobType outputType, String nodeName, Field field) {
+    public DefaultNodeCreator(GlobType outputType, String nodeName, Field field, PathBaseViewImpl.NotifyNode notifyNode) {
         this.outputType = outputType;
         this.nodeName = nodeName;
         this.field = field;
+        this.notifyNode = notifyNode;
         ToStringVisitor visitor = new ToStringVisitor();
         field.safeVisit(visitor);
         toString = visitor.toString;
@@ -34,6 +35,7 @@ public class DefaultNodeCreator implements NodeCreator, Function<Object, Node> {
     }
 
     public Node apply(Object o) {
+        notifyNode.newNode();
         return new DefaultNode(nodeName, toValue.toValue(o), toString.toString(o), outputType.getFields().length != 0 ? outputType.instantiate() : null);
     }
 

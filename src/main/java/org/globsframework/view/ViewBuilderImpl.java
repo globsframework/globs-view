@@ -22,10 +22,12 @@ public class ViewBuilderImpl implements ViewBuilder {
     private final GlobType breakdownType;
     private Glob dictionary;
     private Glob viewRequestType;
+    private int maxNodeCount;
 
-    public ViewBuilderImpl(Glob dictionary, Glob viewRequestType) {
+    public ViewBuilderImpl(Glob dictionary, Glob viewRequestType, int maxNodeCount) {
         this.dictionary = dictionary;
         this.viewRequestType = viewRequestType;
+        this.maxNodeCount = maxNodeCount;
         Glob[] viewOutput = viewRequestType.getOrEmpty(ViewRequestType.output);
         GlobTypeBuilder outputTypeBuilder = new DefaultGlobTypeBuilder("output");
         Glob[] globs = dictionary.getOrEmpty(DictionaryType.breakdowns);
@@ -52,7 +54,7 @@ public class ViewBuilderImpl implements ViewBuilder {
 
     public View createView() {
 //        return new ObjectBaseViewImpl(viewRequestType, breakdownType, outputType);
-        return new PathBaseViewImpl(viewRequestType, breakdownType, outputType, dictionary);
+        return new PathBaseViewImpl(viewRequestType, breakdownType, outputType, dictionary, maxNodeCount);
     }
 
     public GlobType getBreakdownType() {

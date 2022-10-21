@@ -20,10 +20,7 @@ import org.globsframework.metamodel.fields.StringField;
 import org.globsframework.model.Glob;
 import org.globsframework.utils.Strings;
 import org.globsframework.utils.collections.Pair;
-import org.globsframework.view.View;
-import org.globsframework.view.ViewBuilder;
-import org.globsframework.view.ViewEngine;
-import org.globsframework.view.ViewEngineImpl;
+import org.globsframework.view.*;
 import org.globsframework.view.model.ViewRequestType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,7 +111,11 @@ public class HttpViewServer {
                         Source optimizedSrc = src; //dataAccessor.getSource(source);
                         Source.DataConsumer dataConsumer = optimizedSrc.create(view.getAccepter());
                         View.Append appender = view.getAppender(dataConsumer.getOutputType());
-                        dataConsumer.getAll(appender::add);
+                        try {
+                            dataConsumer.getAll(appender::add);
+                        } catch (TooManyNodeException e) {
+                            LOGGER.error("Too many node for request");
+                        }
                         appender.complete();
                         Glob value = view.toGlob();
                         if (queryParameters.get(ParamType.outputType, "json").equals("csv")) {
