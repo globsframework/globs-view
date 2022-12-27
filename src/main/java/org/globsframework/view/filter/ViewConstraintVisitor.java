@@ -234,19 +234,42 @@ public class ViewConstraintVisitor implements ConstraintVisitor {
         isSelected = glob -> !values.contains(glob.getValue(field));
     }
 
-    public void visitContains(Field field, String s, boolean b, boolean startWith) {
+    public void visitContains(Field field, String s, boolean b, boolean startWith, boolean ignoreCase) {
         if (startWith) {
             if (b) {
-                isSelected = glob -> glob.get(field.asStringField(), "").startsWith(s);
+                if (ignoreCase) {
+                    isSelected = glob -> glob.get(field.asStringField(), "").toLowerCase()
+                            .startsWith(s.toLowerCase());
+                }else {
+                    isSelected = glob -> glob.get(field.asStringField(), "").startsWith(s);
+                }
             } else {
-                isSelected = glob -> !glob.get(field.asStringField(), "").startsWith(s);
+                if (ignoreCase) {
+                    isSelected = glob -> !glob.get(field.asStringField(), "").toLowerCase()
+                            .startsWith(s.toLowerCase());
+                }
+                else {
+                    isSelected = glob -> !glob.get(field.asStringField(), "").startsWith(s);
+                }
             }
         }
         else {
             if (b) {
-                isSelected = glob -> glob.get(field.asStringField(), "").contains(s);
+                if (ignoreCase) {
+                    isSelected = glob -> glob.get(field.asStringField(), "")
+                            .toLowerCase().contains(s.toLowerCase());
+                }
+                else {
+                    isSelected = glob -> glob.get(field.asStringField(), "").contains(s);
+                }
             } else {
-                isSelected = glob -> !glob.get(field.asStringField(), "").contains(s);
+                if (ignoreCase) {
+                    isSelected = glob -> !glob.get(field.asStringField(), "").toLowerCase()
+                            .contains(s.toLowerCase());
+                }
+                else {
+                    isSelected = glob -> !glob.get(field.asStringField(), "").contains(s);
+                }
             }
         }
     }
