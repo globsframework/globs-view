@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 public class ViewConstraintVisitor implements ConstraintVisitor {
     private final static Logger LOGGER = LoggerFactory.getLogger(ViewConstraintVisitor.class);
@@ -240,36 +241,49 @@ public class ViewConstraintVisitor implements ConstraintVisitor {
                 if (ignoreCase) {
                     isSelected = glob -> glob.get(field.asStringField(), "").toLowerCase()
                             .startsWith(s.toLowerCase());
-                }else {
+                } else {
                     isSelected = glob -> glob.get(field.asStringField(), "").startsWith(s);
                 }
             } else {
                 if (ignoreCase) {
                     isSelected = glob -> !glob.get(field.asStringField(), "").toLowerCase()
                             .startsWith(s.toLowerCase());
-                }
-                else {
+                } else {
                     isSelected = glob -> !glob.get(field.asStringField(), "").startsWith(s);
                 }
             }
-        }
-        else {
+        } else {
             if (b) {
                 if (ignoreCase) {
                     isSelected = glob -> glob.get(field.asStringField(), "")
                             .toLowerCase().contains(s.toLowerCase());
-                }
-                else {
+                } else {
                     isSelected = glob -> glob.get(field.asStringField(), "").contains(s);
                 }
             } else {
                 if (ignoreCase) {
                     isSelected = glob -> !glob.get(field.asStringField(), "").toLowerCase()
                             .contains(s.toLowerCase());
-                }
-                else {
+                } else {
                     isSelected = glob -> !glob.get(field.asStringField(), "").contains(s);
                 }
+            }
+        }
+    }
+
+    public void visitRegularExpression(Field field, String value, boolean caseInsensitive, boolean not) {
+        Pattern pattern = Pattern.compile(value);
+        if (not) {
+            if (caseInsensitive) {
+                isSelected = glob -> !pattern.matcher(glob.get(field.asStringField(), "").toLowerCase()).matches();
+            } else {
+                isSelected = glob -> !pattern.matcher(glob.get(field.asStringField(), "")).matches();
+            }
+        } else {
+            if (caseInsensitive) {
+                isSelected = glob -> pattern.matcher(glob.get(field.asStringField(), "").toLowerCase()).matches();
+            } else {
+                isSelected = glob -> pattern.matcher(glob.get(field.asStringField(), "")).matches();
             }
         }
     }
