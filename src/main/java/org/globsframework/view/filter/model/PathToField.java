@@ -11,14 +11,13 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 public class PathToField {
-    private Glob filter;
     private GlobType rootType;
-    private Map<String, Glob> dico;
+    private UniqueNameToPath dico;
     private String uniqueName;
     private Jump jump;
     private Field field;
 
-    public PathToField(String uniqueName, GlobType rootType, Map<String, Glob> dico) {
+    public PathToField(String uniqueName, GlobType rootType, UniqueNameToPath dico) {
         this.rootType = rootType;
         this.dico = dico;
         this.uniqueName = uniqueName;
@@ -33,8 +32,8 @@ public class PathToField {
     }
 
     public PathToField invoke() {
-        Glob breakdown = dico.get(uniqueName);
-        String[] strings = breakdown.get(SimpleBreakdown.path);
+        UniqueNameToPath.Field breakdown = dico.get(uniqueName);
+        String[] strings = breakdown.path();
         GlobType lastType = rootType;
         if (strings.length != 0) {
             Jump[] jumps = new Jump[strings.length];
@@ -42,19 +41,15 @@ public class PathToField {
                 String string = strings[i];
                 Field field = lastType.getField(string);
                 if (field instanceof GlobField) {
-                    jumps[i] = new Jump() {
-                        public Stream<Glob> from(Glob glob) {
-                            Glob ch = glob.get(((GlobField) field));
-                            return ch == null ? Stream.empty() : Stream.of(ch);
-                        }
+                    jumps[i] = glob -> {
+                        Glob ch = glob.get(((GlobField) field));
+                        return ch == null ? Stream.empty() : Stream.of(ch);
                     };
                     lastType = ((GlobField) field).getTargetType();
                 } else if (field instanceof GlobArrayField) {
-                    jumps[i] = new Jump() {
-                        public Stream<Glob> from(Glob glob) {
-                            Glob[] ch = glob.get(((GlobArrayField) field));
-                            return ch == null || ch.length == 0 ? Stream.empty() : Stream.of(ch);
-                        }
+                    jumps[i] = glob -> {
+                        Glob[] ch = glob.get(((GlobArrayField) field));
+                        return ch == null || ch.length == 0 ? Stream.empty() : Stream.of(ch);
                     };
                     lastType = ((GlobArrayField) field).getTargetType();
                 } else {
@@ -72,7 +67,7 @@ public class PathToField {
         } else {
             jump = Stream::of;
         }
-        field = lastType.getField(breakdown.get(SimpleBreakdown.fieldName));
+        field = lastType.getField(breakdown.name());
         return this;
     }
 }

@@ -4,14 +4,12 @@ import org.globsframework.metamodel.GlobType;
 import org.globsframework.metamodel.GlobTypeLoaderFactory;
 import org.globsframework.metamodel.annotations.Targets;
 import org.globsframework.metamodel.fields.GlobArrayUnionField;
-import org.globsframework.metamodel.fields.GlobUnionField;
 import org.globsframework.model.Glob;
 import org.globsframework.view.filter.FilterBuilder;
 import org.globsframework.view.filter.FilterImpl;
 import org.globsframework.view.filter.WantedField;
 
 import java.util.Arrays;
-import java.util.Map;
 import java.util.function.Consumer;
 
 public class AndFilterType {
@@ -32,7 +30,7 @@ public class AndFilterType {
                     }
                 })
                 .register(FilterBuilder.class, new FilterBuilder() {
-                    public FilterImpl.IsSelected create(Glob filter, GlobType rootType, Map<String, Glob> dico){
+                    public FilterImpl.IsSelected create(Glob filter, GlobType rootType, UniqueNameToPath dico){
                         Glob[] globs = filter.get(filters);
                         FilterImpl.IsSelected and[] = new FilterImpl.IsSelected[globs.length];
                         for (int i = 0, globsLength = globs.length; i < globsLength; i++) {

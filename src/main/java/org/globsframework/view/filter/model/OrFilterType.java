@@ -10,7 +10,6 @@ import org.globsframework.view.filter.FilterImpl;
 import org.globsframework.view.filter.WantedField;
 
 import java.util.Arrays;
-import java.util.Map;
 import java.util.function.Consumer;
 
 public class OrFilterType {
@@ -32,7 +31,7 @@ public class OrFilterType {
                     }
                 })
                 .register(FilterBuilder.class, new FilterBuilder() {
-                    public FilterImpl.IsSelected create(Glob filter, GlobType rootType, Map<String, Glob> dico){
+                    public FilterImpl.IsSelected create(Glob filter, GlobType rootType, UniqueNameToPath dico){
                         Glob[] globs = filter.get(filters);
                         FilterImpl.IsSelected or[] = new FilterImpl.IsSelected[globs.length];
                         for (int i = 0, globsLength = globs.length; i < globsLength; i++) {

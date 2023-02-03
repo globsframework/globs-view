@@ -3,15 +3,12 @@ package org.globsframework.view.filter.model;
 import org.globsframework.metamodel.GlobType;
 import org.globsframework.metamodel.GlobTypeLoaderFactory;
 import org.globsframework.metamodel.annotations.Targets;
-import org.globsframework.metamodel.fields.GlobField;
 import org.globsframework.metamodel.fields.GlobUnionField;
 import org.globsframework.model.Glob;
 import org.globsframework.view.filter.FilterBuilder;
 import org.globsframework.view.filter.FilterImpl;
 import org.globsframework.view.filter.WantedField;
 
-import java.util.Arrays;
-import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -33,7 +30,7 @@ public class FilterType {
                     }
                 })
                 .register(FilterBuilder.class, new FilterBuilder() {
-                    public FilterImpl.IsSelected create(Glob globFilter, GlobType rootType, Map<String, Glob> dico) {
+                    public FilterImpl.IsSelected create(Glob globFilter, GlobType rootType, UniqueNameToPath dico) {
                         Glob glob = globFilter.get(filter);
                         if (glob == null) {
                             return glob1 -> true;

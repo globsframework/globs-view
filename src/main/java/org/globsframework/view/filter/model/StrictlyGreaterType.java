@@ -14,10 +14,8 @@ import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
-import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 public class StrictlyGreaterType {
     static private final Logger LOGGER = LoggerFactory.getLogger(StrictlyGreaterType.class);
@@ -36,7 +34,7 @@ public class StrictlyGreaterType {
                     }
                 })
                 .register(FilterBuilder.class, new FilterBuilder() {
-                    public FilterImpl.IsSelected create(Glob filter, GlobType rootType, Map<String, Glob> dico) {
+                    public FilterImpl.IsSelected create(Glob filter, GlobType rootType, UniqueNameToPath dico) {
                         PathToField pathToField = new PathToField(filter.get(uniqueName), rootType, dico).invoke();
                         Jump jump = pathToField.getJump();
                         Field field = pathToField.getField();

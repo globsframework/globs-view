@@ -2,9 +2,8 @@ package org.globsframework.view.filter;
 
 import org.globsframework.metamodel.GlobType;
 import org.globsframework.model.Glob;
-
-import java.util.Map;
+import org.globsframework.view.filter.model.UniqueNameToPath;
 
 public interface FilterBuilder {
-    FilterImpl.IsSelected create(Glob filter, GlobType rootType, Map<String, Glob> dico);
+    FilterImpl.IsSelected create(Glob filter, GlobType rootType, UniqueNameToPath dico);
 }

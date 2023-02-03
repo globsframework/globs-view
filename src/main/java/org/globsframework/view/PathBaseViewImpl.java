@@ -12,6 +12,7 @@ import org.globsframework.utils.collections.Pair;
 import org.globsframework.view.filter.Filter;
 import org.globsframework.view.filter.FilterImpl;
 import org.globsframework.view.filter.WantedField;
+import org.globsframework.view.filter.model.UniqueNameToPath;
 import org.globsframework.view.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +62,11 @@ public class PathBaseViewImpl implements View {
         Glob globFilter = viewRequestType.get(ViewRequestType.filter);
         Filter filter;
         if (globFilter != null) {
-            filter = new FilterImpl(globType, globFilter, aliasToDico);
+            filter = new FilterImpl(globType, globFilter,
+                    uniqueName -> {
+                        final Glob glob = aliasToDico.get(uniqueName);
+                        return new UniqueNameToPath.Field(glob.getOrEmpty(SimpleBreakdown.path), glob.get(SimpleBreakdown.fieldName));
+                    });
         } else {
             filter = source -> true;
         }
