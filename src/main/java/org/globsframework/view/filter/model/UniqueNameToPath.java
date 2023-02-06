@@ -1,8 +1,17 @@
 package org.globsframework.view.filter.model;
 
+import java.util.Arrays;
+
 public interface UniqueNameToPath {
-    record Field(String[] path, String name) {
+    record PathField(String[] path, String name) {
+        @Override
+        public String toString() {
+            return "PathField{" +
+                    "path=" + Arrays.toString(path) +
+                    ", name='" + name + '\'' +
+                    '}';
+        }
     }
 
-    Field get(String uniqueName);
+    PathField get(String uniqueName);
 }

@@ -5,9 +5,7 @@ import org.globsframework.metamodel.GlobType;
 import org.globsframework.metamodel.fields.GlobArrayField;
 import org.globsframework.metamodel.fields.GlobField;
 import org.globsframework.model.Glob;
-import org.globsframework.view.model.SimpleBreakdown;
 
-import java.util.Map;
 import java.util.stream.Stream;
 
 public class PathToField {
@@ -32,7 +30,7 @@ public class PathToField {
     }
 
     public PathToField invoke() {
-        UniqueNameToPath.Field breakdown = dico.get(uniqueName);
+        UniqueNameToPath.PathField breakdown = dico.get(uniqueName);
         String[] strings = breakdown.path();
         GlobType lastType = rootType;
         if (strings.length != 0) {

@@ -65,7 +65,7 @@ public class PathBaseViewImpl implements View {
             filter = new FilterImpl(globType, globFilter,
                     uniqueName -> {
                         final Glob glob = aliasToDico.get(uniqueName);
-                        return new UniqueNameToPath.Field(glob.getOrEmpty(SimpleBreakdown.path), glob.get(SimpleBreakdown.fieldName));
+                        return new UniqueNameToPath.PathField(glob.getOrEmpty(SimpleBreakdown.path), glob.get(SimpleBreakdown.fieldName));
                     });
         } else {
             filter = source -> true;
