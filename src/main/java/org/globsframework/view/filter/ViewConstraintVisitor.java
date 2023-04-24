@@ -7,6 +7,7 @@ import org.globsframework.metamodel.fields.DoubleField;
 import org.globsframework.metamodel.fields.IntegerField;
 import org.globsframework.metamodel.fields.LongField;
 import org.globsframework.model.globaccessor.get.GlobGetAccessor;
+import org.globsframework.sqlstreams.constraints.Constraint;
 import org.globsframework.sqlstreams.constraints.ConstraintVisitor;
 import org.globsframework.sqlstreams.constraints.OperandVisitor;
 import org.globsframework.sqlstreams.constraints.impl.*;
@@ -14,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -43,16 +45,36 @@ public class ViewConstraintVisitor implements ConstraintVisitor {
         isSelected = glob -> !Objects.equals(leftAccessor.getValue(glob), rightAccessor.getValue(glob));
     }
 
-    public void visitAnd(AndConstraint andConstraint) {
-        FilterImpl.IsSelected left = andConstraint.getLeftConstraint().visit(new ViewConstraintVisitor(globType)).isSelected;
-        FilterImpl.IsSelected right = andConstraint.getRightConstraint().visit(new ViewConstraintVisitor(globType)).isSelected;
-        isSelected = glob -> left.isSelected(glob) && right.isSelected(glob);
+    public void visitAnd(AndConstraint constraint) {
+        final Constraint[] constraints = constraint.getConstraints();
+        FilterImpl.IsSelected[] filters = new FilterImpl.IsSelected[constraints.length];
+        for (int i = 0; i < constraints.length; i++) {
+            filters[i] = constraints[i].visit(new ViewConstraintVisitor(globType)).isSelected;
+        }
+        if (filters.length == 2) {
+            final FilterImpl.IsSelected filter1 = filters[0];
+            final FilterImpl.IsSelected filter2 = filters[1];
+            isSelected = data -> filter1.isSelected(data) && filter2.isSelected(data);
+        }
+        else {
+            isSelected = data -> Arrays.stream(filters).allMatch(f -> f.isSelected(data));
+        }
     }
 
-    public void visitOr(OrConstraint orConstraint) {
-        FilterImpl.IsSelected left = orConstraint.getLeftConstraint().visit(new ViewConstraintVisitor(globType)).isSelected;
-        FilterImpl.IsSelected right = orConstraint.getRightConstraint().visit(new ViewConstraintVisitor(globType)).isSelected;
-        isSelected = glob -> left.isSelected(glob) || right.isSelected(glob);
+    public void visitOr(OrConstraint constraint) {
+        final Constraint[] constraints = constraint.getConstraints();
+        FilterImpl.IsSelected[] filters = new FilterImpl.IsSelected[constraints.length];
+        for (int i = 0; i < constraints.length; i++) {
+            filters[i] = constraints[i].visit(new ViewConstraintVisitor(globType)).isSelected;
+        }
+        if (filters.length == 2) {
+            final FilterImpl.IsSelected filter1 = filters[0];
+            final FilterImpl.IsSelected filter2 = filters[1];
+            isSelected = data -> filter1.isSelected(data) || filter2.isSelected(data);
+        }
+        else {
+            isSelected = data -> Arrays.stream(filters).anyMatch(f -> f.isSelected(data));
+        }
     }
 
     public void visitLessThan(LessThanConstraint lessThanConstraint) {
