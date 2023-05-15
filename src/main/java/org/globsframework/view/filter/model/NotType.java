@@ -15,7 +15,7 @@ public class NotType {
     @Targets({OrFilterType.class, AndFilterType.class, EqualType.class, NotEqualType.class,
             GreaterOrEqualType.class, StrictlyGreaterType.class,
             NotType.class,
-            StrictlyLessType.class, LessOrEqualType.class, ContainsType.class, NotContainsType.class})
+            StrictlyLessType.class, LessOrEqualType.class, ContainsType.class, NotContainsType.class, IsNullType.class, IsNotNullType.class})
     public static GlobUnionField filter;
 
     static {

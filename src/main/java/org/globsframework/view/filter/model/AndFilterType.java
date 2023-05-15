@@ -17,7 +17,7 @@ public class AndFilterType {
 
     @Targets({OrFilterType.class, AndFilterType.class, EqualType.class, NotEqualType.class,
             NotType.class, GreaterOrEqualType.class, StrictlyGreaterType.class,
-            StrictlyLessType.class, LessOrEqualType.class, ContainsType.class, NotContainsType.class})
+            StrictlyLessType.class, LessOrEqualType.class, ContainsType.class, NotContainsType.class, IsNullType.class, IsNotNullType.class})
     public static GlobArrayUnionField filters;
 
     static {
