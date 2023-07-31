@@ -10,6 +10,7 @@ import org.globsframework.utils.Ref;
 import org.globsframework.utils.Strings;
 import org.globsframework.utils.collections.Pair;
 import org.globsframework.utils.container.Container;
+import org.globsframework.utils.container.hash.HashContainer;
 import org.globsframework.view.filter.Filter;
 import org.globsframework.view.filter.FilterImpl;
 import org.globsframework.view.filter.Rewrite;
@@ -187,23 +188,24 @@ public class PathBaseViewImpl implements View {
         gl.set(nodeNameField, node.getName());
         gl.set(nameField, node.getKeyAsString());
         MutableGlob output = node.getOutput();
-        Container<Comparable, Node> children = node.getChildren();
+        HashContainer<Object, Node> children = node.getChildren();
         if (!children.isEmpty()) {
             agg.reset(output);
             Glob[] sub = new Glob[children.size()];
-//           Object[] key = children.entrySet().toArray();
-//            Arrays.sort(key, (o1, o2) -> o1 != null && o2 != null ? ((Map.Entry<Object, Node>) o1).getValue().getKeyAsString()
-//                    .compareTo(((Map.Entry<Object, Node>) o2).getValue().getKeyAsString()) : (o1 == null ? (o2 == null ? 0 : -1) : 1));
+            int i = 0;
+            Node[] key = new Node[children.size()];
+            final HashContainer.TwoElementIterator<Object, Node> it = children.entryIterator();
+            while (it.next()) {
+                key[i++] = it.getValue();
+            }
+            Arrays.sort(key, Comparator.comparing(Node::getKeyAsString));
 
-            children.apply(new Container.Functor<Comparable, Node>() {
-                int i = 0;
-                public void apply(Comparable key, Node n) {
-                    Glob glh = PathBaseViewImpl.this.computeOutput(n);
-                    sub[i++] = glh;
-                    agg.fill(output, glh.get(outputField));
-
-                }
-            });
+            i = 0;
+            for (Node k : key) {
+                Glob glh = computeOutput(k);
+                sub[i++] = glh;
+                agg.fill(output, glh.get(outputField));
+            }
             gl.set(childrenField, sub);
         }
         gl.set(outputField, output);

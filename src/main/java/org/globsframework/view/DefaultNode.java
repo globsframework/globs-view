@@ -2,6 +2,7 @@ package org.globsframework.view;
 
 import org.globsframework.model.MutableGlob;
 import org.globsframework.utils.container.Container;
+import org.globsframework.utils.container.hash.HashContainer;
 
 import java.util.function.Function;
 
@@ -9,7 +10,7 @@ public class DefaultNode implements Node {
     private final Object key;
     private final String strValue;
     private String nodeName;
-    private Container<Comparable, Node> children = Container.EMPTY_INSTANCE;
+    private HashContainer<Object, Node> children = HashContainer.EMPTY_INSTANCE;
     private MutableGlob output;
 
     public DefaultNode(String nodeName, Object key, String strValue, MutableGlob output) {
@@ -31,7 +32,7 @@ public class DefaultNode implements Node {
         return strValue;
     }
 
-    public Container<Comparable, Node> getChildren() {
+    public HashContainer<Object, Node> getChildren() {
         return children;
     }
 
@@ -39,7 +40,7 @@ public class DefaultNode implements Node {
         return output;
     }
 
-    public Node getOrCreate(Comparable value, Function<Object, Node> create) {
+    public Node getOrCreate(Object value, Function<Object, Node> create) {
         Node node = children.get(value);
         if (node == null) {
             node = create.apply(value);
