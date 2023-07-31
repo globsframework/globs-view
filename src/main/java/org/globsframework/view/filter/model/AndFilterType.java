@@ -5,8 +5,10 @@ import org.globsframework.metamodel.GlobTypeLoaderFactory;
 import org.globsframework.metamodel.annotations.Targets;
 import org.globsframework.metamodel.fields.GlobArrayUnionField;
 import org.globsframework.model.Glob;
+import org.globsframework.utils.exceptions.ItemNotFound;
 import org.globsframework.view.filter.FilterBuilder;
 import org.globsframework.view.filter.FilterImpl;
+import org.globsframework.view.filter.Rewrite;
 import org.globsframework.view.filter.WantedField;
 
 import java.util.Arrays;
@@ -29,14 +31,32 @@ public class AndFilterType {
                                         .wanted(glob, wantedUniqueName));
                     }
                 })
+                .register(Rewrite.class, new Rewrite() {
+                    public Glob rewriteOrInAnd(Glob glob) {
+                        final Glob[] gl = glob.getOrEmpty(filters);
+                        for (int i = 0; i < gl.length; i++) {
+                            gl[i] = gl[i].getType().getRegistered(Rewrite.class)
+                                    .rewriteOrInAnd(gl[i]);
+                        }
+                        return TYPE.instantiate().set(filters, gl);
+                    }
+                })
                 .register(FilterBuilder.class, new FilterBuilder() {
-                    public FilterImpl.IsSelected create(Glob filter, GlobType rootType, UniqueNameToPath dico){
+                    public FilterImpl.IsSelected create(Glob filter, GlobType rootType, UniqueNameToPath dico, boolean fullQuery) {
                         Glob[] globs = filter.get(filters);
-                        FilterImpl.IsSelected and[] = new FilterImpl.IsSelected[globs.length];
+                        FilterImpl.IsSelected[] and = new FilterImpl.IsSelected[globs.length];
                         for (int i = 0, globsLength = globs.length; i < globsLength; i++) {
                             Glob glob = globs[i];
-                            and[i] = glob.getType().getRegistered(FilterBuilder.class)
-                                    .create(glob, rootType, dico);
+                            try {
+                                and[i] = glob.getType().getRegistered(FilterBuilder.class)
+                                        .create(glob, rootType, dico, fullQuery);
+                            } catch (ItemNotFound e) {
+                                if (!fullQuery) {
+                                    and[i] = g -> true;
+                                } else {
+                                    throw e;
+                                }
+                            }
                         }
                         return glob -> {
                             for (FilterImpl.IsSelected isSelected : and) {

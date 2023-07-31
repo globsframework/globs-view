@@ -16,8 +16,6 @@ import org.globsframework.view.model.ViewBreakdown;
 import org.globsframework.view.model.ViewOutput;
 import org.globsframework.view.model.ViewRequestType;
 
-import java.io.IOException;
-import java.io.Writer;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -53,8 +51,7 @@ public class CsvExporter {
             StringField useField;
             if (breakdown.getOptNotEmpty(ViewBreakdown.aliasName).isPresent() && uniqueName.add(breakdown.get(ViewBreakdown.aliasName))) {
                 useField = ViewBreakdown.aliasName;
-            }
-            else {
+            } else {
                 useField = ViewBreakdown.uniqueName;
             }
             breakdownFields[i] = globTypeBuilder.declareStringField(breakdown.get(useField));
@@ -85,8 +82,7 @@ public class CsvExporter {
             Object value = node.getValue(breakdownField);
             if (value != null) {
                 sub.setValue(breakdownFields[level], value);
-            }
-            else {
+            } else {
                 sub.unset(breakdownFields[level]);
             }
         }
@@ -97,8 +93,7 @@ public class CsvExporter {
                     Object value = output.getValue(fieldFieldPair.getFirst());
                     if (value != null) {
                         sub.setValue(fieldFieldPair.getSecond(), value);
-                    }
-                    else {
+                    } else {
                         sub.unset(fieldFieldPair.getSecond());
                     }
                 }

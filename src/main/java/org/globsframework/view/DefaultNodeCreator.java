@@ -31,7 +31,7 @@ public class DefaultNodeCreator implements NodeCreator, Function<Object, Node> {
     }
 
     public Node getOrCreate(Node parent, Glob value) {
-        return parent.getOrCreate(value.getValue(field), this);
+        return parent.getOrCreate(((Comparable) value.getValue(field)), this);
     }
 
     public Node apply(Object o) {

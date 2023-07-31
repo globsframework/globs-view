@@ -7,6 +7,7 @@ import org.globsframework.metamodel.fields.*;
 import org.globsframework.model.Glob;
 import org.globsframework.view.filter.FilterBuilder;
 import org.globsframework.view.filter.FilterImpl;
+import org.globsframework.view.filter.Rewrite;
 import org.globsframework.view.filter.WantedField;
 import org.globsframework.view.model.StringAsDouble;
 import org.slf4j.Logger;
@@ -33,8 +34,9 @@ public class StrictlyGreaterType {
                         wantedUniqueName.accept(filter.get(uniqueName));
                     }
                 })
+                .register(Rewrite.class, glob -> glob)
                 .register(FilterBuilder.class, new FilterBuilder() {
-                    public FilterImpl.IsSelected create(Glob filter, GlobType rootType, UniqueNameToPath dico) {
+                    public FilterImpl.IsSelected create(Glob filter, GlobType rootType, UniqueNameToPath dico, boolean fullQuery) {
                         PathToField pathToField = new PathToField(filter.get(uniqueName), rootType, dico).invoke();
                         Jump jump = pathToField.getJump();
                         Field field = pathToField.getField();

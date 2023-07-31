@@ -53,7 +53,6 @@ public class ViewBuilderImpl implements ViewBuilder {
     }
 
     public View createView() {
-//        return new ObjectBaseViewImpl(viewRequestType, breakdownType, outputType);
         return new PathBaseViewImpl(viewRequestType, breakdownType, outputType, dictionary, maxNodeCount);
     }
 

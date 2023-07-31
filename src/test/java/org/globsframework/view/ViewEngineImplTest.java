@@ -14,10 +14,9 @@ import org.globsframework.metamodel.fields.StringField;
 import org.globsframework.model.Glob;
 import org.globsframework.model.MutableGlob;
 import org.globsframework.utils.Files;
-import org.globsframework.view.filter.model.AndFilterType;
-import org.globsframework.view.filter.model.EqualType;
-import org.globsframework.view.filter.model.FilterType;
-import org.globsframework.view.filter.model.GreaterOrEqualType;
+import org.globsframework.utils.exceptions.ItemNotFound;
+import org.globsframework.view.filter.Filter;
+import org.globsframework.view.filter.model.*;
 import org.globsframework.view.model.*;
 import org.globsframework.view.server.HttpViewServer;
 
@@ -751,6 +750,114 @@ public class ViewEngineImplTest extends TestCase {
                 "  }\n" +
                 "}"), GSonUtils.normalize(actual));
     }
+
+
+    public void testIndexFilter() {
+        ViewEngine viewEngine = new ViewEngineImpl();
+
+        Glob dictionary = viewEngine.createDictionary(ViewType1.TYPE);
+
+        MutableGlob viewRequest = ViewRequestType.TYPE.instantiate();
+        Glob[] breakdowns = dictionary.get(DictionaryType.breakdowns);
+        viewRequest.set(ViewRequestType.breakdowns, new Glob[]{
+                br("Name1", breakdowns)
+        });
+        viewRequest.set(ViewRequestType.output, new Glob[]{
+                ViewOutput.TYPE.instantiate().set(ViewOutput.name, "total")
+                        .set(ViewOutput.uniqueName, br("qty", breakdowns).get(ViewBreakdown.uniqueName))
+        });
+
+        viewRequest.set(ViewRequestType.filter, FilterType.TYPE.instantiate()
+                .set(FilterType.filter,
+                        AndFilterType.TYPE.instantiate()
+                                .set(AndFilterType.filters, new Glob[]{
+                                        EqualType.TYPE.instantiate()
+                                                .set(EqualType.uniqueName, br("NameSub2", breakdowns).get(ViewBreakdown.uniqueName))
+                                                .set(EqualType.value, "sub2")
+                                })
+                ));
+
+        ViewBuilder viewBuilder = viewEngine.buildView(dictionary, viewRequest);
+
+        MutableGlob d1 = ViewType1.TYPE.instantiate()
+                .set(ViewType1.Name1, "n1")
+                .set(ViewType1.Name2, "n11")
+                .set(ViewType1.SUB2, new Glob[]{SubType2.TYPE.instantiate()
+                        .set(SubType2.NameSub2, "sub1")
+                        .set(SubType2.qty, 1)});
+        MutableGlob d2 = ViewType1.TYPE.instantiate()
+                .set(ViewType1.Name1, "n2")
+                .set(ViewType1.Name2, "n22")
+                .set(ViewType1.SUB2, new Glob[]{SubType2.TYPE.instantiate()
+                        .set(SubType2.NameSub2, "sub2")
+                        .set(SubType2.qty, 2)});
+        MutableGlob d3 = ViewType1.TYPE.instantiate()
+                .set(ViewType1.Name1, "n3")
+                .set(ViewType1.Name2, "n33")
+                .set(ViewType1.SUB2, new Glob[]{SubType2.TYPE.instantiate()
+                        .set(SubType2.NameSub2, "sub2")
+                        .set(SubType2.qty, 1)});
+
+        View view = viewBuilder.createView();
+
+        final Filter indexFilter = view.getIndexFilter(IndexViewType1.TYPE, uniqueName -> {
+            if (uniqueName.equals("SUB2.NameSub2")) {
+                return new UniqueNameToPath.PathField(new String[0], "idx1");
+            } else {
+                throw new ItemNotFound(uniqueName);
+            }
+        });
+
+        View.Append appender = view.getAppender(ViewType1.TYPE);
+        if (isFiltered(d1, indexFilter)) appender.add(d1);
+        if (isFiltered(d2, indexFilter)) appender.add(d2);
+        if (isFiltered(d3, indexFilter)) appender.add(d3);
+        appender.complete();
+        Glob viewAsGlob = view.toGlob();
+        String actual = GSonUtils.encode(viewAsGlob, false);
+
+        Assert.assertEquals(GSonUtils.normalize("""
+                {
+                  "name": "",
+                  "nodeName": "root",
+                  "__children__": [
+                    {
+                      "name": "n2",
+                      "nodeName": "Name1",
+                      "output": {
+                        "total": 2.0
+                      }
+                    },
+                    {
+                      "name": "n3",
+                      "nodeName": "Name1",
+                      "output": {
+                        "total": 1.0
+                      }
+                    }
+                  ],
+                  "output": {
+                    "total": 3.0
+                  }
+                }"""), GSonUtils.normalize(actual));
+    }
+
+    private static boolean isFiltered(MutableGlob d1, Filter indexFilter) {
+        return indexFilter.isFiltered(IndexViewType1.TYPE.instantiate().set(IndexViewType1.idx1,
+                Arrays.stream(d1.getOrEmpty(ViewType1.SUB2))
+                        .map(SubType2.NameSub2).findFirst().orElse(null)));
+    }
+
+    public static class IndexViewType1 {
+        public static GlobType TYPE;
+
+        public static StringField idx1;
+
+        static {
+            GlobTypeLoaderFactory.create(IndexViewType1.class).load();
+        }
+    }
+
 
 
     public void testFilterOnArrayOfGlob() {

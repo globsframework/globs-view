@@ -1,5 +1,7 @@
 package org.globsframework.view.filter.model;
 
+import org.globsframework.utils.exceptions.ItemNotFound;
+
 import java.util.Arrays;
 
 public interface UniqueNameToPath {
@@ -13,5 +15,5 @@ public interface UniqueNameToPath {
         }
     }
 
-    PathField get(String uniqueName);
+    PathField get(String uniqueName) throws ItemNotFound;
 }

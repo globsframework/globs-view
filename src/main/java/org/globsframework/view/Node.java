@@ -1,8 +1,8 @@
 package org.globsframework.view;
 
 import org.globsframework.model.MutableGlob;
+import org.globsframework.utils.container.Container;
 
-import java.util.Map;
 import java.util.function.Function;
 
 public interface Node {
@@ -13,9 +13,9 @@ public interface Node {
 
     String getKeyAsString();
 
-    Map<Object, Node> getChildren();
+    Container<Comparable, Node> getChildren();
 
     MutableGlob getOutput();
 
-    Node getOrCreate(Object value, Function<Object, Node> create);
+    Node getOrCreate(Comparable value, Function<Object, Node> create);
 }

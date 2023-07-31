@@ -2,6 +2,9 @@ package org.globsframework.view;
 
 import org.globsframework.metamodel.GlobType;
 import org.globsframework.model.Glob;
+import org.globsframework.view.filter.Filter;
+import org.globsframework.view.filter.FilterImpl;
+import org.globsframework.view.server.Source;
 
 public interface View {
 
@@ -10,6 +13,8 @@ public interface View {
     Node getRootNode();
 
     Glob toGlob();
+
+    Filter getIndexFilter(GlobType index, Source.IndexFieldRemap indexFieldRemap);
 
     interface Append {
         void add(Glob glob);

@@ -21,6 +21,8 @@ import org.globsframework.model.Glob;
 import org.globsframework.utils.Strings;
 import org.globsframework.utils.collections.Pair;
 import org.globsframework.view.*;
+import org.globsframework.view.filter.Filter;
+import org.globsframework.view.filter.FilterImpl;
 import org.globsframework.view.model.ViewRequestType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -110,9 +112,19 @@ public class HttpViewServer {
                         View view = viewBuilder.createView();
                         Source optimizedSrc = src; //dataAccessor.getSource(source);
                         Source.DataConsumer dataConsumer = optimizedSrc.create(view.getAccepter());
+                        final GlobType index = dataConsumer.getIndex();
+                        Filter filter;
+                        if (index != null) {
+                            final Source.IndexFieldRemap indexFieldRemap = dataConsumer.getIndexRemap();
+                            filter = view.getIndexFilter(index, indexFieldRemap);
+                        }
+                        else {
+                            filter = g -> true;
+                        }
+
                         View.Append appender = view.getAppender(dataConsumer.getOutputType());
                         try {
-                            dataConsumer.getAll(appender::add);
+                            dataConsumer.getAll(appender::add, filter);
                         } catch (TooManyNodeException e) {
                             LOGGER.error("Too many node for request");
                         }

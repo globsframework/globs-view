@@ -13,6 +13,7 @@ import org.globsframework.metamodel.fields.StringField;
 import org.globsframework.metamodel.impl.DefaultGlobModel;
 import org.globsframework.model.Glob;
 import org.globsframework.view.View;
+import org.globsframework.view.filter.Filter;
 
 import java.io.FileReader;
 import java.io.IOException;

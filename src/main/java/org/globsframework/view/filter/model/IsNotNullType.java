@@ -7,6 +7,7 @@ import org.globsframework.metamodel.fields.StringField;
 import org.globsframework.model.Glob;
 import org.globsframework.view.filter.FilterBuilder;
 import org.globsframework.view.filter.FilterImpl;
+import org.globsframework.view.filter.Rewrite;
 import org.globsframework.view.filter.WantedField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,8 +27,9 @@ public class IsNotNullType {
                         wantedUniqueName.accept(filter.get(uniqueName));
                     }
                 })
+                .register(Rewrite.class, glob -> glob)
                 .register(FilterBuilder.class, new FilterBuilder() {
-                    public FilterImpl.IsSelected create(Glob filter, GlobType rootType, UniqueNameToPath dico) {
+                    public FilterImpl.IsSelected create(Glob filter, GlobType rootType, UniqueNameToPath dico, boolean fullQuery) {
                         PathToField pathToField = new PathToField(filter.get(uniqueName), rootType, dico).invoke();
                         Jump jump = pathToField.getJump();
                         Field field = pathToField.getField();

@@ -9,11 +9,15 @@ import org.globsframework.model.MutableGlob;
 import org.globsframework.utils.Ref;
 import org.globsframework.utils.Strings;
 import org.globsframework.utils.collections.Pair;
+import org.globsframework.utils.container.Container;
 import org.globsframework.view.filter.Filter;
 import org.globsframework.view.filter.FilterImpl;
+import org.globsframework.view.filter.Rewrite;
 import org.globsframework.view.filter.WantedField;
+import org.globsframework.view.filter.model.FilterType;
 import org.globsframework.view.filter.model.UniqueNameToPath;
 import org.globsframework.view.model.*;
+import org.globsframework.view.server.Source;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,7 +70,7 @@ public class PathBaseViewImpl implements View {
                     uniqueName -> {
                         final Glob glob = aliasToDico.get(uniqueName);
                         return new UniqueNameToPath.PathField(glob.getOrEmpty(SimpleBreakdown.path), glob.get(SimpleBreakdown.fieldName));
-                    });
+                    }, true);
         } else {
             filter = source -> true;
         }
@@ -148,6 +152,18 @@ public class PathBaseViewImpl implements View {
         return computeOutput(rootNode);
     }
 
+    public Filter getIndexFilter(GlobType index, Source.IndexFieldRemap indexFieldRemap) {
+        Glob globFilter = viewRequestType.get(ViewRequestType.filter);
+        Filter filter;
+        Glob rewriteFilter = globFilter != null ? FilterType.TYPE.getRegistered(Rewrite.class).rewriteOrInAnd(globFilter) : null;
+        if (rewriteFilter != null) {
+            filter = new FilterImpl(index, rewriteFilter, indexFieldRemap::translate, false);
+        } else {
+            filter = source -> true;
+        }
+        return filter;
+    }
+
     public Accepted getAccepter() {
 
         SimpleGraph.Visitor<Boolean> visitor = new SimpleGraph.Visitor<>(wanted, false);
@@ -171,20 +187,23 @@ public class PathBaseViewImpl implements View {
         gl.set(nodeNameField, node.getName());
         gl.set(nameField, node.getKeyAsString());
         MutableGlob output = node.getOutput();
-        Map<Object, Node> children = node.getChildren();
+        Container<Comparable, Node> children = node.getChildren();
         if (!children.isEmpty()) {
             agg.reset(output);
             Glob[] sub = new Glob[children.size()];
-            int i = 0;
-           Object[] key = children.entrySet().toArray();
-            Arrays.sort(key, (o1, o2) -> o1 != null && o2 != null ? ((Map.Entry<Object, Node>) o1).getValue().getKeyAsString()
-                    .compareTo(((Map.Entry<Object, Node>) o2).getValue().getKeyAsString()) : (o1 == null ? (o2 == null ? 0 : -1) : 1));
+//           Object[] key = children.entrySet().toArray();
+//            Arrays.sort(key, (o1, o2) -> o1 != null && o2 != null ? ((Map.Entry<Object, Node>) o1).getValue().getKeyAsString()
+//                    .compareTo(((Map.Entry<Object, Node>) o2).getValue().getKeyAsString()) : (o1 == null ? (o2 == null ? 0 : -1) : 1));
 
-            for (Object k : key) {
-                Glob glh = computeOutput(((Map.Entry<Object, Node>) k).getValue());
-                sub[i++] = glh;
-                agg.fill(output, glh.get(outputField));
-            }
+            children.apply(new Container.Functor<Comparable, Node>() {
+                int i = 0;
+                public void apply(Comparable key, Node n) {
+                    Glob glh = PathBaseViewImpl.this.computeOutput(n);
+                    sub[i++] = glh;
+                    agg.fill(output, glh.get(outputField));
+
+                }
+            });
             gl.set(childrenField, sub);
         }
         gl.set(outputField, output);
@@ -194,11 +213,7 @@ public class PathBaseViewImpl implements View {
     private NextPath createNodeBuilder(Map<String, Glob> dictionary, int index, Glob[] breakdowns, ArrayDeque<Path> stackType) {
         if (index == breakdowns.length) {
             FillOutput outputFiller = createOutputFiller(viewRequestType.getOrEmpty(ViewRequestType.output), outputType, stackType, dictionary);
-            return new NextPath() {
-                public void push(Node node, Glob[] stack) {
-                    outputFiller.fill(node.getOutput(), stack);
-                }
-            };
+            return (node, stack) -> outputFiller.fill(node.getOutput(), stack);
         }
         String uniqueName = breakdowns[index].get(ViewBreakdown.uniqueName);
         Glob breakdown = dictionary.computeIfAbsent(uniqueName, s -> {
@@ -250,7 +265,6 @@ public class PathBaseViewImpl implements View {
                     Path type = iterator.next();
                     globStartIndex--;
                     if (findPathTo(type, pathFromRoot, path)) {
-//                    if (!path.isEmpty()) {
                         break;
                     }
                 }
@@ -327,7 +341,6 @@ public class PathBaseViewImpl implements View {
         for (Path globType : stackType) {
             if (Arrays.equals(globType.path, pathTo)) {
                 Field sourceField = globType.globType.getField(fieldName);
-//                for (Field sourceField : globType.getFields()) {
                 if (sourceField.getName().equals(fieldName)) {
                     if (field instanceof DoubleField) {
                         if (sourceField instanceof StringField && sourceField.hasAnnotation(StringAsDouble.key)) {

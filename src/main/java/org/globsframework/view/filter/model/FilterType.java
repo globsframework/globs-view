@@ -7,6 +7,7 @@ import org.globsframework.metamodel.fields.GlobUnionField;
 import org.globsframework.model.Glob;
 import org.globsframework.view.filter.FilterBuilder;
 import org.globsframework.view.filter.FilterImpl;
+import org.globsframework.view.filter.Rewrite;
 import org.globsframework.view.filter.WantedField;
 
 import java.util.function.Consumer;
@@ -30,14 +31,25 @@ public class FilterType {
                     }
                 })
                 .register(FilterBuilder.class, new FilterBuilder() {
-                    public FilterImpl.IsSelected create(Glob globFilter, GlobType rootType, UniqueNameToPath dico) {
+                    public FilterImpl.IsSelected create(Glob globFilter, GlobType rootType, UniqueNameToPath dico, boolean fullQuery) {
                         Glob glob = globFilter.get(filter);
                         if (glob == null) {
                             return glob1 -> true;
                         }
                         return glob.getType().getRegistered(FilterBuilder.class)
-                                .create(glob, rootType, dico);
+                                .create(glob, rootType, dico, fullQuery);
                     }
-                }).load();
+                })
+                .register(Rewrite.class, new Rewrite() {
+                    public Glob rewriteOrInAnd(Glob glob) {
+                        final Glob gl = glob.get(filter);
+                        if (gl != null) {
+                           return TYPE.instantiate().set(filter,
+                                    gl.getType().getRegistered(Rewrite.class).rewriteOrInAnd(gl));
+                        }
+                        return gl;
+                    }
+                })
+                .load();
     }
 }

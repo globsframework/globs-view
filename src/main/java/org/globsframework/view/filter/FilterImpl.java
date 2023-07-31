@@ -4,8 +4,6 @@ import org.globsframework.metamodel.GlobType;
 import org.globsframework.model.Glob;
 import org.globsframework.view.filter.model.UniqueNameToPath;
 
-import java.util.Map;
-
 public class FilterImpl implements Filter {
     private final IsSelected isSelected;
 
@@ -13,9 +11,9 @@ public class FilterImpl implements Filter {
 //        isSelected = constraint.visit(new ViewConstraintVisitor(globType)).getIsSelected();
 //    }
 
-    public FilterImpl(GlobType globType, Glob globFilter, UniqueNameToPath uniqueNameToPath) {
+    public FilterImpl(GlobType globType, Glob globFilter, UniqueNameToPath uniqueNameToPath, boolean fullQuery) {
         isSelected = globFilter.getType().getRegistered(FilterBuilder.class)
-                .create(globFilter, globType, uniqueNameToPath);
+                .create(globFilter, globType, uniqueNameToPath, fullQuery);
     }
 
     public boolean isFiltered(Glob source) {
