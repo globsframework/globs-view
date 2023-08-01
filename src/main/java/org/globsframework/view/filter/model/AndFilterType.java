@@ -34,22 +34,30 @@ public class AndFilterType {
                 .register(Rewrite.class, new Rewrite() {
                     public Glob rewriteOrInAnd(Glob glob) {
                         final Glob[] gl = glob.getOrEmpty(filters);
+                        if (gl.length == 0) {
+                            return null;
+                        }
                         for (int i = 0; i < gl.length; i++) {
-                            gl[i] = gl[i].getType().getRegistered(Rewrite.class)
-                                    .rewriteOrInAnd(gl[i]);
+                            gl[i] = gl[i] != null ? gl[i].getType().getRegistered(Rewrite.class)
+                                    .rewriteOrInAnd(gl[i]) : null;
                         }
                         return TYPE.instantiate().set(filters, gl);
                     }
                 })
                 .register(FilterBuilder.class, new FilterBuilder() {
                     public FilterImpl.IsSelected create(Glob filter, GlobType rootType, UniqueNameToPath dico, boolean fullQuery) {
-                        Glob[] globs = filter.get(filters);
+                        Glob[] globs = filter.getOrEmpty(filters);
                         FilterImpl.IsSelected[] and = new FilterImpl.IsSelected[globs.length];
                         for (int i = 0, globsLength = globs.length; i < globsLength; i++) {
                             Glob glob = globs[i];
                             try {
-                                and[i] = glob.getType().getRegistered(FilterBuilder.class)
-                                        .create(glob, rootType, dico, fullQuery);
+                                if (glob == null) {
+                                    and[i] = g -> true;
+                                }
+                                else {
+                                    and[i] = glob.getType().getRegistered(FilterBuilder.class)
+                                            .create(glob, rootType, dico, fullQuery);
+                                }
                             } catch (ItemNotFound e) {
                                 if (!fullQuery) {
                                     and[i] = g -> true;

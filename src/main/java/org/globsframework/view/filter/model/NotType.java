@@ -30,6 +30,9 @@ public class NotType {
                         if (gl != null) {
                             Glob rewriteGl = gl.getType().getRegistered(Rewrite.class)
                                     .rewriteOrInAnd(gl);
+                            if (rewriteGl == null) {
+                                return null;
+                            }
                             if (rewriteGl.getType() == NotType.TYPE) {
                                 return rewriteGl.get(NotType.filter);
                             }
@@ -44,7 +47,11 @@ public class NotType {
                     Glob glFilter = filter.get(NotType.filter);
                     final FilterImpl.IsSelected selected = glFilter.getType().getRegistered(FilterBuilder.class)
                             .create(glFilter, rootType, dico, fullQuery);
-                    return glob -> !selected.isSelected(glob);
+                    if (selected == null) {
+                        return glob -> false;
+                    } else {
+                        return glob -> !selected.isSelected(glob);
+                    }
                 }).load();
     }
 }
