@@ -119,7 +119,7 @@ public class HttpViewServer {
                             filter = view.getIndexFilter(index, indexFieldRemap);
                         }
                         else {
-                            filter = g -> true;
+                            filter = null;
                         }
 
                         View.Append appender = view.getAppender(dataConsumer.getOutputType());

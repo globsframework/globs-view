@@ -156,11 +156,11 @@ public class PathBaseViewImpl implements View {
     public Filter getIndexFilter(GlobType index, Source.IndexFieldRemap indexFieldRemap) {
         Glob globFilter = viewRequestType.get(ViewRequestType.filter);
         Filter filter;
-        Glob rewriteFilter = globFilter != null ? FilterType.TYPE.getRegistered(Rewrite.class).rewriteOrInAnd(globFilter) : null;
-        if (rewriteFilter != null) {
+        if (globFilter != null) {
+            Glob rewriteFilter = FilterType.TYPE.getRegistered(Rewrite.class).rewriteOrInAnd(globFilter);
             filter = new FilterImpl(index, rewriteFilter, indexFieldRemap::translate, false);
         } else {
-            filter = source -> true;
+            filter = null;
         }
         return filter;
     }
