@@ -33,6 +33,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -123,6 +124,9 @@ public class HttpViewServer {
                         }
 
                         View.Append appender = view.getAppender(dataConsumer.getOutputType());
+                        if (appender == null) {
+                            return CompletableFuture.completedFuture(null);
+                        }
                         try {
                             dataConsumer.getAll(appender::add, filter);
                         } catch (TooManyNodeException e) {

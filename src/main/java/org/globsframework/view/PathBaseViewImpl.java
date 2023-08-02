@@ -9,7 +9,6 @@ import org.globsframework.model.MutableGlob;
 import org.globsframework.utils.Ref;
 import org.globsframework.utils.Strings;
 import org.globsframework.utils.collections.Pair;
-import org.globsframework.utils.container.Container;
 import org.globsframework.utils.container.hash.HashContainer;
 import org.globsframework.view.filter.Filter;
 import org.globsframework.view.filter.FilterImpl;
@@ -65,40 +64,24 @@ public class PathBaseViewImpl implements View {
         Glob[] breakdowns = viewRequestType.getOrEmpty(ViewRequestType.breakdowns);
 
         Glob globFilter = viewRequestType.get(ViewRequestType.filter);
-        Filter filter;
+        Filter filter = null;
         if (globFilter != null) {
-            filter = new FilterImpl(globType, globFilter,
+            filter = FilterImpl.create(globType, globFilter,
                     uniqueName -> {
                         final Glob glob = aliasToDico.get(uniqueName);
                         return new UniqueNameToPath.PathField(glob.getOrEmpty(SimpleBreakdown.path), glob.get(SimpleBreakdown.fieldName));
                     }, true);
-        } else {
-            filter = source -> true;
         }
 
         NextPath nextPath = createNodeBuilder(aliasToDico, 0, breakdowns, stackType);
         if (nextPath == null) {
-            return new Append() {
-                public void add(Glob glob) {
-                }
-
-                public void complete() {
-                }
-            };
+            return null;
         }
-        return new Append() {
-            final Glob[] stack = new Glob[stackType.size()];
-
-            public void add(Glob glob) {
-                if (filter.isFiltered(glob)) {
-                    stack[0] = glob;
-                    nextPath.push(rootNode, stack);
-                }
-            }
-
-            public void complete() {
-            }
-        };
+        if (filter == null) {
+            return new NotFilteredAppend(nextPath, stackType.size());
+        } else {
+            return new FilteredAppend(filter, nextPath, stackType.size());
+        }
     }
 
     private Map<String, Glob> initWanted() {
@@ -158,7 +141,7 @@ public class PathBaseViewImpl implements View {
         Filter filter;
         if (globFilter != null) {
             Glob rewriteFilter = FilterType.TYPE.getRegistered(Rewrite.class).rewriteOrInAnd(globFilter);
-            filter = new FilterImpl(index, rewriteFilter, indexFieldRemap::translate, false);
+            filter = FilterImpl.create(index, rewriteFilter, indexFieldRemap::translate, false);
         } else {
             filter = null;
         }
@@ -1072,4 +1055,44 @@ public class PathBaseViewImpl implements View {
         }
     }
 
+    private class FilteredAppend implements Append {
+        private final Glob[] stack;
+        private final Filter filter;
+        private final NextPath nextPath;
+
+        public FilteredAppend(Filter filter, NextPath nextPath, int stackSize) {
+            this.filter = filter;
+            this.nextPath = nextPath;
+            stack = new Glob[stackSize];
+        }
+
+        public void add(Glob glob) {
+            if (filter.isFiltered(glob)) {
+                stack[0] = glob;
+                nextPath.push(rootNode, stack);
+            }
+        }
+
+        public void complete() {
+        }
+    }
+
+    private class NotFilteredAppend implements Append {
+        private final Glob[] stack;
+        private final NextPath nextPath;
+
+        public NotFilteredAppend(NextPath nextPath, int stackSize) {
+            this.nextPath = nextPath;
+            stack = new Glob[stackSize];
+        }
+
+        public void add(Glob glob) {
+            stack[0] = glob;
+            nextPath.push(rootNode, stack);
+        }
+
+        public void complete() {
+
+        }
+    }
 }

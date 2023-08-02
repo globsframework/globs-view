@@ -7,13 +7,17 @@ import org.globsframework.view.filter.model.UniqueNameToPath;
 public class FilterImpl implements Filter {
     private final IsSelected isSelected;
 
-//    public FilterImpl(GlobType globType, Constraint constraint) {
-//        isSelected = constraint.visit(new ViewConstraintVisitor(globType)).getIsSelected();
-//    }
+    public FilterImpl(IsSelected isSelected) {
+        this.isSelected = isSelected;
+    }
 
-    public FilterImpl(GlobType globType, Glob globFilter, UniqueNameToPath uniqueNameToPath, boolean fullQuery) {
-        isSelected = globFilter.getType().getRegistered(FilterBuilder.class)
+    public static Filter create(GlobType globType, Glob globFilter, UniqueNameToPath uniqueNameToPath, boolean fullQuery) {
+        final IsSelected selected = globFilter.getType().getRegistered(FilterBuilder.class)
                 .create(globFilter, globType, uniqueNameToPath, fullQuery);
+        if (selected != null) {
+            return new FilterImpl(selected);
+        }
+        return null;
     }
 
     public boolean isFiltered(Glob source) {

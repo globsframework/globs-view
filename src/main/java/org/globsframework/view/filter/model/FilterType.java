@@ -34,7 +34,7 @@ public class FilterType {
                     public FilterImpl.IsSelected create(Glob globFilter, GlobType rootType, UniqueNameToPath dico, boolean fullQuery) {
                         Glob glob = globFilter.get(filter);
                         if (glob == null) {
-                            return glob1 -> true;
+                            return null;
                         }
                         return glob.getType().getRegistered(FilterBuilder.class)
                                 .create(glob, rootType, dico, fullQuery);

@@ -6,6 +6,8 @@ import org.globsframework.view.filter.Filter;
 import org.globsframework.view.filter.FilterImpl;
 import org.globsframework.view.server.Source;
 
+import java.util.Optional;
+
 public interface View {
 
     Append getAppender(GlobType globType);
