@@ -46,6 +46,9 @@ public class AndFilterType {
                         if (predicate.isEmpty()) {
                             return null;
                         }
+                        if (predicate.size() == 1) {
+                            return predicate.get(0);
+                        }
                         return TYPE.instantiate().set(filters, predicate.toArray(Glob[]::new));
                     }
                 })
@@ -68,7 +71,9 @@ public class AndFilterType {
                         if (and.isEmpty()) {
                             return null;
                         }
-                        else {
+                        if (and.size() == 1) {
+                            return and.get(0);
+                        } else {
                             FilterImpl.IsSelected[] andArray = and.toArray(FilterImpl.IsSelected[]::new);
                             return glob -> {
                                 for (FilterImpl.IsSelected isSelected : andArray) {

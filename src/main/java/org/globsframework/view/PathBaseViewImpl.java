@@ -142,7 +142,6 @@ public class PathBaseViewImpl implements View {
         if (globFilter != null) {
             Glob rewriteFilter = FilterType.TYPE.getRegistered(Rewrite.class).rewriteOrInAnd(globFilter);
             if (rewriteFilter != null) {
-                LOGGER.info("Index filter is " + GSonUtils.encodeWithoutKind(rewriteFilter));
                 filter = FilterImpl.create(index, rewriteFilter, indexFieldRemap::translate, false);
             }
             else {
