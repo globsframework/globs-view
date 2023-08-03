@@ -11,7 +11,9 @@ import org.globsframework.view.filter.FilterImpl;
 import org.globsframework.view.filter.Rewrite;
 import org.globsframework.view.filter.WantedField;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.Consumer;
 
 public class AndFilterType {
@@ -33,47 +35,50 @@ public class AndFilterType {
                 })
                 .register(Rewrite.class, new Rewrite() {
                     public Glob rewriteOrInAnd(Glob glob) {
-                        final Glob[] gl = glob.getOrEmpty(filters);
-                        if (gl.length == 0) {
+                        List<Glob> predicate = new ArrayList<>();
+                        for (Glob value : glob.getOrEmpty(filters)) {
+                            Glob p = value != null ? value.getType().getRegistered(Rewrite.class)
+                                    .rewriteOrInAnd(value) : null;
+                            if (p != null) {
+                                predicate.add(p);
+                            }
+                        }
+                        if (predicate.isEmpty()) {
                             return null;
                         }
-                        for (int i = 0; i < gl.length; i++) {
-                            gl[i] = gl[i] != null ? gl[i].getType().getRegistered(Rewrite.class)
-                                    .rewriteOrInAnd(gl[i]) : null;
-                        }
-                        return TYPE.instantiate().set(filters, gl);
+                        return TYPE.instantiate().set(filters, predicate.toArray(Glob[]::new));
                     }
                 })
                 .register(FilterBuilder.class, new FilterBuilder() {
                     public FilterImpl.IsSelected create(Glob filter, GlobType rootType, UniqueNameToPath dico, boolean fullQuery) {
-                        Glob[] globs = filter.getOrEmpty(filters);
-                        FilterImpl.IsSelected[] and = new FilterImpl.IsSelected[globs.length];
-                        for (int i = 0, globsLength = globs.length; i < globsLength; i++) {
-                            Glob glob = globs[i];
+                        List<FilterImpl.IsSelected> and = new ArrayList<>();
+                        for (Glob glob : filter.getOrEmpty(filters)) {
                             try {
-                                if (glob == null) {
-                                    and[i] = g -> true;
-                                }
-                                else {
-                                    and[i] = glob.getType().getRegistered(FilterBuilder.class)
-                                            .create(glob, rootType, dico, fullQuery);
+                                final FilterImpl.IsSelected isSelected = glob.getType().getRegistered(FilterBuilder.class)
+                                        .create(glob, rootType, dico, fullQuery);
+                                if (isSelected != null) {
+                                    and.add(isSelected);
                                 }
                             } catch (ItemNotFound e) {
-                                if (!fullQuery) {
-                                    and[i] = g -> true;
-                                } else {
+                                if (fullQuery) {
                                     throw e;
                                 }
                             }
                         }
-                        return glob -> {
-                            for (FilterImpl.IsSelected isSelected : and) {
-                                if (!isSelected.isSelected(glob)) {
-                                    return false;
+                        if (and.isEmpty()) {
+                            return null;
+                        }
+                        else {
+                            FilterImpl.IsSelected[] andArray = and.toArray(FilterImpl.IsSelected[]::new);
+                            return glob -> {
+                                for (FilterImpl.IsSelected isSelected : andArray) {
+                                    if (!isSelected.isSelected(glob)) {
+                                        return false;
+                                    }
                                 }
-                            }
-                            return true;
-                        };
+                                return true;
+                            };
+                        }
                     }
                 })
                 .load();

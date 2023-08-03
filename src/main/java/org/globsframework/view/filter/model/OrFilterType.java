@@ -10,7 +10,9 @@ import org.globsframework.view.filter.FilterImpl;
 import org.globsframework.view.filter.Rewrite;
 import org.globsframework.view.filter.WantedField;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.Consumer;
 
 public class OrFilterType {
@@ -34,36 +36,49 @@ public class OrFilterType {
                 .register(Rewrite.class, new Rewrite() {
                     public Glob rewriteOrInAnd(Glob glob) {
                         final Glob[] gl = glob.getOrEmpty(filters);
-                        if (gl.length == 0) {
-                            return null;
-                        }
+                        List<Glob> predicate = new ArrayList<>();
+
                         for (int i = 0; i < gl.length; i++) {
                             final Glob value = gl[i] != null ? gl[i].getType().getRegistered(Rewrite.class)
                                     .rewriteOrInAnd(gl[i]) : null;
                             if (value == null) {
-                                gl[i] = null;
-                            }else if (value.getType() == NotType.TYPE) { // remove not if not not
-                                gl[i] = value.get(NotType.filter);
-                            }else {
-                                gl[i] = NotType.TYPE.instantiate().set(NotType.filter, value);
+                            } else if (value.getType() == NotType.TYPE) { // remove not if not not
+                                predicate.add(value.get(NotType.filter));
+                            } else {
+                                predicate.add(NotType.TYPE.instantiate().set(NotType.filter, value));
                             }
                         }
+                        if (predicate.isEmpty()) {
+                            return null;
+                        }
+                        if (predicate.size() == 1) {
+                            return NotType.TYPE.instantiate().set(NotType.filter, predicate.get(0));
+                        }
                         return NotType.TYPE.instantiate()
-                                .set(NotType.filter, AndFilterType.TYPE.instantiate().set(AndFilterType.filters, gl));
+                                .set(NotType.filter, AndFilterType.TYPE.instantiate().set(AndFilterType.filters,
+                                        predicate.toArray(Glob[]::new)));
                     }
                 })
 
                 .register(FilterBuilder.class, new FilterBuilder() {
-                    public FilterImpl.IsSelected create(Glob filter, GlobType rootType, UniqueNameToPath dico, boolean fullQuery){
-                        Glob[] globs = filter.get(filters);
-                        FilterImpl.IsSelected[] or = new FilterImpl.IsSelected[globs.length];
-                        for (int i = 0, globsLength = globs.length; i < globsLength; i++) {
-                            Glob glob = globs[i];
-                            or[i] = glob != null ? glob.getType().getRegistered(FilterBuilder.class)
-                                    .create(glob, rootType, dico, fullQuery) : g -> false;
+                    public FilterImpl.IsSelected create(Glob filter, GlobType rootType, UniqueNameToPath dico, boolean fullQuery) {
+                        List<FilterImpl.IsSelected> or = new ArrayList<>();
+                        for (Glob glob : filter.getOrEmpty(filters)) {
+                            FilterImpl.IsSelected e = glob != null ? glob.getType().getRegistered(FilterBuilder.class)
+                                    .create(glob, rootType, dico, fullQuery) : null;
+                            if (e != null) {
+                                or.add(e);
+                            }
                         }
+                        if (or.isEmpty()) {
+                            return null;
+                        }
+                        if (or.size() == 1) {
+                            return or.get(0);
+                        }
+                        FilterImpl.IsSelected[] orArray = or.toArray(FilterImpl.IsSelected[]::new);
                         return glob -> {
-                            for (FilterImpl.IsSelected isSelected : or) {
+                            for (FilterImpl.IsSelected isSelected : orArray) {
                                 if (isSelected.isSelected(glob)) {
                                     return true;
                                 }

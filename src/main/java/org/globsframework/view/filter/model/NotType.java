@@ -48,7 +48,7 @@ public class NotType {
                     final FilterImpl.IsSelected selected = glFilter.getType().getRegistered(FilterBuilder.class)
                             .create(glFilter, rootType, dico, fullQuery);
                     if (selected == null) {
-                        return glob -> false;
+                        return null;
                     } else {
                         return glob -> !selected.isSelected(glob);
                     }

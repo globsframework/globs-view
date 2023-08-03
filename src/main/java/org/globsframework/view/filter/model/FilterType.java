@@ -44,8 +44,11 @@ public class FilterType {
                     public Glob rewriteOrInAnd(Glob glob) {
                         final Glob gl = glob.get(filter);
                         if (gl != null) {
-                           return TYPE.instantiate().set(filter,
-                                    gl.getType().getRegistered(Rewrite.class).rewriteOrInAnd(gl));
+                            final Glob value = gl.getType().getRegistered(Rewrite.class).rewriteOrInAnd(gl);
+                            if (value == null) {
+                                return null;
+                            }
+                            return TYPE.instantiate().set(filter, value);
                         }
                         return gl;
                     }
