@@ -174,7 +174,7 @@ public class PathBaseViewImpl implements View {
     private Glob computeOutput(Node node) {
         MutableGlob gl = breakdownDownType.instantiate();
         gl.set(nodeNameField, node.getName());
-        gl.set(nameField, node.getKeyAsString());
+        gl.set(nameField, node.getKey() == null ? "" : node.getKeyAsString());
         MutableGlob output = node.getOutput();
         HashContainer<Object, Node> children = node.getChildren();
         if (!children.isEmpty()) {

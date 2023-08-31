@@ -77,7 +77,7 @@ public class CsvExporter {
     }
 
     private void scan(MutableGlob current, Glob node, int level) {
-        MutableGlob sub = current.duplicate();
+        MutableGlob sub = current; //.duplicate();
         if (level >= 0) {
             Object value = node.getValue(breakdownField);
             if (value != null) {
@@ -100,13 +100,15 @@ public class CsvExporter {
             } else {
                 for (Pair<Field, Field> fieldFieldPair : copy) {
                     sub.unset(fieldFieldPair.getSecond());
-//                    sub.setValue(fieldFieldPair.getSecond(), null);
                 }
             }
             export.accept(sub);
         }
         for (Glob glob : node.getOrEmpty(children)) {
             scan(sub, glob, level + 1);
+        }
+        if (level >= 0) {
+            sub.unset(breakdownFields[level]);
         }
     }
 }

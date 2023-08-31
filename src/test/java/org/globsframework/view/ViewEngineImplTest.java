@@ -576,11 +576,11 @@ public class ViewEngineImplTest extends TestCase {
                 "      \"nodeName\": \"Name1\",\n" +
                 "      \"__children__\": [\n" +
                 "        {\n" +
-                "          \"name\": \"null\",\n" +
+                "          \"name\": \"\",\n" +
                 "          \"nodeName\": \"SUB2.SUB3.NameSub4\",\n" +
                 "          \"__children__\": [\n" +
                 "            {\n" +
-                "              \"name\": \"null\",\n" +
+                "              \"name\": \"\",\n" +
                 "              \"nodeName\": \"SUB2.SUB3.NameSub5\"\n" +
                 "            }\n" +
                 "          ]\n" +
@@ -610,7 +610,7 @@ public class ViewEngineImplTest extends TestCase {
                 "          \"nodeName\": \"SUB2.SUB3.NameSub4\",\n" +
                 "          \"__children__\": [\n" +
                 "            {\n" +
-                "              \"name\": \"null\",\n" +
+                "              \"name\": \"\",\n" +
                 "              \"nodeName\": \"SUB2.SUB3.NameSub5\"\n" +
                 "            }\n" +
                 "          ]\n" +
@@ -620,7 +620,7 @@ public class ViewEngineImplTest extends TestCase {
                 "          \"nodeName\": \"SUB2.SUB3.NameSub4\",\n" +
                 "          \"__children__\": [\n" +
                 "            {\n" +
-                "              \"name\": \"null\",\n" +
+                "              \"name\": \"\",\n" +
                 "              \"nodeName\": \"SUB2.SUB3.NameSub5\"\n" +
                 "            }\n" +
                 "          ]\n" +
