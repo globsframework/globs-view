@@ -5,6 +5,7 @@ import org.globsframework.metamodel.GlobType;
 import org.globsframework.metamodel.GlobTypeLoaderFactory;
 import org.globsframework.metamodel.fields.*;
 import org.globsframework.model.Glob;
+import org.globsframework.view.DateUtils;
 import org.globsframework.view.filter.FilterBuilder;
 import org.globsframework.view.filter.FilterImpl;
 import org.globsframework.view.filter.Rewrite;
@@ -41,7 +42,7 @@ public class StrictlyLessType {
                         Field field = pathToField.getField();
 
                         if (field instanceof DateTimeField) {
-                            ZonedDateTime compareTo = ZonedDateTime.parse(filter.get(value));
+                            ZonedDateTime compareTo = DateUtils.parse(filter.get(value));
                             return glob -> jump.from(glob)
                                     .map(((DateTimeField) field))
                                     .filter(Objects::nonNull)

@@ -5,6 +5,7 @@ import org.globsframework.metamodel.GlobType;
 import org.globsframework.metamodel.GlobTypeLoaderFactory;
 import org.globsframework.metamodel.fields.*;
 import org.globsframework.model.Glob;
+import org.globsframework.view.DateUtils;
 import org.globsframework.view.filter.FilterBuilder;
 import org.globsframework.view.filter.FilterImpl;
 import org.globsframework.view.filter.Rewrite;
@@ -13,8 +14,7 @@ import org.globsframework.view.model.StringAsDouble;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.LocalDate;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -41,7 +41,7 @@ public class GreaterOrEqualType {
                         Field field = pathToField.getField();
 
                         if (field instanceof DateTimeField) {
-                            ZonedDateTime compareTo = ZonedDateTime.parse(filter.get(value));
+                            ZonedDateTime compareTo = DateUtils.parse(filter.get(value));
                             return glob -> jump.from(glob)
                                     .map(((DateTimeField) field))
                                     .filter(Objects::nonNull)
