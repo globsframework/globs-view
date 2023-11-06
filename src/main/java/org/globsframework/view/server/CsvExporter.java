@@ -1,7 +1,7 @@
 package org.globsframework.view.server;
 
 import org.globsframework.export.ExportBySize;
-import org.globsframework.metamodel.Field;
+import org.globsframework.metamodel.fields.Field;
 import org.globsframework.metamodel.GlobType;
 import org.globsframework.metamodel.GlobTypeBuilder;
 import org.globsframework.metamodel.fields.GlobArrayField;

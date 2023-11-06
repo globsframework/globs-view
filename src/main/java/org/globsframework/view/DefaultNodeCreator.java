@@ -1,6 +1,6 @@
 package org.globsframework.view;
 
-import org.globsframework.metamodel.Field;
+import org.globsframework.metamodel.fields.Field;
 import org.globsframework.metamodel.GlobType;
 import org.globsframework.metamodel.fields.FieldVisitor;
 import org.globsframework.metamodel.fields.IntegerArrayField;
