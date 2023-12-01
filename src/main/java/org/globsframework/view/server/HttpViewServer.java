@@ -131,6 +131,7 @@ public class HttpViewServer {
                             dataConsumer.getAll(appender::add, filter);
                         } catch (TooManyNodeException e) {
                             LOGGER.error("Too many node for request");
+                            return CompletableFuture.failedFuture(e);
                         }
                         appender.complete();
                         Glob value = view.toGlob();

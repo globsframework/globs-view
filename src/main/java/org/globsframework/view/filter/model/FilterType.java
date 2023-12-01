@@ -5,6 +5,7 @@ import org.globsframework.metamodel.GlobTypeLoaderFactory;
 import org.globsframework.metamodel.annotations.Targets;
 import org.globsframework.metamodel.fields.GlobUnionField;
 import org.globsframework.model.Glob;
+import org.globsframework.utils.exceptions.ItemNotFound;
 import org.globsframework.view.filter.FilterBuilder;
 import org.globsframework.view.filter.FilterImpl;
 import org.globsframework.view.filter.Rewrite;
@@ -36,8 +37,15 @@ public class FilterType {
                         if (glob == null) {
                             return null;
                         }
-                        return glob.getType().getRegistered(FilterBuilder.class)
-                                .create(glob, rootType, dico, fullQuery);
+                        try {
+                            return glob.getType().getRegistered(FilterBuilder.class)
+                                    .create(glob, rootType, dico, fullQuery);
+                        } catch (ItemNotFound e) {
+                            if (fullQuery) {
+                                throw e;
+                            }
+                        }
+                        return null;
                     }
                 })
                 .register(Rewrite.class, new Rewrite() {
