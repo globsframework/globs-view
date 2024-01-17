@@ -17,6 +17,7 @@ import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public class EqualType {
     static private final Logger LOGGER = LoggerFactory.getLogger(EqualType.class);
@@ -79,6 +80,12 @@ public class EqualType {
                             return glob -> jump.from(glob).map(((StringField) field))
                                     .filter(Objects::nonNull)
                                     .anyMatch(compareTo::equals);
+                        }
+                        if (field instanceof BooleanField) {
+                            boolean compareTo = Boolean.parseBoolean(filter.get(value));
+                            return glob -> jump.from(glob).map(((BooleanField) field))
+                                    .filter(Objects::nonNull)
+                                    .anyMatch(Predicate.isEqual(compareTo));
                         }
                         String msg = "Field " + field.getFullName() + " of type " + field.getValueClass() + " not managed";
                         LOGGER.error(msg);

@@ -17,6 +17,7 @@ import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public class NotEqualType {
     static private final Logger LOGGER = LoggerFactory.getLogger(NotEqualType.class);
@@ -82,6 +83,13 @@ public class NotEqualType {
                                     .filter(Objects::nonNull)
                                     .anyMatch(value -> !compareTo.equals(value));
                         }
+                        if (field instanceof BooleanField) {
+                            boolean compareTo = Boolean.parseBoolean(filter.get(value));
+                            return glob -> jump.from(glob).map(((BooleanField) field))
+                                    .filter(Objects::nonNull)
+                                    .anyMatch(Predicate.not(Predicate.isEqual(compareTo)));
+                        }
+
                         String msg = "Field " + field.getFullName() + " of type " + field.getValueClass() + " not managed";
                         LOGGER.error(msg);
                         throw new RuntimeException(msg);
