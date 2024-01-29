@@ -21,7 +21,7 @@ public class NotType {
 
     static {
         GlobTypeLoaderFactory.create(NotType.class)
-                .register(WantedField.class, (filter, wantedUniqueName) -> filter.getOptional(NotType.filter)
+                .register(WantedField.class, (filter, wantedUniqueName) -> filter.getOpt(NotType.filter)
                         .ifPresent(glob -> glob.getType().getRegistered(WantedField.class)
                                 .wanted(glob, wantedUniqueName)))
                 .register(Rewrite.class, new Rewrite() {
