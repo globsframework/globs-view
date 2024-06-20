@@ -454,20 +454,46 @@ public class ViewEngineImplTest extends TestCase {
                 .set(ViewType1.SUB2, new Glob[]{SubType2.TYPE.instantiate().set(SubType2.qty, 2)});
         ;
         View view = viewBuilder.createView();
-        View.Append appender = view.getAppender(ViewType1.TYPE);
-        appender.add(d1);
-        appender.add(d2);
-        appender.complete();
-        Glob viewAsGlob = view.toGlob();
-        Glob result = HttpViewServer.dumpInCsv(viewRequest, viewAsGlob, false);
+        {
+            View.Append appender = view.getAppender(ViewType1.TYPE);
+            appender.add(d1);
+            appender.add(d2);
+            appender.complete();
+            Glob viewAsGlob = view.toGlob();
+            Glob result = HttpViewServer.dumpInCsv(viewRequest, viewAsGlob, false);
 
-        String str = Files.read(new FileInputStream(result.get(GlobFile.file)), StandardCharsets.UTF_8);
+            String str = Files.read(new FileInputStream(result.get(GlobFile.file)), StandardCharsets.UTF_8);
 
-        Assert.assertEquals("Name1;Name2;total\n" +
-                ";;3\n" +
-                "n1;;3\n" +
-                "n1;n11;1\n" +
-                "n1;n22;2\n", str);
+            Assert.assertEquals("""
+                    Name1;Name2;total
+                    ;;3
+                    n1;;3
+                    n1;n11;1
+                    n1;n22;2
+                    """, str);
+        }
+        {
+            view.reset();
+            MutableGlob d3 = ViewType1.TYPE.instantiate()
+                    .set(ViewType1.Name1, "n2")
+                    .set(ViewType1.Name2, "n22")
+                    .set(ViewType1.SUB2, new Glob[]{SubType2.TYPE.instantiate().set(SubType2.qty, 2)});
+            View.Append appender = view.getAppender(ViewType1.TYPE);
+            appender.add(d3);
+            appender.complete();
+            Glob viewAsGlob = view.toGlob();
+            Glob result = HttpViewServer.dumpInCsv(viewRequest, viewAsGlob, false);
+
+            String str = Files.read(new FileInputStream(result.get(GlobFile.file)), StandardCharsets.UTF_8);
+
+            Assert.assertEquals("""
+                    Name1;Name2;total
+                    ;;2
+                    n2;;2
+                    n2;n22;2
+                    """, str);
+
+        }
     }
 
     public void testInCsvLeafOnly() throws IOException {

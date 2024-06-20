@@ -13,16 +13,16 @@ import java.util.Arrays;
 import java.util.Collections;
 
 public class ViewBuilderImpl implements ViewBuilder {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ViewBuilderImpl.class);
     public static final String NAME = "name";
     public static final String NODE_NAME = "nodeName";
     public static final String OUTPUT = "output";
     public static final String CHILD_FIELD_NAME = "__children__";
-    private static Logger LOGGER = LoggerFactory.getLogger(ViewBuilderImpl.class);
     private final GlobType outputType;
     private final GlobType breakdownType;
-    private Glob dictionary;
-    private Glob viewRequestType;
-    private int maxNodeCount;
+    private final Glob dictionary;
+    private final Glob viewRequestType;
+    private final int maxNodeCount;
 
     public ViewBuilderImpl(Glob dictionary, Glob viewRequestType, int maxNodeCount) {
         this.dictionary = dictionary;
@@ -37,7 +37,7 @@ public class ViewBuilderImpl implements ViewBuilder {
                     .orElseThrow(() -> {
                         String msg = uniqueName + " no found";
                         LOGGER.error(msg);
-                        throw new RuntimeException(msg);
+                        return new RuntimeException(msg);
                     });
             String outputAlias = o.get(ViewOutput.name, o.get(ViewOutput.uniqueName));
             outputTypeBuilder.declare(outputAlias, DataType.valueOf(type.get(SimpleBreakdown.outputTypeName, type.get(SimpleBreakdown.nativeType))),

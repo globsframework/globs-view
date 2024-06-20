@@ -3,12 +3,11 @@ package org.globsframework.view;
 import org.globsframework.metamodel.GlobType;
 import org.globsframework.model.Glob;
 import org.globsframework.view.filter.Filter;
-import org.globsframework.view.filter.FilterImpl;
 import org.globsframework.view.server.Source;
 
-import java.util.Optional;
-
 public interface View {
+
+    void reset();
 
     Append getAppender(GlobType globType);
 

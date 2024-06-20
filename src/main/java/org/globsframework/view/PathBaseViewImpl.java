@@ -26,19 +26,19 @@ import java.util.stream.Stream;
 
 public class PathBaseViewImpl implements View {
     private final static Logger LOGGER = LoggerFactory.getLogger(PathBaseViewImpl.class);
-    private final Node rootNode;
     private final AggOutput agg;
     private final StringField nameField;
     private final StringField nodeNameField;
     private final SimpleGraph<Boolean> wanted = new SimpleGraph<>("", true);
     private final Map<String, Glob> aliasToDico;
     private final Glob dictionary;
-    private int maxNodeCount;
+    private final int maxNodeCount;
     private final Glob viewRequestType;
     private final GlobType breakdownDownType;
     private final GlobType outputType;
     private final GlobField outputField;
     private final GlobArrayField childrenField;
+    private Node rootNode; // mutated in
     private int nodeCount;
 
     public PathBaseViewImpl(Glob viewRequestType, GlobType breakdownDownType, GlobType outputType, Glob dictionary, int maxNodeCount) {
@@ -47,14 +47,19 @@ public class PathBaseViewImpl implements View {
         this.outputType = outputType;
         rootNode = new DefaultNode("root", null, "", outputType.getFields().length == 0 ? null : outputType.instantiate());
         agg = createAgg(outputType);
-        outputField = (GlobField) breakdownDownType.getField(ViewBuilderImpl.OUTPUT);
-        childrenField = (GlobArrayField) breakdownDownType.getField(ViewBuilderImpl.CHILD_FIELD_NAME);
+        outputField = breakdownDownType.getField(ViewBuilderImpl.OUTPUT).asGlobField();
+        childrenField = breakdownDownType.getField(ViewBuilderImpl.CHILD_FIELD_NAME).asGlobArrayField();
         nameField = breakdownDownType.getField(ViewBuilderImpl.NAME).asStringField();
         nodeNameField = breakdownDownType.getField(ViewBuilderImpl.NODE_NAME).asStringField();
         this.dictionary = dictionary;
         this.maxNodeCount = maxNodeCount;
         aliasToDico = initWanted();
         registerWantedField(aliasToDico);
+    }
+
+    public void reset() {
+        rootNode = new DefaultNode("root", null, "", outputType.getFields().length == 0 ? null : outputType.instantiate());
+        nodeCount = 0;
     }
 
     public Append getAppender(GlobType globType) {

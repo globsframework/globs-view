@@ -1,6 +1,5 @@
 package org.globsframework.view;
 
-import org.globsframework.metamodel.fields.Field;
 import org.globsframework.metamodel.GlobType;
 import org.globsframework.metamodel.fields.*;
 import org.globsframework.metamodel.type.DataType;
@@ -13,8 +12,9 @@ import org.globsframework.view.model.StringAsDouble;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ViewEngineImpl implements ViewEngine {
     private static final Logger LOGGER = LoggerFactory.getLogger(ViewEngineImpl.class);
@@ -33,7 +33,7 @@ public class ViewEngineImpl implements ViewEngine {
     private void extract(GlobType globType, List<Glob> breakdowns, ArrayDeque<String> path) {
         LOGGER.debug("extract " + globType.getName());
         if (path.size() > VIEW_MAX_DEPTH) {
-            LOGGER.warn("Stop drilling down to deep in fields : " + path.stream().collect(Collectors.joining("/")));
+            LOGGER.warn("Stop drilling down to deep in fields : " + String.join("/", path));
             return;
         }
         Field[] fields = globType.getFields();
