@@ -5,11 +5,9 @@ import junit.framework.TestCase;
 import org.globsframework.json.GSonUtils;
 import org.globsframework.metamodel.GlobType;
 import org.globsframework.metamodel.GlobTypeLoaderFactory;
-import org.globsframework.metamodel.annotations.Target;
 import org.globsframework.metamodel.annotations.Targets;
 import org.globsframework.metamodel.fields.GlobUnionField;
 import org.globsframework.metamodel.fields.IntegerField;
-import org.globsframework.metamodel.fields.StringArrayField;
 import org.globsframework.metamodel.fields.StringField;
 import org.globsframework.model.Glob;
 import org.globsframework.model.MutableGlob;
@@ -86,7 +84,48 @@ public class ViewOnGLobUnionTest extends TestCase {
         Glob viewAsGlob = view.toGlob();
         String actual = GSonUtils.encode(viewAsGlob, false);
 
-        Assert.assertEquals(GSonUtils.normalize("{\"name\":\"\",\"nodeName\":\"root\",\"__children__\":[{\"name\":\"n1\",\"nodeName\":\"key\",\"__children__\":[{\"name\":\"data1\",\"nodeName\":\"data.object1.keyObj1\",\"output\":{\"quantity\":10}}],\"output\":{\"quantity\":10}},{\"name\":\"n2\",\"nodeName\":\"key\",\"__children__\":[{\"name\":\"data2\",\"nodeName\":\"data.object1.keyObj1\",\"output\":{\"quantity\":2}}],\"output\":{\"quantity\":2}}],\"output\":{\"quantity\":12}}"), GSonUtils.normalize(actual));
+        Assert.assertEquals(GSonUtils.normalize("""
+                {
+                  "name": "",
+                  "nodeName": "root",
+                  "__children__": [
+                    {
+                      "name": "n1",
+                      "nodeName": "key",
+                      "__children__": [
+                        {
+                          "name": "data1",
+                          "nodeName": "data.object1.keyObj1",
+                          "output": {
+                            "quantity": 10
+                          }
+                        }
+                      ],
+                      "output": {
+                        "quantity": 10
+                      }
+                    },
+                    {
+                      "name": "n2",
+                      "nodeName": "key",
+                      "__children__": [
+                        {
+                          "name": "data2",
+                          "nodeName": "data.object1.keyObj1",
+                          "output": {
+                            "quantity": 2
+                          }
+                        }
+                      ],
+                      "output": {
+                        "quantity": 2
+                      }
+                    }
+                  ],
+                  "output": {
+                    "quantity": 12
+                  }
+                }"""), GSonUtils.normalize(actual));
     }
 
     public static class Object1 {

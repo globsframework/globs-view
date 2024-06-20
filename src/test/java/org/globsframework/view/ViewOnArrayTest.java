@@ -44,7 +44,27 @@ public class ViewOnArrayTest extends TestCase {
         Glob viewAsGlob = view.toGlob();
         String actual = GSonUtils.encode(viewAsGlob, false);
 
-        Assert.assertEquals(GSonUtils.normalize("{\"name\":\"\",\"nodeName\":\"root\",\"__children__\":[{\"name\":\"n1\",\"nodeName\":\"key\",\"__children__\":[{\"name\":\"[m1, m2, m3]\",\"nodeName\":\"messages\"},{\"name\":\"[m3, m4, m5]\",\"nodeName\":\"messages\"}]}]}"), GSonUtils.normalize(actual));
+        Assert.assertEquals(GSonUtils.normalize("""
+                {
+                  "name":"",
+                  "nodeName": "root",
+                  "__children__":[
+                    {
+                       "name":"n1",
+                       "nodeName":"key",
+                       "__children__":[
+                          {
+                             "name":"[m1, m2, m3]",
+                             "nodeName":"messages"
+                          },
+                          {
+                             "name":"[m3, m4, m5]",
+                             "nodeName":"messages"
+                          }
+                       ]
+                    }
+                  ]
+                }"""), GSonUtils.normalize(actual));
 
     }
 

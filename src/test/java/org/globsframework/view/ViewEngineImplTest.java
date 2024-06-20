@@ -82,124 +82,126 @@ public class ViewEngineImplTest extends TestCase {
         Glob viewAsGlob = view.toGlob();
         String actual = GSonUtils.encode(viewAsGlob, false);
 
-        Assert.assertEquals(GSonUtils.normalize("{\n" +
-                "  \"name\": \"\",\n" +
-                "  \"nodeName\": \"root\",\n" +
-                "  \"__children__\": [\n" +
-                "    {\n" +
-                "      \"name\": \"n1\",\n" +
-                "      \"nodeName\": \"Name1\",\n" +
-                "      \"__children__\": [\n" +
-                "        {\n" +
-                "          \"name\": \"sub21\",\n" +
-                "          \"nodeName\": \"SUB2.NameSub2\",\n" +
-                "          \"__children__\": [\n" +
-                "            {\n" +
-                "              \"name\": \"n2\",\n" +
-                "              \"nodeName\": \"Name2\",\n" +
-                "              \"__children__\": [\n" +
-                "                {\n" +
-                "                  \"name\": \"subN1\",\n" +
-                "                  \"nodeName\": \"SUB1.NameSub1\",\n" +
-                "                  \"output\": {\n" +
-                "                    \"quantity\": 1.0\n" +
-                "                  }\n" +
-                "                }\n" +
-                "              ],\n" +
-                "              \"output\": {\n" +
-                "                \"quantity\": 1.0\n" +
-                "              }\n" +
-                "            }\n" +
-                "          ],\n" +
-                "          \"output\": {\n" +
-                "            \"quantity\": 1.0\n" +
-                "          }\n" +
-                "        },\n" +
-                "        {\n" +
-                "          \"name\": \"sub22\",\n" +
-                "          \"nodeName\": \"SUB2.NameSub2\",\n" +
-                "          \"__children__\": [\n" +
-                "            {\n" +
-                "              \"name\": \"n2\",\n" +
-                "              \"nodeName\": \"Name2\",\n" +
-                "              \"__children__\": [\n" +
-                "                {\n" +
-                "                  \"name\": \"subN1\",\n" +
-                "                  \"nodeName\": \"SUB1.NameSub1\",\n" +
-                "                  \"output\": {\n" +
-                "                    \"quantity\": 2.0\n" +
-                "                  }\n" +
-                "                }\n" +
-                "              ],\n" +
-                "              \"output\": {\n" +
-                "                \"quantity\": 2.0\n" +
-                "              }\n" +
-                "            }\n" +
-                "          ],\n" +
-                "          \"output\": {\n" +
-                "            \"quantity\": 2.0\n" +
-                "          }\n" +
-                "        },\n" +
-                "        {\n" +
-                "          \"name\": \"sub221\",\n" +
-                "          \"nodeName\": \"SUB2.NameSub2\",\n" +
-                "          \"__children__\": [\n" +
-                "            {\n" +
-                "              \"name\": \"n22\",\n" +
-                "              \"nodeName\": \"Name2\",\n" +
-                "              \"__children__\": [\n" +
-                "                {\n" +
-                "                  \"name\": \"subN21\",\n" +
-                "                  \"nodeName\": \"SUB1.NameSub1\",\n" +
-                "                  \"output\": {\n" +
-                "                    \"quantity\": 3.0\n" +
-                "                  }\n" +
-                "                }\n" +
-                "              ],\n" +
-                "              \"output\": {\n" +
-                "                \"quantity\": 3.0\n" +
-                "              }\n" +
-                "            }\n" +
-                "          ],\n" +
-                "          \"output\": {\n" +
-                "            \"quantity\": 3.0\n" +
-                "          }\n" +
-                "        },\n" +
-                "        {\n" +
-                "          \"name\": \"sub222\",\n" +
-                "          \"nodeName\": \"SUB2.NameSub2\",\n" +
-                "          \"__children__\": [\n" +
-                "            {\n" +
-                "              \"name\": \"n22\",\n" +
-                "              \"nodeName\": \"Name2\",\n" +
-                "              \"__children__\": [\n" +
-                "                {\n" +
-                "                  \"name\": \"subN21\",\n" +
-                "                  \"nodeName\": \"SUB1.NameSub1\",\n" +
-                "                  \"output\": {\n" +
-                "                    \"quantity\": 1.0\n" +
-                "                  }\n" +
-                "                }\n" +
-                "              ],\n" +
-                "              \"output\": {\n" +
-                "                \"quantity\": 1.0\n" +
-                "              }\n" +
-                "            }\n" +
-                "          ],\n" +
-                "          \"output\": {\n" +
-                "            \"quantity\": 1.0\n" +
-                "          }\n" +
-                "        }\n" +
-                "      ],\n" +
-                "      \"output\": {\n" +
-                "        \"quantity\": 7.0\n" +
-                "      }\n" +
-                "    }\n" +
-                "  ],\n" +
-                "  \"output\": {\n" +
-                "    \"quantity\": 7.0\n" +
-                "  }\n" +
-                "}\n"), GSonUtils.normalize(actual));
+        Assert.assertEquals(GSonUtils.normalize("""
+                {
+                  "name": "",
+                  "nodeName": "root",
+                  "__children__": [
+                    {
+                      "name": "n1",
+                      "nodeName": "Name1",
+                      "__children__": [
+                        {
+                          "name": "sub21",
+                          "nodeName": "SUB2.NameSub2",
+                          "__children__": [
+                            {
+                              "name": "n2",
+                              "nodeName": "Name2",
+                              "__children__": [
+                                {
+                                  "name": "subN1",
+                                  "nodeName": "SUB1.NameSub1",
+                                  "output": {
+                                    "quantity": 1.0
+                                  }
+                                }
+                              ],
+                              "output": {
+                                "quantity": 1.0
+                              }
+                            }
+                          ],
+                          "output": {
+                            "quantity": 1.0
+                          }
+                        },
+                        {
+                          "name": "sub22",
+                          "nodeName": "SUB2.NameSub2",
+                          "__children__": [
+                            {
+                              "name": "n2",
+                              "nodeName": "Name2",
+                              "__children__": [
+                                {
+                                  "name": "subN1",
+                                  "nodeName": "SUB1.NameSub1",
+                                  "output": {
+                                    "quantity": 2.0
+                                  }
+                                }
+                              ],
+                              "output": {
+                                "quantity": 2.0
+                              }
+                            }
+                          ],
+                          "output": {
+                            "quantity": 2.0
+                          }
+                        },
+                        {
+                          "name": "sub221",
+                          "nodeName": "SUB2.NameSub2",
+                          "__children__": [
+                            {
+                              "name": "n22",
+                              "nodeName": "Name2",
+                              "__children__": [
+                                {
+                                  "name": "subN21",
+                                  "nodeName": "SUB1.NameSub1",
+                                  "output": {
+                                    "quantity": 3.0
+                                  }
+                                }
+                              ],
+                              "output": {
+                                "quantity": 3.0
+                              }
+                            }
+                          ],
+                          "output": {
+                            "quantity": 3.0
+                          }
+                        },
+                        {
+                          "name": "sub222",
+                          "nodeName": "SUB2.NameSub2",
+                          "__children__": [
+                            {
+                              "name": "n22",
+                              "nodeName": "Name2",
+                              "__children__": [
+                                {
+                                  "name": "subN21",
+                                  "nodeName": "SUB1.NameSub1",
+                                  "output": {
+                                    "quantity": 1.0
+                                  }
+                                }
+                              ],
+                              "output": {
+                                "quantity": 1.0
+                              }
+                            }
+                          ],
+                          "output": {
+                            "quantity": 1.0
+                          }
+                        }
+                      ],
+                      "output": {
+                        "quantity": 7.0
+                      }
+                    }
+                  ],
+                  "output": {
+                    "quantity": 7.0
+                  }
+                }
+                """), GSonUtils.normalize(actual));
     }
 
     public void testWithSameType() {
@@ -232,26 +234,27 @@ public class ViewEngineImplTest extends TestCase {
         Glob viewAsGlob = view.toGlob();
         String actual = GSonUtils.encode(viewAsGlob, false);
 
-        Assert.assertEquals(GSonUtils.normalize("{\n" +
-                "  \"name\": \"\",\n" +
-                "  \"nodeName\": \"root\",\n" +
-                "  \"__children__\": [\n" +
-                "    {\n" +
-                "      \"name\": \"n1\",\n" +
-                "      \"nodeName\": \"Name1\",\n" +
-                "      \"__children__\": [\n" +
-                "        {\n" +
-                "          \"name\": \"n2\",\n" +
-                "          \"nodeName\": \"Name2\"\n" +
-                "        },\n" +
-                "        {\n" +
-                "          \"name\": \"n22\",\n" +
-                "          \"nodeName\": \"Name2\"\n" +
-                "        }\n" +
-                "      ]\n" +
-                "    }\n" +
-                "  ]\n" +
-                "}"), GSonUtils.normalize(actual));
+        Assert.assertEquals(GSonUtils.normalize("""
+                {
+                  "name": "",
+                  "nodeName": "root",
+                  "__children__": [
+                    {
+                      "name": "n1",
+                      "nodeName": "Name1",
+                      "__children__": [
+                        {
+                          "name": "n2",
+                          "nodeName": "Name2"
+                        },
+                        {
+                          "name": "n22",
+                          "nodeName": "Name2"
+                        }
+                      ]
+                    }
+                  ]
+                }"""), GSonUtils.normalize(actual));
     }
 
     public void testWithOutputWithoutBreakdownOnThisType() {
@@ -290,22 +293,23 @@ public class ViewEngineImplTest extends TestCase {
         Glob viewAsGlob = view.toGlob();
         String actual = GSonUtils.encode(viewAsGlob, false);
 
-        Assert.assertEquals(GSonUtils.normalize("{\n" +
-                "  \"name\": \"\",\n" +
-                "  \"nodeName\": \"root\",\n" +
-                "  \"__children__\": [\n" +
-                "    {\n" +
-                "      \"name\": \"n1\",\n" +
-                "      \"nodeName\": \"Name1\",\n" +
-                "      \"output\": {\n" +
-                "        \"total\": 3.0\n" +
-                "      }\n" +
-                "    }\n" +
-                "  ],\n" +
-                "  \"output\": {\n" +
-                "    \"total\": 3.0\n" +
-                "  }\n" +
-                "}"), GSonUtils.normalize(actual));
+        Assert.assertEquals(GSonUtils.normalize("""
+                {
+                  "name": "",
+                  "nodeName": "root",
+                  "__children__": [
+                    {
+                      "name": "n1",
+                      "nodeName": "Name1",
+                      "output": {
+                        "total": 3.0
+                      }
+                    }
+                  ],
+                  "output": {
+                    "total": 3.0
+                  }
+                }"""), GSonUtils.normalize(actual));
     }
 
     public void testWithOutputWithoutBreakdown() {
@@ -343,13 +347,14 @@ public class ViewEngineImplTest extends TestCase {
         Glob viewAsGlob = view.toGlob();
         String actual = GSonUtils.encode(viewAsGlob, false);
 
-        Assert.assertEquals(GSonUtils.normalize("{\n" +
-                "  \"name\": \"\",\n" +
-                "  \"nodeName\": \"root\",\n" +
-                "  \"output\": {\n" +
-                "    \"total\": 3.0\n" +
-                "  }\n" +
-                "}"), GSonUtils.normalize(actual));
+        Assert.assertEquals(GSonUtils.normalize("""
+                {
+                  "name": "",
+                  "nodeName": "root",
+                  "output": {
+                    "total": 3.0
+                  }
+                }"""), GSonUtils.normalize(actual));
     }
 
     public void testWithOutput() {
@@ -389,38 +394,40 @@ public class ViewEngineImplTest extends TestCase {
         Glob viewAsGlob = view.toGlob();
         String actual = GSonUtils.encode(viewAsGlob, false);
 
-        Assert.assertEquals(GSonUtils.normalize("{\n" +
-                "  \"name\": \"\",\n" +
-                "  \"nodeName\": \"root\",\n" +
-                "  \"__children__\": [\n" +
-                "    {\n" +
-                "      \"name\": \"n1\",\n" +
-                "      \"nodeName\": \"Name1\",\n" +
-                "      \"__children__\": [\n" +
-                "        {\n" +
-                "          \"name\": \"n11\",\n" +
-                "          \"nodeName\": \"Name2\",\n" +
-                "          \"output\": {\n" +
-                "            \"total\": 1.0\n" +
-                "          }\n" +
-                "        },\n" +
-                "        {\n" +
-                "          \"name\": \"n22\",\n" +
-                "          \"nodeName\": \"Name2\",\n" +
-                "          \"output\": {\n" +
-                "            \"total\": 2.0\n" +
-                "          }\n" +
-                "        }\n" +
-                "      ],\n" +
-                "      \"output\": {\n" +
-                "        \"total\": 3.0\n" +
-                "      }\n" +
-                "    }\n" +
-                "  ],\n" +
-                "  \"output\": {\n" +
-                "    \"total\": 3.0\n" +
-                "  }\n" +
-                "}\n"), GSonUtils.normalize(actual));
+        Assert.assertEquals(GSonUtils.normalize("""
+                {
+                  "name": "",
+                  "nodeName": "root",
+                  "__children__": [
+                    {
+                      "name": "n1",
+                      "nodeName": "Name1",
+                      "__children__": [
+                        {
+                          "name": "n11",
+                          "nodeName": "Name2",
+                          "output": {
+                            "total": 1.0
+                          }
+                        },
+                        {
+                          "name": "n22",
+                          "nodeName": "Name2",
+                          "output": {
+                            "total": 2.0
+                          }
+                        }
+                      ],
+                      "output": {
+                        "total": 3.0
+                      }
+                    }
+                  ],
+                  "output": {
+                    "total": 3.0
+                  }
+                }
+                """), GSonUtils.normalize(actual));
     }
 
 
@@ -535,9 +542,11 @@ public class ViewEngineImplTest extends TestCase {
 
         String str = Files.read(new FileInputStream(result.get(GlobFile.file)), StandardCharsets.UTF_8);
 
-        Assert.assertEquals("Name1;Name2;total\n" +
-                "n1;n11;1\n" +
-                "n1;n22;2\n", str);
+        Assert.assertEquals("""
+                Name1;Name2;total
+                n1;n11;1
+                n1;n22;2
+                """, str);
     }
 
     public void testMultilevelWithoutIntermediaryLevel() {
@@ -593,68 +602,70 @@ public class ViewEngineImplTest extends TestCase {
         Glob viewAsGlob = view.toGlob();
         String actual = GSonUtils.encode(viewAsGlob, false);
 
-        Assert.assertEquals(GSonUtils.normalize("{\n" +
-                "  \"name\": \"\",\n" +
-                "  \"nodeName\": \"root\",\n" +
-                "  \"__children__\": [\n" +
-                "    {\n" +
-                "      \"name\": \"n1\",\n" +
-                "      \"nodeName\": \"Name1\",\n" +
-                "      \"__children__\": [\n" +
-                "        {\n" +
-                "          \"name\": \"\",\n" +
-                "          \"nodeName\": \"SUB2.SUB3.NameSub4\",\n" +
-                "          \"__children__\": [\n" +
-                "            {\n" +
-                "              \"name\": \"\",\n" +
-                "              \"nodeName\": \"SUB2.SUB3.NameSub5\"\n" +
-                "            }\n" +
-                "          ]\n" +
-                "        },\n" +
-                "        {\n" +
-                "          \"name\": \"s41\",\n" +
-                "          \"nodeName\": \"SUB2.SUB3.NameSub4\",\n" +
-                "          \"__children__\": [\n" +
-                "            {\n" +
-                "              \"name\": \"s51\",\n" +
-                "              \"nodeName\": \"SUB2.SUB3.NameSub5\"\n" +
-                "            }\n" +
-                "          ]\n" +
-                "        },\n" +
-                "        {\n" +
-                "          \"name\": \"s42\",\n" +
-                "          \"nodeName\": \"SUB2.SUB3.NameSub4\",\n" +
-                "          \"__children__\": [\n" +
-                "            {\n" +
-                "              \"name\": \"s52\",\n" +
-                "              \"nodeName\": \"SUB2.SUB3.NameSub5\"\n" +
-                "            }\n" +
-                "          ]\n" +
-                "        },\n" +
-                "        {\n" +
-                "          \"name\": \"s6\",\n" +
-                "          \"nodeName\": \"SUB2.SUB3.NameSub4\",\n" +
-                "          \"__children__\": [\n" +
-                "            {\n" +
-                "              \"name\": \"\",\n" +
-                "              \"nodeName\": \"SUB2.SUB3.NameSub5\"\n" +
-                "            }\n" +
-                "          ]\n" +
-                "        },\n" +
-                "        {\n" +
-                "          \"name\": \"s7\",\n" +
-                "          \"nodeName\": \"SUB2.SUB3.NameSub4\",\n" +
-                "          \"__children__\": [\n" +
-                "            {\n" +
-                "              \"name\": \"\",\n" +
-                "              \"nodeName\": \"SUB2.SUB3.NameSub5\"\n" +
-                "            }\n" +
-                "          ]\n" +
-                "        }\n" +
-                "      ]\n" +
-                "    }\n" +
-                "  ]\n" +
-                "}\n"), GSonUtils.normalize(actual));
+        Assert.assertEquals(GSonUtils.normalize("""
+                {
+                  "name": "",
+                  "nodeName": "root",
+                  "__children__": [
+                    {
+                      "name": "n1",
+                      "nodeName": "Name1",
+                      "__children__": [
+                        {
+                          "name": "",
+                          "nodeName": "SUB2.SUB3.NameSub4",
+                          "__children__": [
+                            {
+                              "name": "",
+                              "nodeName": "SUB2.SUB3.NameSub5"
+                            }
+                          ]
+                        },
+                        {
+                          "name": "s41",
+                          "nodeName": "SUB2.SUB3.NameSub4",
+                          "__children__": [
+                            {
+                              "name": "s51",
+                              "nodeName": "SUB2.SUB3.NameSub5"
+                            }
+                          ]
+                        },
+                        {
+                          "name": "s42",
+                          "nodeName": "SUB2.SUB3.NameSub4",
+                          "__children__": [
+                            {
+                              "name": "s52",
+                              "nodeName": "SUB2.SUB3.NameSub5"
+                            }
+                          ]
+                        },
+                        {
+                          "name": "s6",
+                          "nodeName": "SUB2.SUB3.NameSub4",
+                          "__children__": [
+                            {
+                              "name": "",
+                              "nodeName": "SUB2.SUB3.NameSub5"
+                            }
+                          ]
+                        },
+                        {
+                          "name": "s7",
+                          "nodeName": "SUB2.SUB3.NameSub4",
+                          "__children__": [
+                            {
+                              "name": "",
+                              "nodeName": "SUB2.SUB3.NameSub5"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+                """), GSonUtils.normalize(actual));
     }
 
     public void testWithConvertStringToDouble() {
@@ -688,22 +699,23 @@ public class ViewEngineImplTest extends TestCase {
         Glob viewAsGlob = view.toGlob();
         String actual = GSonUtils.encode(viewAsGlob, false);
 
-        Assert.assertEquals(GSonUtils.normalize("{\n" +
-                "  \"name\": \"\",\n" +
-                "  \"nodeName\": \"root\",\n" +
-                "  \"__children__\": [\n" +
-                "    {\n" +
-                "      \"name\": \"n1\",\n" +
-                "      \"nodeName\": \"Name1\",\n" +
-                "      \"output\": {\n" +
-                "        \"strValue\": 55.0\n" +
-                "      }\n" +
-                "    }\n" +
-                "  ],\n" +
-                "  \"output\": {\n" +
-                "    \"strValue\": 55.0\n" +
-                "  }\n" +
-                "}"), GSonUtils.normalize(actual));
+        Assert.assertEquals(GSonUtils.normalize("""
+                {
+                  "name": "",
+                  "nodeName": "root",
+                  "__children__": [
+                    {
+                      "name": "n1",
+                      "nodeName": "Name1",
+                      "output": {
+                        "strValue": 55.0
+                      }
+                    }
+                  ],
+                  "output": {
+                    "strValue": 55.0
+                  }
+                }"""), GSonUtils.normalize(actual));
     }
 
     public void testFilter() {
@@ -759,22 +771,23 @@ public class ViewEngineImplTest extends TestCase {
         Glob viewAsGlob = view.toGlob();
         String actual = GSonUtils.encode(viewAsGlob, false);
 
-        Assert.assertEquals(GSonUtils.normalize("{\n" +
-                "  \"name\": \"\",\n" +
-                "  \"nodeName\": \"root\",\n" +
-                "  \"__children__\": [\n" +
-                "    {\n" +
-                "      \"name\": \"n1\",\n" +
-                "      \"nodeName\": \"Name1\",\n" +
-                "      \"output\": {\n" +
-                "        \"total\": 1.0\n" +
-                "      }\n" +
-                "    }\n" +
-                "  ],\n" +
-                "  \"output\": {\n" +
-                "    \"total\": 1.0\n" +
-                "  }\n" +
-                "}"), GSonUtils.normalize(actual));
+        Assert.assertEquals(GSonUtils.normalize("""
+                {
+                  "name": "",
+                  "nodeName": "root",
+                  "__children__": [
+                    {
+                      "name": "n1",
+                      "nodeName": "Name1",
+                      "output": {
+                        "total": 1.0
+                      }
+                    }
+                  ],
+                  "output": {
+                    "total": 1.0
+                  }
+                }"""), GSonUtils.normalize(actual));
     }
 
 
@@ -959,22 +972,23 @@ public class ViewEngineImplTest extends TestCase {
         Glob viewAsGlob = view.toGlob();
         String actual = GSonUtils.encode(viewAsGlob, false);
 
-        Assert.assertEquals(GSonUtils.normalize("{\n" +
-                "  \"name\": \"\",\n" +
-                "  \"nodeName\": \"root\",\n" +
-                "  \"__children__\": [\n" +
-                "    {\n" +
-                "      \"name\": \"n2\",\n" +
-                "      \"nodeName\": \"Name1\",\n" +
-                "      \"output\": {\n" +
-                "        \"total\": 0.0\n" +
-                "      }\n" +
-                "    }\n" +
-                "  ],\n" +
-                "  \"output\": {\n" +
-                "    \"total\": 0.0\n" +
-                "  }\n" +
-                "}"), GSonUtils.normalize(actual));
+        Assert.assertEquals(GSonUtils.normalize("""
+                {
+                  "name": "",
+                  "nodeName": "root",
+                  "__children__": [
+                    {
+                      "name": "n2",
+                      "nodeName": "Name1",
+                      "output": {
+                        "total": 0.0
+                      }
+                    }
+                  ],
+                  "output": {
+                    "total": 0.0
+                  }
+                }"""), GSonUtils.normalize(actual));
     }
 
     public static Glob br(String name, Glob[] breakdowns) {
