@@ -25,7 +25,7 @@ public class DefaultNodeCreator implements NodeCreator, Function<Object, Node> {
         this.field = field;
         this.notifyNode = notifyNode;
         ToStringVisitor visitor = new ToStringVisitor();
-        field.safeVisit(visitor);
+        field.safeAccept(visitor);
         toString = visitor.toString;
         toValue = visitor.toValue;
     }

@@ -479,7 +479,7 @@ public class PathBaseViewImpl implements View {
                 String s = pathFromRoot[i];
                 Field field = currentType.getField(s);
                 ExtractType visitor = new ExtractType(pathFromRoot, i, previousPath, path);
-                currentType = field.safeVisit(visitor).type;
+                currentType = field.safeAccept(visitor).type;
                 i = visitor.index;
                 previousPath = visitor.previousPath;
 //                path.addLast(Pair.makePair(field, previousPath));
