@@ -49,7 +49,7 @@ public class ViewConstraintVisitor implements ConstraintVisitor {
         final Constraint[] constraints = constraint.getConstraints();
         FilterImpl.IsSelected[] filters = new FilterImpl.IsSelected[constraints.length];
         for (int i = 0; i < constraints.length; i++) {
-            filters[i] = constraints[i].visit(new ViewConstraintVisitor(globType)).isSelected;
+            filters[i] = constraints[i].accept(new ViewConstraintVisitor(globType)).isSelected;
         }
         if (filters.length == 2) {
             final FilterImpl.IsSelected filter1 = filters[0];
@@ -65,7 +65,7 @@ public class ViewConstraintVisitor implements ConstraintVisitor {
         final Constraint[] constraints = constraint.getConstraints();
         FilterImpl.IsSelected[] filters = new FilterImpl.IsSelected[constraints.length];
         for (int i = 0; i < constraints.length; i++) {
-            filters[i] = constraints[i].visit(new ViewConstraintVisitor(globType)).isSelected;
+            filters[i] = constraints[i].accept(new ViewConstraintVisitor(globType)).isSelected;
         }
         if (filters.length == 2) {
             final FilterImpl.IsSelected filter1 = filters[0];
