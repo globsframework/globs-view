@@ -1,6 +1,6 @@
 package org.globsframework.view.server;
 
-import org.globsframework.export.ExportBySize;
+import org.globsframework.csv.ExportBySize;
 import org.globsframework.metamodel.fields.Field;
 import org.globsframework.metamodel.GlobType;
 import org.globsframework.metamodel.GlobTypeBuilder;

@@ -7,10 +7,10 @@ import org.globsframework.metamodel.fields.DoubleField;
 import org.globsframework.metamodel.fields.IntegerField;
 import org.globsframework.metamodel.fields.LongField;
 import org.globsframework.model.globaccessor.get.GlobGetAccessor;
-import org.globsframework.sqlstreams.constraints.Constraint;
-import org.globsframework.sqlstreams.constraints.ConstraintVisitor;
-import org.globsframework.sqlstreams.constraints.OperandVisitor;
-import org.globsframework.sqlstreams.constraints.impl.*;
+import org.globsframework.sql.constraints.Constraint;
+import org.globsframework.sql.constraints.ConstraintVisitor;
+import org.globsframework.sql.constraints.OperandVisitor;
+import org.globsframework.sql.constraints.impl.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
