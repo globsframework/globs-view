@@ -5,7 +5,7 @@ import org.apache.http.ExceptionLogger;
 import org.apache.http.impl.nio.bootstrap.HttpServer;
 import org.apache.http.impl.nio.bootstrap.ServerBootstrap;
 import org.apache.http.impl.nio.reactor.IOReactorConfig;
-import org.globsframework.csv.ExportBySize;
+import org.globsframework.export.ExportBySize;
 import org.globsframework.http.GlobFile;
 import org.globsframework.http.HttpServerRegister;
 import org.globsframework.http.HttpTreatment;
@@ -215,7 +215,7 @@ public class HttpViewServer {
         }
     }
 
-    private class StdErrorExceptionLogger implements ExceptionLogger {
+    private class  StdErrorExceptionLogger implements ExceptionLogger {
         private Logger logger;
 
         public StdErrorExceptionLogger(Logger logger) {
