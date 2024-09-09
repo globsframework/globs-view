@@ -67,7 +67,7 @@ public class HttpViewServer {
         httpServerRegister.registerOpenApi();
         httpServerRegister.register("/sources", null)
                 .get(null, new HttpTreatment() {
-                    public CompletableFuture<Glob> consume(Glob body, Glob url, Glob queryParameters) {
+                    public CompletableFuture<Glob> consume(Glob body, Glob pathParameters, Glob queryParameters) {
                         return CompletableFuture.completedFuture(SourcesType.TYPE.instantiate().set(SourcesType.sources,
                                 dataAccessor.getSources().toArray(Glob[]::new)
                         ));
@@ -76,7 +76,7 @@ public class HttpViewServer {
 
         httpServerRegister.register("/dictionary", null)
                 .get(ParamType.TYPE, new HttpTreatment() {
-                    public CompletableFuture<Glob> consume(Glob body, Glob url, Glob queryParameters) throws Exception {
+                    public CompletableFuture<Glob> consume(Glob body, Glob pathParameters, Glob queryParameters) throws Exception {
                         String source = queryParameters.getNotNull(ParamType.source);
                         Pair<Long, Source> longGlobPair = sourceCache.get(source);
                         Source src;
@@ -95,7 +95,7 @@ public class HttpViewServer {
         httpServerRegister.register("/computeView", null)
 //                .setGzipCompress()
                 .post(ViewRequestType.TYPE, ParamType.TYPE, new HttpTreatment() {
-                    public CompletableFuture<Glob> consume(Glob viewRequest, Glob url, Glob queryParameters) throws Exception {
+                    public CompletableFuture<Glob> consume(Glob viewRequest, Glob pathParameters, Glob queryParameters) throws Exception {
                         String source = queryParameters.getNotNull(ParamType.source);
                         ViewEngine viewEngine = new ViewEngineImpl();
                         Pair<Long, Source> longGlobPair = sourceCache.get(source);
