@@ -1,7 +1,7 @@
 package org.globsframework.view;
 
-import org.globsframework.model.Glob;
-import org.globsframework.model.MutableGlob;
+import org.globsframework.core.model.Glob;
+import org.globsframework.core.model.MutableGlob;
 import org.globsframework.view.filter.Rewrite;
 import org.globsframework.view.filter.model.FilterType;
 import org.globsframework.view.filter.model.OrFilterType;

@@ -1,6 +1,6 @@
 package org.globsframework.view.server;
 
-import org.globsframework.model.Glob;
+import org.globsframework.core.model.Glob;
 
 import java.util.List;
 

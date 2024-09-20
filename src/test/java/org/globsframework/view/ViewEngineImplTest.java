@@ -2,19 +2,19 @@ package org.globsframework.view;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
+import org.globsframework.core.metamodel.GlobType;
+import org.globsframework.core.metamodel.GlobTypeLoaderFactory;
+import org.globsframework.core.metamodel.annotations.Target;
+import org.globsframework.core.metamodel.fields.DoubleField;
+import org.globsframework.core.metamodel.fields.GlobArrayField;
+import org.globsframework.core.metamodel.fields.GlobField;
+import org.globsframework.core.metamodel.fields.StringField;
+import org.globsframework.core.model.Glob;
+import org.globsframework.core.model.MutableGlob;
+import org.globsframework.core.utils.Files;
+import org.globsframework.core.utils.exceptions.ItemNotFound;
 import org.globsframework.http.GlobFile;
 import org.globsframework.json.GSonUtils;
-import org.globsframework.metamodel.GlobType;
-import org.globsframework.metamodel.GlobTypeLoaderFactory;
-import org.globsframework.metamodel.annotations.Target;
-import org.globsframework.metamodel.fields.DoubleField;
-import org.globsframework.metamodel.fields.GlobArrayField;
-import org.globsframework.metamodel.fields.GlobField;
-import org.globsframework.metamodel.fields.StringField;
-import org.globsframework.model.Glob;
-import org.globsframework.model.MutableGlob;
-import org.globsframework.utils.Files;
-import org.globsframework.utils.exceptions.ItemNotFound;
 import org.globsframework.view.filter.Filter;
 import org.globsframework.view.filter.model.*;
 import org.globsframework.view.model.*;
@@ -676,11 +676,11 @@ public class ViewEngineImplTest extends TestCase {
         MutableGlob viewRequest = ViewRequestType.TYPE.instantiate();
         Glob[] breakdowns = dictionary.get(DictionaryType.breakdowns);
         viewRequest.set(ViewRequestType.breakdowns, new Glob[]{
-                br("Name1", breakdowns)
-        })
+                        br("Name1", breakdowns)
+                })
                 .set(ViewRequestType.output, new Glob[]{
                         ViewOutput.TYPE.instantiate().set(ViewOutput.name, "strValue")
-                        .set(ViewOutput.uniqueName, br("strValue", breakdowns).get(ViewBreakdown.uniqueName))
+                                .set(ViewOutput.uniqueName, br("strValue", breakdowns).get(ViewBreakdown.uniqueName))
                 });
         ViewBuilder viewBuilder = viewEngine.buildView(dictionary, viewRequest);
 
@@ -734,8 +734,8 @@ public class ViewEngineImplTest extends TestCase {
         });
 
         viewRequest.set(ViewRequestType.filter, FilterType.TYPE.instantiate()
-        .set(FilterType.filter,
-                AndFilterType.TYPE.instantiate()
+                .set(FilterType.filter,
+                        AndFilterType.TYPE.instantiate()
                                 .set(AndFilterType.filters, new Glob[]{
                                         EqualType.TYPE.instantiate()
                                                 .set(EqualType.uniqueName, br("Name2", breakdowns).get(ViewBreakdown.uniqueName))
@@ -745,7 +745,7 @@ public class ViewEngineImplTest extends TestCase {
                                                         br("Name1", breakdowns).get(ViewBreakdown.uniqueName))
                                                 .set(GreaterOrEqualType.value, "a")
                                 })
-        ));
+                ));
 
         System.out.println(GSonUtils.encode(viewRequest, true));
 
@@ -896,7 +896,6 @@ public class ViewEngineImplTest extends TestCase {
             GlobTypeLoaderFactory.create(IndexViewType1.class).load();
         }
     }
-
 
 
     public void testFilterOnArrayOfGlob() {

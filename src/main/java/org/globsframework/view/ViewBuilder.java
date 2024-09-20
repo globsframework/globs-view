@@ -1,7 +1,6 @@
 package org.globsframework.view;
 
-import org.globsframework.metamodel.GlobType;
-import org.globsframework.model.Glob;
+import org.globsframework.core.metamodel.GlobType;
 
 public interface ViewBuilder {
 

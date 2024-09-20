@@ -1,11 +1,11 @@
 package org.globsframework.view;
 
-import org.globsframework.metamodel.fields.Field;
-import org.globsframework.metamodel.GlobType;
-import org.globsframework.metamodel.fields.FieldVisitor;
-import org.globsframework.metamodel.fields.IntegerArrayField;
-import org.globsframework.metamodel.fields.StringArrayField;
-import org.globsframework.model.Glob;
+import org.globsframework.core.metamodel.GlobType;
+import org.globsframework.core.metamodel.fields.Field;
+import org.globsframework.core.metamodel.fields.FieldVisitor;
+import org.globsframework.core.metamodel.fields.IntegerArrayField;
+import org.globsframework.core.metamodel.fields.StringArrayField;
+import org.globsframework.core.model.Glob;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -43,7 +43,7 @@ public class DefaultNodeCreator implements NodeCreator, Function<Object, Node> {
         String toString(Object o);
     }
 
-    interface ToValue{
+    interface ToValue {
         Object toValue(Object v);
     }
 

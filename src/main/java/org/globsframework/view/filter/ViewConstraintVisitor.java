@@ -1,12 +1,8 @@
 package org.globsframework.view.filter;
 
-import org.globsframework.metamodel.fields.Field;
-import org.globsframework.metamodel.GlobType;
-import org.globsframework.metamodel.fields.DateTimeField;
-import org.globsframework.metamodel.fields.DoubleField;
-import org.globsframework.metamodel.fields.IntegerField;
-import org.globsframework.metamodel.fields.LongField;
-import org.globsframework.model.globaccessor.get.GlobGetAccessor;
+import org.globsframework.core.metamodel.GlobType;
+import org.globsframework.core.metamodel.fields.*;
+import org.globsframework.core.model.globaccessor.get.GlobGetAccessor;
 import org.globsframework.sql.constraints.Constraint;
 import org.globsframework.sql.constraints.ConstraintVisitor;
 import org.globsframework.sql.constraints.OperandVisitor;
@@ -55,8 +51,7 @@ public class ViewConstraintVisitor implements ConstraintVisitor {
             final FilterImpl.IsSelected filter1 = filters[0];
             final FilterImpl.IsSelected filter2 = filters[1];
             isSelected = data -> filter1.isSelected(data) && filter2.isSelected(data);
-        }
-        else {
+        } else {
             isSelected = data -> Arrays.stream(filters).allMatch(f -> f.isSelected(data));
         }
     }
@@ -71,8 +66,7 @@ public class ViewConstraintVisitor implements ConstraintVisitor {
             final FilterImpl.IsSelected filter1 = filters[0];
             final FilterImpl.IsSelected filter2 = filters[1];
             isSelected = data -> filter1.isSelected(data) || filter2.isSelected(data);
-        }
-        else {
+        } else {
             isSelected = data -> Arrays.stream(filters).anyMatch(f -> f.isSelected(data));
         }
     }

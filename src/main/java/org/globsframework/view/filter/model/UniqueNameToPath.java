@@ -1,6 +1,6 @@
 package org.globsframework.view.filter.model;
 
-import org.globsframework.utils.exceptions.ItemNotFound;
+import org.globsframework.core.utils.exceptions.ItemNotFound;
 
 import java.util.Arrays;
 

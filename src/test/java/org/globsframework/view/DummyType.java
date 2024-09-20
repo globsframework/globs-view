@@ -1,15 +1,15 @@
 package org.globsframework.view;
 
 import com.google.gson.Gson;
-import org.globsframework.metamodel.GlobTypeResolver;
+import org.globsframework.core.metamodel.GlobType;
+import org.globsframework.core.metamodel.GlobTypeLoaderFactory;
+import org.globsframework.core.metamodel.GlobTypeResolver;
+import org.globsframework.core.metamodel.annotations.Target;
+import org.globsframework.core.metamodel.fields.GlobArrayField;
+import org.globsframework.core.metamodel.fields.StringField;
+import org.globsframework.core.model.Glob;
+import org.globsframework.core.model.MutableGlob;
 import org.globsframework.json.GlobsGson;
-import org.globsframework.metamodel.GlobType;
-import org.globsframework.metamodel.GlobTypeLoaderFactory;
-import org.globsframework.metamodel.annotations.Target;
-import org.globsframework.metamodel.fields.GlobArrayField;
-import org.globsframework.metamodel.fields.StringField;
-import org.globsframework.model.Glob;
-import org.globsframework.model.MutableGlob;
 
 public class DummyType {
     public static GlobType TYPE;
@@ -26,7 +26,7 @@ public class DummyType {
     }
 
     // pour générer un premier sample.
-    
+
     public static void main(String[] args) {
         Gson gson = GlobsGson.create(GlobTypeResolver.ERROR);
         System.out.println("DummyType.main " + gson.toJson(new GlobType[]{DummyType.TYPE, DummySubType.TYPE}));

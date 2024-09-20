@@ -2,13 +2,13 @@ package org.globsframework.view;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
+import org.globsframework.core.metamodel.GlobType;
+import org.globsframework.core.metamodel.GlobTypeLoaderFactory;
+import org.globsframework.core.metamodel.fields.StringArrayField;
+import org.globsframework.core.metamodel.fields.StringField;
+import org.globsframework.core.model.Glob;
+import org.globsframework.core.model.MutableGlob;
 import org.globsframework.json.GSonUtils;
-import org.globsframework.metamodel.GlobType;
-import org.globsframework.metamodel.GlobTypeLoaderFactory;
-import org.globsframework.metamodel.fields.StringArrayField;
-import org.globsframework.metamodel.fields.StringField;
-import org.globsframework.model.Glob;
-import org.globsframework.model.MutableGlob;
 import org.globsframework.view.model.DictionaryType;
 import org.globsframework.view.model.ViewRequestType;
 

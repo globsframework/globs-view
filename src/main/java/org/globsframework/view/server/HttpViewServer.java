@@ -5,21 +5,21 @@ import org.apache.http.ExceptionLogger;
 import org.apache.http.impl.nio.bootstrap.HttpServer;
 import org.apache.http.impl.nio.bootstrap.ServerBootstrap;
 import org.apache.http.impl.nio.reactor.IOReactorConfig;
-import org.globsframework.export.ExportBySize;
+import org.globsframework.core.metamodel.GlobType;
+import org.globsframework.core.metamodel.GlobTypeLoaderFactory;
+import org.globsframework.core.metamodel.annotations.Comment_;
+import org.globsframework.core.metamodel.annotations.Target;
+import org.globsframework.core.metamodel.fields.BooleanField;
+import org.globsframework.core.metamodel.fields.GlobArrayField;
+import org.globsframework.core.metamodel.fields.IntegerField;
+import org.globsframework.core.metamodel.fields.StringField;
+import org.globsframework.core.model.Glob;
+import org.globsframework.core.utils.Strings;
+import org.globsframework.core.utils.collections.Pair;
+import org.globsframework.csv.ExportBySize;
 import org.globsframework.http.GlobFile;
 import org.globsframework.http.HttpServerRegister;
 import org.globsframework.http.HttpTreatment;
-import org.globsframework.metamodel.GlobType;
-import org.globsframework.metamodel.GlobTypeLoaderFactory;
-import org.globsframework.metamodel.annotations.Comment_;
-import org.globsframework.metamodel.annotations.Target;
-import org.globsframework.metamodel.fields.BooleanField;
-import org.globsframework.metamodel.fields.GlobArrayField;
-import org.globsframework.metamodel.fields.IntegerField;
-import org.globsframework.metamodel.fields.StringField;
-import org.globsframework.model.Glob;
-import org.globsframework.utils.Strings;
-import org.globsframework.utils.collections.Pair;
 import org.globsframework.view.*;
 import org.globsframework.view.filter.Filter;
 import org.globsframework.view.model.ViewRequestType;
@@ -116,8 +116,7 @@ public class HttpViewServer {
                         if (index != null) {
                             final Source.IndexFieldRemap indexFieldRemap = dataConsumer.getIndexRemap();
                             filter = view.getIndexFilter(index, indexFieldRemap);
-                        }
-                        else {
+                        } else {
                             filter = null;
                         }
 
@@ -215,7 +214,7 @@ public class HttpViewServer {
         }
     }
 
-    private class  StdErrorExceptionLogger implements ExceptionLogger {
+    private class StdErrorExceptionLogger implements ExceptionLogger {
         private Logger logger;
 
         public StdErrorExceptionLogger(Logger logger) {

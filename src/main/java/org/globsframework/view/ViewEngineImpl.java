@@ -1,10 +1,10 @@
 package org.globsframework.view;
 
-import org.globsframework.metamodel.GlobType;
-import org.globsframework.metamodel.fields.*;
-import org.globsframework.metamodel.type.DataType;
-import org.globsframework.model.Glob;
-import org.globsframework.model.MutableGlob;
+import org.globsframework.core.metamodel.GlobType;
+import org.globsframework.core.metamodel.fields.*;
+import org.globsframework.core.metamodel.type.DataType;
+import org.globsframework.core.model.Glob;
+import org.globsframework.core.model.MutableGlob;
 import org.globsframework.view.model.DictionaryType;
 import org.globsframework.view.model.IsSensibleData;
 import org.globsframework.view.model.SimpleBreakdown;

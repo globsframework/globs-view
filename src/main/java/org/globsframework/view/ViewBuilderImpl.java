@@ -1,11 +1,14 @@
 package org.globsframework.view;
 
-import org.globsframework.metamodel.GlobType;
-import org.globsframework.metamodel.GlobTypeBuilder;
-import org.globsframework.metamodel.impl.DefaultGlobTypeBuilder;
-import org.globsframework.metamodel.type.DataType;
-import org.globsframework.model.Glob;
-import org.globsframework.view.model.*;
+import org.globsframework.core.metamodel.GlobType;
+import org.globsframework.core.metamodel.GlobTypeBuilder;
+import org.globsframework.core.metamodel.impl.DefaultGlobTypeBuilder;
+import org.globsframework.core.metamodel.type.DataType;
+import org.globsframework.core.model.Glob;
+import org.globsframework.view.model.DictionaryType;
+import org.globsframework.view.model.SimpleBreakdown;
+import org.globsframework.view.model.ViewOutput;
+import org.globsframework.view.model.ViewRequestType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

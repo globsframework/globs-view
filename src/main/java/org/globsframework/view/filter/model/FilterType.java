@@ -1,11 +1,11 @@
 package org.globsframework.view.filter.model;
 
-import org.globsframework.metamodel.GlobType;
-import org.globsframework.metamodel.GlobTypeLoaderFactory;
-import org.globsframework.metamodel.annotations.Targets;
-import org.globsframework.metamodel.fields.GlobUnionField;
-import org.globsframework.model.Glob;
-import org.globsframework.utils.exceptions.ItemNotFound;
+import org.globsframework.core.metamodel.GlobType;
+import org.globsframework.core.metamodel.GlobTypeLoaderFactory;
+import org.globsframework.core.metamodel.annotations.Targets;
+import org.globsframework.core.metamodel.fields.GlobUnionField;
+import org.globsframework.core.model.Glob;
+import org.globsframework.core.utils.exceptions.ItemNotFound;
 import org.globsframework.view.filter.FilterBuilder;
 import org.globsframework.view.filter.FilterImpl;
 import org.globsframework.view.filter.Rewrite;

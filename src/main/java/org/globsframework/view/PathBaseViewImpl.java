@@ -1,15 +1,14 @@
 package org.globsframework.view;
 
+import org.globsframework.core.metamodel.GlobType;
+import org.globsframework.core.metamodel.fields.*;
+import org.globsframework.core.model.Glob;
+import org.globsframework.core.model.MutableGlob;
+import org.globsframework.core.utils.Ref;
+import org.globsframework.core.utils.Strings;
+import org.globsframework.core.utils.collections.Pair;
+import org.globsframework.core.utils.container.hash.HashContainer;
 import org.globsframework.json.GSonUtils;
-import org.globsframework.metamodel.fields.Field;
-import org.globsframework.metamodel.GlobType;
-import org.globsframework.metamodel.fields.*;
-import org.globsframework.model.Glob;
-import org.globsframework.model.MutableGlob;
-import org.globsframework.utils.Ref;
-import org.globsframework.utils.Strings;
-import org.globsframework.utils.collections.Pair;
-import org.globsframework.utils.container.hash.HashContainer;
 import org.globsframework.view.filter.Filter;
 import org.globsframework.view.filter.FilterImpl;
 import org.globsframework.view.filter.Rewrite;
@@ -148,8 +147,7 @@ public class PathBaseViewImpl implements View {
             Glob rewriteFilter = FilterType.TYPE.getRegistered(Rewrite.class).rewriteOrInAnd(globFilter);
             if (rewriteFilter != null) {
                 filter = FilterImpl.create(index, rewriteFilter, indexFieldRemap::translate, false);
-            }
-            else {
+            } else {
                 filter = null;
             }
         } else {
@@ -397,6 +395,7 @@ public class PathBaseViewImpl implements View {
             fillOutput = new OnOutputScan() {
                 private final LongField outField = field.asLongField();
                 private final LongField src = sourceField.asLongField();
+
                 public void scan(MutableGlob output, Glob data) {
                     output.set(outField, data.get(src, 0) + output.get(outField, 0));
 
@@ -416,7 +415,7 @@ public class PathBaseViewImpl implements View {
                     try {
                         v = Double.parseDouble(value);
                     } catch (NumberFormatException e) {
-                        LOGGER.error("Fail to parse " + value +" on " + GSonUtils.encode(data, true), e);
+                        LOGGER.error("Fail to parse " + value + " on " + GSonUtils.encode(data, true), e);
                     }
                     output.set(outField, v + output.get(outField, 0.));
                 }
@@ -510,7 +509,6 @@ public class PathBaseViewImpl implements View {
             return new PathElement(typeName);
         }
     }
-
 
 
     interface FillDirectOutput {
@@ -629,7 +627,6 @@ public class PathBaseViewImpl implements View {
     }
 
 
-
     private static class ExtractType extends FieldVisitor.AbstractWithErrorVisitor {
         private final String[] pathFromRoot;
         private int index;
@@ -685,6 +682,7 @@ public class PathBaseViewImpl implements View {
             this.sourceField = sourceField;
             this.outputField = outputField;
         }
+
         public void fill(MutableGlob output, Glob[] stack) {
             String value = stack[stackIndex].get(sourceField);
             if (Strings.isNullOrEmpty(value)) {
@@ -979,6 +977,7 @@ public class PathBaseViewImpl implements View {
             stack[stackLevel] = null;
         }
     }
+
     static class FieldUnionOnField implements OnField {
         final OnField next;
         final GlobUnionField field;

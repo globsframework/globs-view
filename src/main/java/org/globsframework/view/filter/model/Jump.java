@@ -1,8 +1,7 @@
 package org.globsframework.view.filter.model;
 
-import org.globsframework.model.Glob;
+import org.globsframework.core.model.Glob;
 
-import java.util.Optional;
 import java.util.stream.Stream;
 
 interface Jump {

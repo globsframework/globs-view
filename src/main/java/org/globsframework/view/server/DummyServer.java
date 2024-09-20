@@ -2,18 +2,17 @@ package org.globsframework.view.server;
 
 import com.google.gson.Gson;
 import org.globsframework.commandline.ParseCommandLine;
-import org.globsframework.metamodel.GlobTypeResolver;
+import org.globsframework.core.metamodel.GlobModel;
+import org.globsframework.core.metamodel.GlobType;
+import org.globsframework.core.metamodel.GlobTypeLoaderFactory;
+import org.globsframework.core.metamodel.GlobTypeResolver;
+import org.globsframework.core.metamodel.annotations.AllAnnotations;
+import org.globsframework.core.metamodel.fields.StringField;
+import org.globsframework.core.metamodel.impl.DefaultGlobModel;
+import org.globsframework.core.model.Glob;
 import org.globsframework.json.GlobTypeSet;
 import org.globsframework.json.GlobsGson;
-import org.globsframework.metamodel.GlobModel;
-import org.globsframework.metamodel.GlobType;
-import org.globsframework.metamodel.GlobTypeLoaderFactory;
-import org.globsframework.metamodel.annotations.AllAnnotations;
-import org.globsframework.metamodel.fields.StringField;
-import org.globsframework.metamodel.impl.DefaultGlobModel;
-import org.globsframework.model.Glob;
 import org.globsframework.view.View;
-import org.globsframework.view.filter.Filter;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -71,8 +70,7 @@ public class DummyServer implements DataAccessor {
         Reader reader;
         if (fileName == null) {
             reader = new InputStreamReader(getClass().getResourceAsStream("/SimpleDummyType.json"), StandardCharsets.UTF_8);
-        }
-        else {
+        } else {
             reader = new FileReader(fileName);
         }
         GlobTypeSet globTypes = gson.fromJson(reader, GlobTypeSet.class);
@@ -85,7 +83,7 @@ public class DummyServer implements DataAccessor {
         Reader dataReader;
         if (dataFileName == null) {
             dataReader = new InputStreamReader(getClass().getResourceAsStream("/SimpleDummyData.json"), StandardCharsets.UTF_8);
-        }else {
+        } else {
             dataReader = new FileReader(dataFileName);
         }
         data = gsonData.fromJson(dataReader, Glob[].class);

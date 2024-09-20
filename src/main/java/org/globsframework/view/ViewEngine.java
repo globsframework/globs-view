@@ -1,7 +1,7 @@
 package org.globsframework.view;
 
-import org.globsframework.metamodel.GlobType;
-import org.globsframework.model.Glob;
+import org.globsframework.core.metamodel.GlobType;
+import org.globsframework.core.model.Glob;
 
 public interface ViewEngine {
     int DEFAULT_MAX_NODE = Integer.getInteger("globs.view.max.node", 500000);

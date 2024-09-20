@@ -1,7 +1,7 @@
 package org.globsframework.view.server;
 
-import org.globsframework.metamodel.GlobType;
-import org.globsframework.model.Glob;
+import org.globsframework.core.metamodel.GlobType;
+import org.globsframework.core.model.Glob;
 import org.globsframework.view.View;
 import org.globsframework.view.filter.Filter;
 import org.globsframework.view.filter.model.UniqueNameToPath;
@@ -18,11 +18,11 @@ public interface Source {
 
     interface DataConsumer {
 
-        default IndexFieldRemap getIndexRemap(){
+        default IndexFieldRemap getIndexRemap() {
             return null;
         }
 
-        default GlobType getIndex(){
+        default GlobType getIndex() {
             return null;
         }
 

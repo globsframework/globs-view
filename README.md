@@ -2,6 +2,7 @@ With this library, is is possible to query Globs using breakdown and output.
 It is used to expose an endpoint to output a dictionnary and a view (hierarchical tree or flat like a csv)
 
 Programatiacly:
+
 ```
         ViewEngine viewEngine = new ViewEngineImpl();
 
@@ -24,6 +25,7 @@ Programatiacly:
 ```
 
 Given a list a ViewType1 glob it will produce
+
 ```
                         {
                           "name": "",

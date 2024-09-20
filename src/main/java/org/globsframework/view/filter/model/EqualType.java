@@ -1,10 +1,9 @@
 package org.globsframework.view.filter.model;
 
-import org.globsframework.metamodel.fields.Field;
-import org.globsframework.metamodel.GlobType;
-import org.globsframework.metamodel.GlobTypeLoaderFactory;
-import org.globsframework.metamodel.fields.*;
-import org.globsframework.model.Glob;
+import org.globsframework.core.metamodel.GlobType;
+import org.globsframework.core.metamodel.GlobTypeLoaderFactory;
+import org.globsframework.core.metamodel.fields.*;
+import org.globsframework.core.model.Glob;
 import org.globsframework.view.DateUtils;
 import org.globsframework.view.filter.FilterBuilder;
 import org.globsframework.view.filter.FilterImpl;
@@ -44,14 +43,14 @@ public class EqualType {
                         if (field instanceof DateTimeField) {
                             ZonedDateTime compareTo = DateUtils.parse(filter.get(value));
                             return glob -> jump.from(glob)
-                                    .map((DateTimeField)field)
+                                    .map((DateTimeField) field)
                                     .filter(Objects::nonNull)
                                     .anyMatch(compareTo::isEqual);
                         }
                         if (field instanceof DateField) {
                             LocalDate compareTo = LocalDate.parse(filter.get(value));
                             return glob -> jump.from(glob)
-                                    .map((DateField)field)
+                                    .map((DateField) field)
                                     .filter(Objects::nonNull)
                                     .anyMatch(compareTo::isEqual);
                         }

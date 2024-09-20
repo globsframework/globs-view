@@ -1,8 +1,7 @@
 package org.globsframework.view;
 
-import org.globsframework.model.MutableGlob;
-import org.globsframework.utils.container.Container;
-import org.globsframework.utils.container.hash.HashContainer;
+import org.globsframework.core.model.MutableGlob;
+import org.globsframework.core.utils.container.hash.HashContainer;
 
 import java.util.function.Function;
 
