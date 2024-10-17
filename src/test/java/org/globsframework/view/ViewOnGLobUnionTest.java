@@ -49,7 +49,7 @@ public class ViewOnGLobUnionTest extends TestCase {
         Glob viewAsGlob = view.toGlob();
         String actual = GSonUtils.encode(viewAsGlob, false);
 
-        Assert.assertEquals(GSonUtils.normalize("{\"name\":\"\",\"nodeName\":\"root\",\"__children__\":[{\"name\":\"n1\",\"nodeName\":\"key\",\"__children__\":[{\"name\":\"data1\",\"nodeName\":\"data.object1.keyObj1\"}]},{\"name\":\"n2\",\"nodeName\":\"key\"}]}"), GSonUtils.normalize(actual));
+        Assert.assertEquals(GSonUtils.normalize("{\"name\":\"\",\"nodeName\":\"root\",\"__children__\":[{\"name\":\"n1\",\"nodeName\":\"key\",\"__children__\":[{\"name\":\"data1\",\"nodeName\":\"data.Object1.keyObj1\"}]},{\"name\":\"n2\",\"nodeName\":\"key\"}]}"), GSonUtils.normalize(actual));
     }
 
     public void testWithOutput() {
@@ -95,7 +95,7 @@ public class ViewOnGLobUnionTest extends TestCase {
                       "__children__": [
                         {
                           "name": "data1",
-                          "nodeName": "data.object1.keyObj1",
+                          "nodeName": "data.Object1.keyObj1",
                           "output": {
                             "quantity": 10
                           }
@@ -111,7 +111,7 @@ public class ViewOnGLobUnionTest extends TestCase {
                       "__children__": [
                         {
                           "name": "data2",
-                          "nodeName": "data.object1.keyObj1",
+                          "nodeName": "data.Object1.keyObj1",
                           "output": {
                             "quantity": 2
                           }

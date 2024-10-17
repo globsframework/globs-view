@@ -6,7 +6,7 @@ import org.globsframework.core.metamodel.GlobModel;
 import org.globsframework.core.metamodel.GlobType;
 import org.globsframework.core.metamodel.GlobTypeLoaderFactory;
 import org.globsframework.core.metamodel.GlobTypeResolver;
-import org.globsframework.core.metamodel.annotations.AllAnnotations;
+import org.globsframework.core.metamodel.annotations.AllCoreAnnotations;
 import org.globsframework.core.metamodel.fields.StringField;
 import org.globsframework.core.metamodel.impl.DefaultGlobModel;
 import org.globsframework.core.model.Glob;
@@ -65,7 +65,7 @@ public class DummyServer implements DataAccessor {
 
     public DummyServer(Glob httpOption, Glob dummyServerOptions) throws InterruptedException, IOException {
         httpViewServer = new HttpViewServer(httpOption, this);
-        Gson gson = GlobsGson.create(GlobTypeResolver.chain(AllAnnotations.MODEL::getType));
+        Gson gson = GlobsGson.create(GlobTypeResolver.chain(AllCoreAnnotations.MODEL::getType));
         String fileName = dummyServerOptions.get(Options.typeFileName);
         Reader reader;
         if (fileName == null) {
@@ -78,7 +78,7 @@ public class DummyServer implements DataAccessor {
 
         GlobModel globModel = new DefaultGlobModel(globTypes.globType);
 
-        Gson gsonData = GlobsGson.create(GlobTypeResolver.chain(AllAnnotations.MODEL::findType, globModel::findType));
+        Gson gsonData = GlobsGson.create(GlobTypeResolver.chain(AllCoreAnnotations.MODEL::findType, globModel::findType));
         String dataFileName = dummyServerOptions.get(Options.dataFileName);
         Reader dataReader;
         if (dataFileName == null) {
