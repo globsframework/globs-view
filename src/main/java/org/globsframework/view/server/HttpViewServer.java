@@ -139,9 +139,9 @@ public class HttpViewServer {
                     }
                 });
 
-        Pair<HttpServer, Integer> httpServerIntegerPair = httpServerRegister.startAndWaitForStartup(serverBootstrap);
-        httpServer = httpServerIntegerPair.getFirst();
-        port = httpServerIntegerPair.getSecond();
+        HttpServerRegister.HttpStartup httpServerIntegerPair = httpServerRegister.startAndWaitForStartup(serverBootstrap);
+        httpServer = httpServerIntegerPair.httpServer();
+        port = httpServerIntegerPair.listenPort();
         System.out.println("PORT: " + port);
         LOGGER.info("http port : " + port);
     }
