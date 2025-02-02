@@ -1,10 +1,9 @@
 package org.globsframework.view.server;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.http.ExceptionLogger;
-import org.apache.http.impl.nio.bootstrap.HttpServer;
-import org.apache.http.impl.nio.bootstrap.ServerBootstrap;
-import org.apache.http.impl.nio.reactor.IOReactorConfig;
+import org.apache.hc.core5.function.Callback;
+import org.apache.hc.core5.http.impl.bootstrap.AsyncServerBootstrap;
+import org.apache.hc.core5.http.impl.bootstrap.HttpAsyncServer;
 import org.globsframework.core.metamodel.GlobType;
 import org.globsframework.core.metamodel.GlobTypeLoaderFactory;
 import org.globsframework.core.metamodel.annotations.Comment_;
@@ -28,10 +27,12 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -41,7 +42,6 @@ public class HttpViewServer {
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpViewServer.class);
     private final DataAccessor dataAccessor;
     private final int port;
-    private final org.apache.http.impl.nio.bootstrap.HttpServer httpServer;
     private final Map<String, Pair<Long, Source>> sourceCache = new ConcurrentHashMap<>();
 
     public HttpViewServer(Glob options, DataAccessor dataAccessor) throws InterruptedException, IOException {
@@ -51,17 +51,8 @@ public class HttpViewServer {
     public HttpViewServer(String localAddress, int httpPort, DataAccessor dataAccessor) throws InterruptedException, IOException {
         this.dataAccessor = dataAccessor;
 
-        final IOReactorConfig config = IOReactorConfig.custom()
-                .setSoReuseAddress(true)
-                .build();
-        ServerBootstrap bootstrap = ServerBootstrap.bootstrap();
-        if (Strings.isNotEmpty(localAddress)) {
-            bootstrap.setLocalAddress(InetAddress.getByName(localAddress));
-        }
-        ServerBootstrap serverBootstrap = bootstrap
-                .setListenerPort(httpPort)
-                .setIOReactorConfig(config)
-                .setExceptionLogger(new StdErrorExceptionLogger(LOGGER));
+        AsyncServerBootstrap bootstrap = AsyncServerBootstrap.bootstrap()
+                .setExceptionCallback(new StdErrorExceptionLogger(LOGGER));
 
         HttpServerRegister httpServerRegister = new HttpServerRegister("viewServer/1.1");
         httpServerRegister.registerOpenApi();
@@ -139,9 +130,10 @@ public class HttpViewServer {
                     }
                 });
 
-        HttpServerRegister.HttpStartup httpServerIntegerPair = httpServerRegister.startAndWaitForStartup(serverBootstrap);
-        httpServer = httpServerIntegerPair.httpServer();
-        port = httpServerIntegerPair.listenPort();
+        HttpServerRegister.Server httpAsyncServer = httpServerRegister.startAndWaitForStartup(bootstrap, httpPort);
+
+        port = httpAsyncServer.getPort();
+
         System.out.println("PORT: " + port);
         LOGGER.info("http port : " + port);
     }
@@ -166,13 +158,13 @@ public class HttpViewServer {
         return port;
     }
 
-    public void end() {
-        httpServer.shutdown(1, TimeUnit.SECONDS);
-    }
-
-    public void waitEnd() throws InterruptedException {
-        httpServer.awaitTermination(10, TimeUnit.SECONDS);
-    }
+//    public void end() {
+//        httpServer.shutdown(1, TimeUnit.SECONDS);
+//    }
+//
+//    public void waitEnd() throws InterruptedException {
+//        httpServer.awaitTermination(10, TimeUnit.SECONDS);
+//    }
 
     static public class ParamType {
         public static GlobType TYPE;
@@ -214,16 +206,15 @@ public class HttpViewServer {
         }
     }
 
-    private class StdErrorExceptionLogger implements ExceptionLogger {
+    private class StdErrorExceptionLogger implements Callback<Exception> {
         private Logger logger;
 
         public StdErrorExceptionLogger(Logger logger) {
             this.logger = logger;
         }
 
-        public void log(Exception ex) {
+        public void execute(Exception ex) {
             logger.error("on http layer", ex);
-
         }
     }
 }
