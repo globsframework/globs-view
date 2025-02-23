@@ -1009,7 +1009,7 @@ public class ViewEngineImplTest extends TestCase {
         @Target(SubType2.class)
         public static GlobArrayField SUB2;
 
-        @_StringAsDouble
+        @StringAsDouble_
         public static StringField strValue;
 
         static {

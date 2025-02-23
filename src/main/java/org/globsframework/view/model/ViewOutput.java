@@ -1,19 +1,25 @@
 package org.globsframework.view.model;
 
 import org.globsframework.core.metamodel.GlobType;
-import org.globsframework.core.metamodel.GlobTypeLoaderFactory;
+import org.globsframework.core.metamodel.GlobTypeBuilder;
+import org.globsframework.core.metamodel.GlobTypeBuilderFactory;
 import org.globsframework.core.metamodel.annotations.Comment_;
 import org.globsframework.core.metamodel.fields.StringField;
 
 public class ViewOutput {
-    public static GlobType TYPE;
+    public static final GlobType TYPE;
 
-    public static StringField uniqueName;
+    public static final StringField uniqueName;
 
     @Comment_("name in the result")
-    public static StringField name;
+    public static final StringField name;
 
     static {
-        GlobTypeLoaderFactory.create(ViewOutput.class).load();
+        GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("ViewOutput");
+        TYPE = typeBuilder.unCompleteType();
+        uniqueName = typeBuilder.declareStringField("uniqueName");
+        name = typeBuilder.declareStringField("name");
+        typeBuilder.complete();
+//        GlobTypeLoaderFactory.create(ViewOutput.class).load();
     }
 }

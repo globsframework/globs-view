@@ -1,7 +1,8 @@
 package org.globsframework.view.filter.model;
 
 import org.globsframework.core.metamodel.GlobType;
-import org.globsframework.core.metamodel.GlobTypeLoaderFactory;
+import org.globsframework.core.metamodel.GlobTypeBuilder;
+import org.globsframework.core.metamodel.GlobTypeBuilderFactory;
 import org.globsframework.core.metamodel.fields.Field;
 import org.globsframework.core.metamodel.fields.StringField;
 import org.globsframework.core.model.Glob;
@@ -16,12 +17,17 @@ import java.util.function.Consumer;
 
 public class IsNotNullType {
     static private final Logger LOGGER = LoggerFactory.getLogger(IsNotNullType.class);
-    public static GlobType TYPE;
+    public static final GlobType TYPE;
 
-    public static StringField uniqueName;
+    public static final StringField uniqueName;
 
     static {
-        GlobTypeLoaderFactory.create(IsNotNullType.class)
+        GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("IsNotNull");
+        TYPE = typeBuilder.unCompleteType();
+        uniqueName = typeBuilder.declareStringField("uniqueName");
+        typeBuilder.complete();
+//        GlobTypeLoaderFactory.create(IsNotNullType.class)
+        typeBuilder
                 .register(WantedField.class, new WantedField() {
                     public void wanted(Glob filter, Consumer<String> wantedUniqueName) {
                         wantedUniqueName.accept(filter.get(uniqueName));
@@ -36,6 +42,6 @@ public class IsNotNullType {
                         return glob -> jump.from(glob)
                                 .anyMatch(g -> g.getValue(field) != null);
                     }
-                }).load();
+                });
     }
 }

@@ -1,7 +1,8 @@
 package org.globsframework.view.filter.model;
 
 import org.globsframework.core.metamodel.GlobType;
-import org.globsframework.core.metamodel.GlobTypeLoaderFactory;
+import org.globsframework.core.metamodel.GlobTypeBuilder;
+import org.globsframework.core.metamodel.GlobTypeBuilderFactory;
 import org.globsframework.core.metamodel.fields.*;
 import org.globsframework.core.model.Glob;
 import org.globsframework.view.DateUtils;
@@ -20,15 +21,20 @@ import java.util.function.Predicate;
 
 public class NotEqualType {
     static private final Logger LOGGER = LoggerFactory.getLogger(NotEqualType.class);
-    public static GlobType TYPE;
+    public static final GlobType TYPE;
 
-    public static StringField uniqueName;
+    public static final StringField uniqueName;
 
-    public static StringField value;
+    public static final StringField value;
 
     static {
-        GlobTypeLoaderFactory.create(NotEqualType.class)
-                .register(WantedField.class, new WantedField() {
+        GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("NotEqual");
+        TYPE = typeBuilder.unCompleteType();
+        uniqueName = typeBuilder.declareStringField("uniqueName");
+        value = typeBuilder.declareStringField("value");
+        typeBuilder.complete();
+
+        typeBuilder.register(WantedField.class, new WantedField() {
                     public void wanted(Glob filter, Consumer<String> wantedUniqueName) {
                         wantedUniqueName.accept(filter.get(uniqueName));
                     }
@@ -93,6 +99,6 @@ public class NotEqualType {
                         LOGGER.error(msg);
                         throw new RuntimeException(msg);
                     }
-                }).load();
+                });
     }
 }

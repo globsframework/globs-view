@@ -48,9 +48,9 @@ public class ViewEngineImpl implements ViewEngine {
                         .set(SimpleBreakdown.aliasName, uniqueName)
                         .set(SimpleBreakdown.typeName, globType.getName())
                         .set(SimpleBreakdown.fieldName, field.getName())
-                        .set(SimpleBreakdown.isSensibleData, field.hasAnnotation(IsSensibleData.key))
+                        .set(SimpleBreakdown.isSensibleData, field.hasAnnotation(IsSensibleData.UNIQUE_KEY))
                         .set(SimpleBreakdown.nativeType, field.getDataType().name());
-                if (field.hasAnnotation(StringAsDouble.key)) {
+                if (field.hasAnnotation(StringAsDouble.UNIQUE_KEY)) {
                     brk.set(SimpleBreakdown.outputTypeName, DataType.Double.name());
                 }
                 breakdowns.add(brk);

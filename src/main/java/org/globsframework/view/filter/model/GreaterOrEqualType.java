@@ -1,7 +1,8 @@
 package org.globsframework.view.filter.model;
 
 import org.globsframework.core.metamodel.GlobType;
-import org.globsframework.core.metamodel.GlobTypeLoaderFactory;
+import org.globsframework.core.metamodel.GlobTypeBuilder;
+import org.globsframework.core.metamodel.GlobTypeBuilderFactory;
 import org.globsframework.core.metamodel.fields.*;
 import org.globsframework.core.model.Glob;
 import org.globsframework.view.DateUtils;
@@ -20,15 +21,22 @@ import java.util.function.Consumer;
 
 public class GreaterOrEqualType {
     static private final Logger LOGGER = LoggerFactory.getLogger(GreaterOrEqualType.class);
-    public static GlobType TYPE;
+    public static final GlobType TYPE;
 
-    public static StringField uniqueName;
+    public static final StringField uniqueName;
 
-    public static StringField value;
+    public static final StringField value;
 
     static {
-        GlobTypeLoaderFactory.create(GreaterOrEqualType.class)
-                .register(WantedField.class, new WantedField() {
+        GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("GreaterOrEqual");
+        TYPE = typeBuilder.unCompleteType();
+        uniqueName = typeBuilder.declareStringField("uniqueName");
+        value = typeBuilder.declareStringField("value");
+        typeBuilder.complete();
+
+//        GlobTypeLoaderFactory.create(GreaterOrEqualType.class)
+
+        typeBuilder.register(WantedField.class, new WantedField() {
                     public void wanted(Glob filter, Consumer<String> wantedUniqueName) {
                         wantedUniqueName.accept(filter.get(uniqueName));
                     }
@@ -77,7 +85,7 @@ public class GreaterOrEqualType {
                         }
                         if (field instanceof StringField) {
                             String compareTo = filter.get(value);
-                            if (field.hasAnnotation(StringAsDouble.key)) {
+                            if (field.hasAnnotation(StringAsDouble.UNIQUE_KEY)) {
                                 double dbl = Double.parseDouble(filter.get(value));
                                 StringField dblField = (StringField) field;
                                 return glob -> jump.from(glob)
@@ -96,8 +104,7 @@ public class GreaterOrEqualType {
                         LOGGER.error(msg);
                         throw new RuntimeException(msg);
                     }
-                })
-                .load();
+                });
     }
 
 }

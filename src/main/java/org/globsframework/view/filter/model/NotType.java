@@ -1,7 +1,8 @@
 package org.globsframework.view.filter.model;
 
 import org.globsframework.core.metamodel.GlobType;
-import org.globsframework.core.metamodel.GlobTypeLoaderFactory;
+import org.globsframework.core.metamodel.GlobTypeBuilder;
+import org.globsframework.core.metamodel.GlobTypeBuilderFactory;
 import org.globsframework.core.metamodel.annotations.Targets;
 import org.globsframework.core.metamodel.fields.GlobUnionField;
 import org.globsframework.core.model.Glob;
@@ -10,17 +11,28 @@ import org.globsframework.view.filter.FilterImpl;
 import org.globsframework.view.filter.Rewrite;
 import org.globsframework.view.filter.WantedField;
 
+import java.util.List;
+
 public class NotType {
-    public static GlobType TYPE;
+    public static final GlobType TYPE;
 
     @Targets({OrFilterType.class, AndFilterType.class, EqualType.class, NotEqualType.class,
             GreaterOrEqualType.class, StrictlyGreaterType.class,
             NotType.class,
             StrictlyLessType.class, LessOrEqualType.class, ContainsType.class, NotContainsType.class, IsNullType.class, IsNotNullType.class})
-    public static GlobUnionField filter;
+    public static final GlobUnionField filter;
 
     static {
-        GlobTypeLoaderFactory.create(NotType.class)
+        GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("Not");
+        TYPE = typeBuilder.unCompleteType();
+        filter = typeBuilder.declareGlobUnionField("filter",
+                List.of(OrFilterType.TYPE, AndFilterType.TYPE, EqualType.TYPE, NotEqualType.TYPE,
+                        GreaterOrEqualType.TYPE, StrictlyGreaterType.TYPE,
+                        NotType.TYPE,
+                        StrictlyLessType.TYPE, LessOrEqualType.TYPE, ContainsType.TYPE, NotContainsType.TYPE, IsNullType.TYPE, IsNotNullType.TYPE));
+        typeBuilder.complete();
+//        GlobTypeLoaderFactory.create(NotType.class)
+        typeBuilder
                 .register(WantedField.class, (filter, wantedUniqueName) -> filter.getOpt(NotType.filter)
                         .ifPresent(glob -> glob.getType().getRegistered(WantedField.class)
                                 .wanted(glob, wantedUniqueName)))
@@ -51,6 +63,6 @@ public class NotType {
                     } else {
                         return glob -> !selected.isSelected(glob);
                     }
-                }).load();
+                });
     }
 }

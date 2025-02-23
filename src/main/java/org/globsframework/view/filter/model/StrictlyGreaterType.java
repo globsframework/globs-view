@@ -1,7 +1,8 @@
 package org.globsframework.view.filter.model;
 
 import org.globsframework.core.metamodel.GlobType;
-import org.globsframework.core.metamodel.GlobTypeLoaderFactory;
+import org.globsframework.core.metamodel.GlobTypeBuilder;
+import org.globsframework.core.metamodel.GlobTypeBuilderFactory;
 import org.globsframework.core.metamodel.fields.*;
 import org.globsframework.core.model.Glob;
 import org.globsframework.view.DateUtils;
@@ -21,15 +22,19 @@ import java.util.function.Consumer;
 public class StrictlyGreaterType {
     static private final Logger LOGGER = LoggerFactory.getLogger(StrictlyGreaterType.class);
 
-    public static GlobType TYPE;
+    public static final GlobType TYPE;
 
-    public static StringField uniqueName;
+    public static final StringField uniqueName;
 
-    public static StringField value;
+    public static final StringField value;
 
     static {
-        GlobTypeLoaderFactory.create(StrictlyGreaterType.class)
-                .register(WantedField.class, new WantedField() {
+        GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("StrictlyGreater");
+        TYPE = typeBuilder.unCompleteType();
+        uniqueName = typeBuilder.declareStringField("uniqueName");
+        value = typeBuilder.declareStringField("value");
+        typeBuilder.complete();
+        typeBuilder.register(WantedField.class, new WantedField() {
                     public void wanted(Glob filter, Consumer<String> wantedUniqueName) {
                         wantedUniqueName.accept(filter.get(uniqueName));
                     }
@@ -79,7 +84,7 @@ public class StrictlyGreaterType {
                         }
                         if (field instanceof StringField) {
                             String compareTo = filter.get(value);
-                            if (field.hasAnnotation(StringAsDouble.key)) {
+                            if (field.hasAnnotation(StringAsDouble.UNIQUE_KEY)) {
                                 double dbl = Double.parseDouble(filter.get(value));
                                 StringField dblField = (StringField) field;
                                 return glob -> jump.from(glob)
@@ -98,7 +103,7 @@ public class StrictlyGreaterType {
                         LOGGER.error(msg);
                         throw new RuntimeException(msg);
                     }
-                }).load();
+                });
     }
 
     public static Double parseDouble(String dbl) {

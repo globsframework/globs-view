@@ -2,10 +2,7 @@ package org.globsframework.view.server;
 
 import com.google.gson.Gson;
 import org.globsframework.commandline.ParseCommandLine;
-import org.globsframework.core.metamodel.GlobModel;
-import org.globsframework.core.metamodel.GlobType;
-import org.globsframework.core.metamodel.GlobTypeLoaderFactory;
-import org.globsframework.core.metamodel.GlobTypeResolver;
+import org.globsframework.core.metamodel.*;
 import org.globsframework.core.metamodel.annotations.AllCoreAnnotations;
 import org.globsframework.core.metamodel.fields.StringField;
 import org.globsframework.core.metamodel.impl.DefaultGlobModel;
@@ -143,14 +140,19 @@ public class DummyServer implements DataAccessor {
     }
 
     public static class Options {
-        public static GlobType TYPE;
+        public static final GlobType TYPE;
 
-        public static StringField typeFileName;
+        public static final StringField typeFileName;
 
-        public static StringField dataFileName;
+        public static final StringField dataFileName;
 
         static {
-            GlobTypeLoaderFactory.create(Options.class).load();
+            GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("DummyServer");
+            TYPE = typeBuilder.unCompleteType();
+            typeFileName = typeBuilder.declareStringField("typeFileName");
+            dataFileName = typeBuilder.declareStringField("dataFileName");
+            typeBuilder.complete();
+//            GlobTypeLoaderFactory.create(Options.class).load();
         }
     }
 

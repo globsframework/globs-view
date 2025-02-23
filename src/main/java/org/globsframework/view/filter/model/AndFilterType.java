@@ -1,7 +1,8 @@
 package org.globsframework.view.filter.model;
 
 import org.globsframework.core.metamodel.GlobType;
-import org.globsframework.core.metamodel.GlobTypeLoaderFactory;
+import org.globsframework.core.metamodel.GlobTypeBuilder;
+import org.globsframework.core.metamodel.GlobTypeBuilderFactory;
 import org.globsframework.core.metamodel.annotations.Targets;
 import org.globsframework.core.metamodel.fields.GlobArrayUnionField;
 import org.globsframework.core.model.Glob;
@@ -17,16 +18,23 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class AndFilterType {
-    public static GlobType TYPE;
+    public static final GlobType TYPE;
 
     @Targets({OrFilterType.class, AndFilterType.class, EqualType.class, NotEqualType.class,
             NotType.class, GreaterOrEqualType.class, StrictlyGreaterType.class,
             StrictlyLessType.class, LessOrEqualType.class, ContainsType.class, NotContainsType.class, IsNullType.class, IsNotNullType.class})
-    public static GlobArrayUnionField filters;
+    public static final GlobArrayUnionField filters;
 
     static {
-        GlobTypeLoaderFactory.create(AndFilterType.class)
-                .register(WantedField.class, new WantedField() {
+        GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("AndFilter");
+        TYPE = typeBuilder.unCompleteType();
+        filters = typeBuilder.declareGlobUnionArrayField("filters",
+                List.of(OrFilterType.TYPE, AndFilterType.TYPE, EqualType.TYPE, NotEqualType.TYPE,
+                        NotType.TYPE, GreaterOrEqualType.TYPE, StrictlyGreaterType.TYPE,
+                        StrictlyLessType.TYPE, LessOrEqualType.TYPE, ContainsType.TYPE, NotContainsType.TYPE, IsNullType.TYPE, IsNotNullType.TYPE));
+        //        GlobTypeLoaderFactory.create(AndFilterType.class)
+        typeBuilder.complete();
+        typeBuilder.register(WantedField.class, new WantedField() {
                     public void wanted(Glob filter, Consumer<String> wantedUniqueName) {
                         Arrays.stream(filter.getOrEmpty(filters))
                                 .forEach(glob -> glob.getType().getRegistered(WantedField.class)
@@ -85,7 +93,6 @@ public class AndFilterType {
                             };
                         }
                     }
-                })
-                .load();
+                });
     }
 }

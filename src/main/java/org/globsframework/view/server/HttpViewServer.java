@@ -3,9 +3,9 @@ package org.globsframework.view.server;
 import org.apache.commons.io.FileUtils;
 import org.apache.hc.core5.function.Callback;
 import org.apache.hc.core5.http.impl.bootstrap.AsyncServerBootstrap;
-import org.apache.hc.core5.http.impl.bootstrap.HttpAsyncServer;
 import org.globsframework.core.metamodel.GlobType;
-import org.globsframework.core.metamodel.GlobTypeLoaderFactory;
+import org.globsframework.core.metamodel.GlobTypeBuilder;
+import org.globsframework.core.metamodel.GlobTypeBuilderFactory;
 import org.globsframework.core.metamodel.annotations.Comment_;
 import org.globsframework.core.metamodel.annotations.Target;
 import org.globsframework.core.metamodel.fields.BooleanField;
@@ -13,7 +13,6 @@ import org.globsframework.core.metamodel.fields.GlobArrayField;
 import org.globsframework.core.metamodel.fields.IntegerField;
 import org.globsframework.core.metamodel.fields.StringField;
 import org.globsframework.core.model.Glob;
-import org.globsframework.core.utils.Strings;
 import org.globsframework.core.utils.collections.Pair;
 import org.globsframework.csv.ExportBySize;
 import org.globsframework.http.GlobFile;
@@ -26,16 +25,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
 public class HttpViewServer {
     public static final int EXPIRATION = 1000 * 60 * 20; // => cache 20 min
@@ -167,42 +162,57 @@ public class HttpViewServer {
 //    }
 
     static public class ParamType {
-        public static GlobType TYPE;
+        public static final GlobType TYPE;
 
-        public static StringField source;
+        public static final StringField source;
 
         //json or csv
         @Comment_("json or csv")
-        public static StringField outputType;
+        public static final StringField outputType;
 
-        public static BooleanField leafOnly;
+        public static final BooleanField leafOnly;
 
         static {
-            GlobTypeLoaderFactory.create(ParamType.class).load();
+            GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("Param");
+            TYPE = typeBuilder.unCompleteType();
+            source = typeBuilder.declareStringField("source");
+            outputType = typeBuilder.declareStringField("outputType");
+            leafOnly = typeBuilder.declareBooleanField("leafOnly");
+            typeBuilder.complete();
+//            GlobTypeLoaderFactory.create(ParamType.class).load();
         }
     }
 
     static public class SourcesType {
-        public static GlobType TYPE;
+        public static final GlobType TYPE;
 
         @Target(SourceNameType.class)
-        public static GlobArrayField sources;
+        public static final GlobArrayField sources;
 
         static {
-            GlobTypeLoaderFactory.create(SourcesType.class).load();
+            GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("Sources");
+            TYPE = typeBuilder.unCompleteType();
+            sources = typeBuilder.declareGlobArrayField("sources", SourceNameType.TYPE);
+            typeBuilder.complete();
+//            GlobTypeLoaderFactory.create(SourcesType.class).load();
         }
     }
 
 
     static public class Options {
-        public static GlobType TYPE;
+        public static final GlobType TYPE;
 
-        public static StringField localViewAddress;
+        public static final StringField localViewAddress;
 
-        public static IntegerField httpPort;
+        public static final IntegerField httpPort;
 
         static {
-            GlobTypeLoaderFactory.create(Options.class).load();
+            GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("Options");
+            TYPE = typeBuilder.unCompleteType();
+            localViewAddress = typeBuilder.declareStringField("localViewAddress");
+            httpPort = typeBuilder.declareIntegerField("httpPort");
+            typeBuilder.complete();
+//            GlobTypeLoaderFactory.create(Options.class).load();
         }
     }
 

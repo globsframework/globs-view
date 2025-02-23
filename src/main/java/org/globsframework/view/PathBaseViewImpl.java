@@ -336,7 +336,7 @@ public class PathBaseViewImpl implements View {
                 Field sourceField = globType.globType.getField(fieldName);
                 if (sourceField.getName().equals(fieldName)) {
                     if (field instanceof DoubleField) {
-                        if (sourceField instanceof StringField && sourceField.hasAnnotation(StringAsDouble.key)) {
+                        if (sourceField instanceof StringField && sourceField.hasAnnotation(StringAsDouble.UNIQUE_KEY)) {
                             return new InStackStringToDoubleFillOutput(stackIndex, sourceField.asStringField(), field.asDoubleField());
                         } else {
                             return new InStackDoubleFillOutput(stackIndex, sourceField.asDoubleField(), field.asDoubleField());
@@ -401,7 +401,7 @@ public class PathBaseViewImpl implements View {
 
                 }
             };
-        } else if (sourceField instanceof StringField && sourceField.hasAnnotation(StringAsDouble.key)) {
+        } else if (sourceField instanceof StringField && sourceField.hasAnnotation(StringAsDouble.UNIQUE_KEY)) {
             fillOutput = new OnOutputScan() {
                 private DoubleField outField = field.asDoubleField();
                 private StringField srcField = sourceField.asStringField();

@@ -1,26 +1,33 @@
 package org.globsframework.view.model;
 
 import org.globsframework.core.metamodel.GlobType;
-import org.globsframework.core.metamodel.GlobTypeLoaderFactory;
+import org.globsframework.core.metamodel.GlobTypeBuilder;
+import org.globsframework.core.metamodel.GlobTypeBuilderFactory;
 import org.globsframework.core.metamodel.annotations.Target;
 import org.globsframework.core.metamodel.fields.GlobArrayField;
 import org.globsframework.core.metamodel.fields.GlobField;
 import org.globsframework.view.filter.model.FilterType;
 
 public class ViewRequestType {
-    public static GlobType TYPE;
+    public static final GlobType TYPE;
 
     @Target(ViewBreakdown.class)
-    public static GlobArrayField breakdowns;
+    public static final GlobArrayField breakdowns;
 
     @Target(ViewOutput.class)
-    public static GlobArrayField output;
+    public static final GlobArrayField output;
 
     @Target(FilterType.class)
-    public static GlobField filter;
+    public static final GlobField filter;
 
     static {
-        GlobTypeLoaderFactory.create(ViewRequestType.class).load();
+        GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("ViewRequest");
+        TYPE = typeBuilder.unCompleteType();
+        breakdowns = typeBuilder.declareGlobArrayField("breakdowns", ViewBreakdown.TYPE);
+        output = typeBuilder.declareGlobArrayField("output", ViewOutput.TYPE);
+        filter = typeBuilder.declareGlobField("filter", FilterType.TYPE);
+        typeBuilder.complete();
+//        GlobTypeLoaderFactory.create(ViewRequestType.class).load();
     }
 
 }
