@@ -1,7 +1,8 @@
 package org.globsframework.view;
 
 import org.globsframework.core.metamodel.GlobType;
-import org.globsframework.core.metamodel.GlobTypeLoaderFactory;
+import org.globsframework.core.metamodel.GlobTypeBuilder;
+import org.globsframework.core.metamodel.GlobTypeBuilderFactory;
 import org.globsframework.core.metamodel.fields.StringField;
 
 public class DummySubType {
@@ -12,6 +13,9 @@ public class DummySubType {
     public static StringField s2;
 
     static {
-        GlobTypeLoaderFactory.create(DummySubType.class).load();
+        GlobTypeBuilder builder = GlobTypeBuilderFactory.create("DummySubType");
+        s1 = builder.declareStringField("s1");
+        s2 = builder.declareStringField("s2");
+        TYPE = builder.build();
     }
 }

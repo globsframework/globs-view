@@ -18,12 +18,10 @@ public class SimpleOutput {
 
     static {
         GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("SimpleOutput");
-        TYPE = typeBuilder.unCompleteType();
         uniqueName = typeBuilder.declareStringField("uniqueName");
         alias = typeBuilder.declareStringField("alias");
         outputName = typeBuilder.declareStringField("outputName");
         nativeType = typeBuilder.declareStringField("nativeType");
-        typeBuilder.complete();
-//        GlobTypeLoaderFactory.create(SimpleOutput.class).load();
+        TYPE = typeBuilder.build();
     }
 }

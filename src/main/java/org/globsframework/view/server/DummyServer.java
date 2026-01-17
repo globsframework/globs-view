@@ -148,11 +148,9 @@ public class DummyServer implements DataAccessor {
 
         static {
             GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("DummyServer");
-            TYPE = typeBuilder.unCompleteType();
             typeFileName = typeBuilder.declareStringField("typeFileName");
             dataFileName = typeBuilder.declareStringField("dataFileName");
-            typeBuilder.complete();
-//            GlobTypeLoaderFactory.create(Options.class).load();
+            TYPE = typeBuilder.build();
         }
     }
 

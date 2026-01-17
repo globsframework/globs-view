@@ -2,7 +2,8 @@ package org.globsframework.view;
 
 import com.google.gson.Gson;
 import org.globsframework.core.metamodel.GlobType;
-import org.globsframework.core.metamodel.GlobTypeLoaderFactory;
+import org.globsframework.core.metamodel.GlobTypeBuilder;
+import org.globsframework.core.metamodel.GlobTypeBuilderFactory;
 import org.globsframework.core.metamodel.GlobTypeResolver;
 import org.globsframework.core.metamodel.annotations.Target;
 import org.globsframework.core.metamodel.fields.GlobArrayField;
@@ -22,7 +23,11 @@ public class DummyType {
     public static GlobArrayField subType;
 
     static {
-        GlobTypeLoaderFactory.create(DummyType.class).load();
+        GlobTypeBuilder builder = GlobTypeBuilderFactory.create("DummyType");
+        n1 = builder.declareStringField("n1");
+        n2 = builder.declareStringField("n2");
+        subType = builder.declareGlobArrayField("subType", () -> DummySubType.TYPE);
+        TYPE = builder.build();
     }
 
     // pour générer un premier sample.

@@ -29,11 +29,8 @@ public class StrictlyLessType {
 
     static {
         GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("StrictlyLess");
-        TYPE = typeBuilder.unCompleteType();
         uniqueName = typeBuilder.declareStringField("uniqueName");
         value = typeBuilder.declareStringField("value");
-        typeBuilder.complete();
-
         typeBuilder.register(WantedField.class, new WantedField() {
                     public void wanted(Glob filter, Consumer<String> wantedUniqueName) {
                         wantedUniqueName.accept(filter.get(uniqueName));
@@ -103,5 +100,7 @@ public class StrictlyLessType {
                         throw new RuntimeException(msg);
                     }
                 });
+        TYPE = typeBuilder.build();
+
     }
 }

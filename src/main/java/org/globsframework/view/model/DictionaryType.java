@@ -14,10 +14,8 @@ public class DictionaryType {
 
     static {
         GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("Dictionary");
-        TYPE = typeBuilder.unCompleteType();
-        breakdowns = typeBuilder.declareGlobArrayField("breakdowns", SimpleBreakdown.TYPE);
-        typeBuilder.get();
-//        GlobTypeLoaderFactory.create(DictionaryType.class).load();
+        breakdowns = typeBuilder.declareGlobArrayField("breakdowns", () -> SimpleBreakdown.TYPE);
+        TYPE = typeBuilder.build();
     }
 
     /*

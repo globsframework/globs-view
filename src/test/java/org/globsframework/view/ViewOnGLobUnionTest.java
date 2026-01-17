@@ -3,7 +3,8 @@ package org.globsframework.view;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 import org.globsframework.core.metamodel.GlobType;
-import org.globsframework.core.metamodel.GlobTypeLoaderFactory;
+import org.globsframework.core.metamodel.GlobTypeBuilder;
+import org.globsframework.core.metamodel.GlobTypeBuilderFactory;
 import org.globsframework.core.metamodel.annotations.Targets;
 import org.globsframework.core.metamodel.fields.GlobUnionField;
 import org.globsframework.core.metamodel.fields.IntegerField;
@@ -15,6 +16,8 @@ import org.globsframework.view.model.DictionaryType;
 import org.globsframework.view.model.ViewBreakdown;
 import org.globsframework.view.model.ViewOutput;
 import org.globsframework.view.model.ViewRequestType;
+
+import java.util.function.Supplier;
 
 import static org.globsframework.view.ViewEngineImplTest.br;
 
@@ -136,7 +139,10 @@ public class ViewOnGLobUnionTest extends TestCase {
         public static IntegerField count_1;
 
         static {
-            GlobTypeLoaderFactory.create(Object1.class).load();
+            GlobTypeBuilder builder = GlobTypeBuilderFactory.create("Object1");
+            keyObj1 = builder.declareStringField("keyObj1");
+            count_1 = builder.declareIntegerField("count_1");
+            TYPE = builder.build();
         }
     }
 
@@ -148,7 +154,10 @@ public class ViewOnGLobUnionTest extends TestCase {
         public static IntegerField count_2;
 
         static {
-            GlobTypeLoaderFactory.create(Object2.class).load();
+            GlobTypeBuilder builder = GlobTypeBuilderFactory.create("Object2");
+            keyObj2 = builder.declareStringField("keyObj2");
+            count_2 = builder.declareIntegerField("count_2");
+            TYPE = builder.build();
         }
     }
 
@@ -161,7 +170,10 @@ public class ViewOnGLobUnionTest extends TestCase {
         public static GlobUnionField data;
 
         static {
-            GlobTypeLoaderFactory.create(ObjectWithUnion.class).load();
+            GlobTypeBuilder builder = GlobTypeBuilderFactory.create("ObjectWithUnion");
+            key = builder.declareStringField("key");
+            data = builder.declareGlobUnionField("data", new Supplier[]{() -> Object1.TYPE, () -> Object2.TYPE});
+            TYPE = builder.build();
         }
     }
 }

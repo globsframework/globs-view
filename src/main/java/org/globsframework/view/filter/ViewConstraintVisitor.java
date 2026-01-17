@@ -2,6 +2,7 @@ package org.globsframework.view.filter;
 
 import org.globsframework.core.metamodel.GlobType;
 import org.globsframework.core.metamodel.fields.*;
+import org.globsframework.core.model.Glob;
 import org.globsframework.core.model.globaccessor.get.GlobGetAccessor;
 import org.globsframework.sql.constraints.Constraint;
 import org.globsframework.sql.constraints.ConstraintVisitor;
@@ -305,7 +306,7 @@ public class ViewConstraintVisitor implements ConstraintVisitor {
     }
 
     private static class DataAccessOperandVisitor implements OperandVisitor {
-        GlobGetAccessor globGetAccessor;
+        AbstractGlobGetAccessor globGetAccessor;
         Field field;
 
         public void visitValueOperand(ValueOperand valueOperand) {
@@ -321,6 +322,18 @@ public class ViewConstraintVisitor implements ConstraintVisitor {
         public void visitFieldOperand(Field field) {
             this.field = field;
             globGetAccessor = glob -> glob.getValue(field);
+        }
+    }
+
+    public interface AbstractGlobGetAccessor extends GlobGetAccessor {
+        @Override
+        default boolean isSet(Glob glob) {
+            return false;
+        }
+
+        @Override
+        default boolean isNull(Glob glob) {
+            return getValue(glob) == null;
         }
     }
 }

@@ -3,7 +3,8 @@ package org.globsframework.view;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 import org.globsframework.core.metamodel.GlobType;
-import org.globsframework.core.metamodel.GlobTypeLoaderFactory;
+import org.globsframework.core.metamodel.GlobTypeBuilder;
+import org.globsframework.core.metamodel.GlobTypeBuilderFactory;
 import org.globsframework.core.metamodel.annotations.Target;
 import org.globsframework.core.metamodel.fields.DoubleField;
 import org.globsframework.core.metamodel.fields.GlobArrayField;
@@ -893,7 +894,9 @@ public class ViewEngineImplTest extends TestCase {
         public static StringField idx1;
 
         static {
-            GlobTypeLoaderFactory.create(IndexViewType1.class).load();
+            GlobTypeBuilder builder = GlobTypeBuilderFactory.create("IndexViewType1");
+            idx1 = builder.declareStringField("idx1");
+            TYPE = builder.build();
         }
     }
 
@@ -1013,7 +1016,13 @@ public class ViewEngineImplTest extends TestCase {
         public static StringField strValue;
 
         static {
-            GlobTypeLoaderFactory.create(ViewType1.class).load();
+            GlobTypeBuilder builder = GlobTypeBuilderFactory.create("ViewType1");
+            Name1 = builder.declareStringField("Name1");
+            Name2 = builder.declareStringField("Name2");
+            SUB1 = builder.declareGlobField("SUB1", () -> SubType1.TYPE);
+            SUB2 = builder.declareGlobArrayField("SUB2", () -> SubType2.TYPE);
+            strValue = builder.declareStringField("strValue", StringAsDouble.UNIQUE_INSTANCE);
+            TYPE = builder.build();
         }
     }
 
@@ -1023,7 +1032,9 @@ public class ViewEngineImplTest extends TestCase {
         public static StringField NameSub1;
 
         static {
-            GlobTypeLoaderFactory.create(SubType1.class).load();
+            GlobTypeBuilder builder = GlobTypeBuilderFactory.create("SubType1");
+            NameSub1 = builder.declareStringField("NameSub1");
+            TYPE = builder.build();
         }
     }
 
@@ -1040,7 +1051,12 @@ public class ViewEngineImplTest extends TestCase {
         public static GlobArrayField SUB3;
 
         static {
-            GlobTypeLoaderFactory.create(SubType2.class).load();
+            GlobTypeBuilder builder = GlobTypeBuilderFactory.create("SubType2");
+            NameSub2 = builder.declareStringField("NameSub2");
+            NameSub3 = builder.declareStringField("NameSub3");
+            qty = builder.declareDoubleField("qty");
+            SUB3 = builder.declareGlobArrayField("SUB3", () -> SubType3.TYPE);
+            TYPE = builder.build();
         }
     }
 
@@ -1052,7 +1068,10 @@ public class ViewEngineImplTest extends TestCase {
         public static StringField NameSub5;
 
         static {
-            GlobTypeLoaderFactory.create(SubType3.class).load();
+            GlobTypeBuilder builder = GlobTypeBuilderFactory.create("SubType3");
+            NameSub4 = builder.declareStringField("NameSub4");
+            NameSub5 = builder.declareStringField("NameSub5");
+            TYPE = builder.build();
         }
     }
 }

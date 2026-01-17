@@ -49,10 +49,18 @@ public class ViewBuilderImpl implements ViewBuilder {
         GlobTypeBuilder nodeTypeBuilder = new DefaultGlobTypeBuilder("Node");
         nodeTypeBuilder.declareStringField(NAME);
         nodeTypeBuilder.declareStringField(NODE_NAME);
-        nodeTypeBuilder.declareGlobArrayField(CHILD_FIELD_NAME, nodeTypeBuilder.unCompleteType());
-        nodeTypeBuilder.declareGlobField(OUTPUT, outputTypeBuilder.get());
-        breakdownType = nodeTypeBuilder.get();
-        outputType = outputTypeBuilder.get();
+        nodeTypeBuilder.declareGlobArrayField(CHILD_FIELD_NAME, this::getBreakdown);
+        nodeTypeBuilder.declareGlobField(OUTPUT, this::getOutput);
+        breakdownType = nodeTypeBuilder.build();
+        outputType = outputTypeBuilder.build();
+    }
+
+    private GlobType getOutput() {
+        return outputType;
+    }
+
+    private GlobType getBreakdown() {
+        return breakdownType;
     }
 
     public View createView() {

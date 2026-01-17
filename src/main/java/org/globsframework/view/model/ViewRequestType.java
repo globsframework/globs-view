@@ -22,12 +22,10 @@ public class ViewRequestType {
 
     static {
         GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("ViewRequest");
-        TYPE = typeBuilder.unCompleteType();
-        breakdowns = typeBuilder.declareGlobArrayField("breakdowns", ViewBreakdown.TYPE);
-        output = typeBuilder.declareGlobArrayField("output", ViewOutput.TYPE);
-        filter = typeBuilder.declareGlobField("filter", FilterType.TYPE);
-        typeBuilder.complete();
-//        GlobTypeLoaderFactory.create(ViewRequestType.class).load();
+        breakdowns = typeBuilder.declareGlobArrayField("breakdowns", () -> ViewBreakdown.TYPE);
+        output = typeBuilder.declareGlobArrayField("output", () -> ViewOutput.TYPE);
+        filter = typeBuilder.declareGlobField("filter", () -> FilterType.TYPE);
+        TYPE = typeBuilder.build();
     }
 
 }

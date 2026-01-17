@@ -14,6 +14,7 @@ import org.globsframework.view.filter.WantedField;
 
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public class FilterType {
@@ -26,13 +27,11 @@ public class FilterType {
 
     static {
         GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("Filter");
-        TYPE = typeBuilder.unCompleteType();
         filter = typeBuilder.declareGlobUnionField("filter",
-                List.of(OrFilterType.TYPE, AndFilterType.TYPE, EqualType.TYPE, NotEqualType.TYPE,
-                        GreaterOrEqualType.TYPE, StrictlyGreaterType.TYPE, NotType.TYPE,
-                        StrictlyLessType.TYPE, LessOrEqualType.TYPE, ContainsType.TYPE, NotContainsType.TYPE, IsNullType.TYPE, IsNotNullType.TYPE));
-        typeBuilder.complete();
-//        GlobTypeLoaderFactory.create(FilterType.class)
+                new Supplier[]{() -> OrFilterType.TYPE, () -> AndFilterType.TYPE, () -> EqualType.TYPE, () -> NotEqualType.TYPE,
+                        () -> GreaterOrEqualType.TYPE, () -> StrictlyGreaterType.TYPE, () -> NotType.TYPE,
+                        () -> StrictlyLessType.TYPE, () -> LessOrEqualType.TYPE, () -> ContainsType.TYPE,
+                        () -> NotContainsType.TYPE, () -> IsNullType.TYPE, () -> IsNotNullType.TYPE});
         typeBuilder.register(WantedField.class, new WantedField() {
                     public void wanted(Glob f, Consumer<String> wantedUniqueName) {
                         Stream.ofNullable(f.get(filter))
@@ -70,5 +69,6 @@ public class FilterType {
                         return gl;
                     }
                 });
+        TYPE = typeBuilder.build();
     }
 }

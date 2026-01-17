@@ -28,7 +28,6 @@ public class SimpleBreakdown {
 
     static {
         GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("SimpleBreakdown");
-        TYPE = typeBuilder.unCompleteType();
         path = typeBuilder.declareStringArrayField("path");
         uniqueName = typeBuilder.declareStringField("uniqueName");
         aliasName = typeBuilder.declareStringField("aliasName");
@@ -37,7 +36,6 @@ public class SimpleBreakdown {
         fieldName = typeBuilder.declareStringField("fieldName");
         nativeType = typeBuilder.declareStringField("nativeType");
         isSensibleData = typeBuilder.declareBooleanField("isSensibleData");
-        typeBuilder.complete();
-//        GlobTypeLoaderFactory.create(SimpleBreakdown.class).load();
+        TYPE = typeBuilder.build();
     }
 }

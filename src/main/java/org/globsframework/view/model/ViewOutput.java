@@ -16,10 +16,8 @@ public class ViewOutput {
 
     static {
         GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("ViewOutput");
-        TYPE = typeBuilder.unCompleteType();
         uniqueName = typeBuilder.declareStringField("uniqueName");
         name = typeBuilder.declareStringField("name");
-        typeBuilder.complete();
-//        GlobTypeLoaderFactory.create(ViewOutput.class).load();
+        TYPE = typeBuilder.build();
     }
 }
