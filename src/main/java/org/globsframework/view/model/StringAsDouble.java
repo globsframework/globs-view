@@ -21,13 +21,9 @@ public class StringAsDouble {
 
     static {
         GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("StringAsDouble");
-        TYPE = typeBuilder.get();
+        typeBuilder.register(GlobCreateFromAnnotation.class, annotation -> StringAsDouble.UNIQUE_INSTANCE);
+        TYPE = typeBuilder.build();
         UNIQUE_KEY = KeyBuilder.newEmptyKey(TYPE);
         UNIQUE_INSTANCE = TYPE.instantiate();
-        typeBuilder.register(GlobCreateFromAnnotation.class, annotation -> UNIQUE_INSTANCE);
-//        GlobTypeLoaderFactory.create(StringAsDouble.class)
-//                .register(GlobCreateFromAnnotation.class, annotation -> data
-//                ).load();
-
     }
 }

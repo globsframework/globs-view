@@ -21,15 +21,9 @@ public class IsSensibleData {
 
     static {
         GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("IsSensibleData");
-        TYPE = typeBuilder.unCompleteType();
-        typeBuilder.get();
+        typeBuilder.register(GlobCreateFromAnnotation.class, annotation -> IsSensibleData.UNIQUE_INSTANCE);
+        TYPE = typeBuilder.build();
         UNIQUE_KEY = KeyBuilder.newEmptyKey(TYPE);
         UNIQUE_INSTANCE = TYPE.instantiate();
-        typeBuilder.register(GlobCreateFromAnnotation.class, annotation -> UNIQUE_INSTANCE);
-
-//        GlobTypeLoaderFactory.create(IsSensibleData.class)
-//                .register(GlobCreateFromAnnotation.class, annotation -> data
-//                ).load();
-
     }
 }

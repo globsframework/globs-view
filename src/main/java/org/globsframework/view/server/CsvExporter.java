@@ -65,7 +65,7 @@ public class CsvExporter {
             Field targetCsvOutput = globTypeBuilder.declare(field.getName(), field.getDataType(), Collections.emptyList());
             copy.add(Pair.makePair(field, targetCsvOutput));
         }
-        GlobType csvOutput = globTypeBuilder.get();
+        GlobType csvOutput = globTypeBuilder.build();
         if (withHeader) {
             exportBySize.exportHeader(csvOutput, writer);
         }

@@ -25,10 +25,8 @@ public class SourceNameType {
 
     static {
         GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("SourceNameType");
-        TYPE = typeBuilder.unCompleteType();
         ID = typeBuilder.declareStringField("id", KeyField.ZERO);
         NAME = typeBuilder.declareStringArrayField("name");
-        typeBuilder.complete();
-//        GlobTypeLoaderFactory.create(SourceNameType.class).load();
+        TYPE = typeBuilder.build();
     }
 }

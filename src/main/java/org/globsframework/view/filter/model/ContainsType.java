@@ -26,11 +26,8 @@ public class ContainsType {
 
     static {
         GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("Contains");
-        TYPE = typeBuilder.unCompleteType();
         uniqueName = typeBuilder.declareStringField("uniqueName");
         value = typeBuilder.declareStringField("value");
-        typeBuilder.complete();
-//        GlobTypeLoaderFactory.create(ContainsType.class)
         typeBuilder.register(WantedField.class, new WantedField() {
                     public void wanted(Glob filter, Consumer<String> wantedUniqueName) {
                         wantedUniqueName.accept(filter.get(uniqueName));
@@ -54,5 +51,6 @@ public class ContainsType {
                         throw new RuntimeException(msg);
                     }
                 });
+        TYPE = typeBuilder.build();
     }
 }

@@ -30,10 +30,8 @@ public class StrictlyGreaterType {
 
     static {
         GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("StrictlyGreater");
-        TYPE = typeBuilder.unCompleteType();
         uniqueName = typeBuilder.declareStringField("uniqueName");
         value = typeBuilder.declareStringField("value");
-        typeBuilder.complete();
         typeBuilder.register(WantedField.class, new WantedField() {
                     public void wanted(Glob filter, Consumer<String> wantedUniqueName) {
                         wantedUniqueName.accept(filter.get(uniqueName));
@@ -104,6 +102,7 @@ public class StrictlyGreaterType {
                         throw new RuntimeException(msg);
                     }
                 });
+        TYPE = typeBuilder.build();
     }
 
     public static Double parseDouble(String dbl) {

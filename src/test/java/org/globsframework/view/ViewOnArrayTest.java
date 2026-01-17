@@ -3,7 +3,8 @@ package org.globsframework.view;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 import org.globsframework.core.metamodel.GlobType;
-import org.globsframework.core.metamodel.GlobTypeLoaderFactory;
+import org.globsframework.core.metamodel.GlobTypeBuilder;
+import org.globsframework.core.metamodel.GlobTypeBuilderFactory;
 import org.globsframework.core.metamodel.fields.StringArrayField;
 import org.globsframework.core.metamodel.fields.StringField;
 import org.globsframework.core.model.Glob;
@@ -76,7 +77,10 @@ public class ViewOnArrayTest extends TestCase {
         public static StringArrayField messages;
 
         static {
-            GlobTypeLoaderFactory.create(ObjectWithArray.class).load();
+            GlobTypeBuilder builder = GlobTypeBuilderFactory.create("ObjectWithArray");
+            key = builder.declareStringField("key");
+            messages = builder.declareStringArrayField("messages");
+            TYPE = builder.build();
         }
     }
 }

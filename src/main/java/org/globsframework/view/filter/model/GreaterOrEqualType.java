@@ -29,13 +29,8 @@ public class GreaterOrEqualType {
 
     static {
         GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("GreaterOrEqual");
-        TYPE = typeBuilder.unCompleteType();
         uniqueName = typeBuilder.declareStringField("uniqueName");
         value = typeBuilder.declareStringField("value");
-        typeBuilder.complete();
-
-//        GlobTypeLoaderFactory.create(GreaterOrEqualType.class)
-
         typeBuilder.register(WantedField.class, new WantedField() {
                     public void wanted(Glob filter, Consumer<String> wantedUniqueName) {
                         wantedUniqueName.accept(filter.get(uniqueName));
@@ -105,6 +100,8 @@ public class GreaterOrEqualType {
                         throw new RuntimeException(msg);
                     }
                 });
+        TYPE = typeBuilder.build();
+
     }
 
 }

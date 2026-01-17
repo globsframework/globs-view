@@ -11,7 +11,7 @@ import org.globsframework.view.filter.FilterImpl;
 import org.globsframework.view.filter.Rewrite;
 import org.globsframework.view.filter.WantedField;
 
-import java.util.List;
+import java.util.function.Supplier;
 
 public class NotType {
     public static final GlobType TYPE;
@@ -24,14 +24,12 @@ public class NotType {
 
     static {
         GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("Not");
-        TYPE = typeBuilder.unCompleteType();
         filter = typeBuilder.declareGlobUnionField("filter",
-                List.of(OrFilterType.TYPE, AndFilterType.TYPE, EqualType.TYPE, NotEqualType.TYPE,
-                        GreaterOrEqualType.TYPE, StrictlyGreaterType.TYPE,
-                        NotType.TYPE,
-                        StrictlyLessType.TYPE, LessOrEqualType.TYPE, ContainsType.TYPE, NotContainsType.TYPE, IsNullType.TYPE, IsNotNullType.TYPE));
-        typeBuilder.complete();
-//        GlobTypeLoaderFactory.create(NotType.class)
+                new Supplier[]{() -> OrFilterType.TYPE, () -> AndFilterType.TYPE, () -> EqualType.TYPE, () -> NotEqualType.TYPE,
+                        () -> GreaterOrEqualType.TYPE, () -> StrictlyGreaterType.TYPE,
+                        () -> NotType.TYPE,
+                        () -> StrictlyLessType.TYPE, () -> LessOrEqualType.TYPE, () -> ContainsType.TYPE,
+                        () -> NotContainsType.TYPE, () -> IsNullType.TYPE, () -> IsNotNullType.TYPE});
         typeBuilder
                 .register(WantedField.class, (filter, wantedUniqueName) -> filter.getOpt(NotType.filter)
                         .ifPresent(glob -> glob.getType().getRegistered(WantedField.class)
@@ -64,5 +62,6 @@ public class NotType {
                         return glob -> !selected.isSelected(glob);
                     }
                 });
+        TYPE = typeBuilder.build();
     }
 }

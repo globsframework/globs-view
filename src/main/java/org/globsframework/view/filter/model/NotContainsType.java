@@ -26,11 +26,8 @@ public class NotContainsType {
 
     static {
         GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("NotContains");
-        TYPE = typeBuilder.unCompleteType();
         uniqueName = typeBuilder.declareStringField("uniqueName");
         value = typeBuilder.declareStringField("value");
-        typeBuilder.complete();
-
         typeBuilder
                 .register(WantedField.class, new WantedField() {
                     public void wanted(Glob filter, Consumer<String> wantedUniqueName) {
@@ -55,5 +52,7 @@ public class NotContainsType {
                         throw new RuntimeException(msg);
                     }
                 });
+        TYPE = typeBuilder.build();
+
     }
 }

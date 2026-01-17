@@ -14,11 +14,8 @@ public class ViewBreakdown {
 
     static {
         GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("ViewBreakdown");
-        TYPE = typeBuilder.unCompleteType();
         uniqueName = typeBuilder.declareStringField("uniqueName");
         aliasName = typeBuilder.declareStringField("aliasName");
-        typeBuilder.complete();
-
-//        GlobTypeLoaderFactory.create(ViewBreakdown.class).load();
+        TYPE = typeBuilder.build();
     }
 }

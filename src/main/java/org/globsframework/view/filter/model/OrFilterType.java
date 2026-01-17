@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class OrFilterType {
     public static final GlobType TYPE;
@@ -27,15 +28,13 @@ public class OrFilterType {
 
     static {
         GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("OrFilter");
-        TYPE = typeBuilder.unCompleteType();
-        filters = typeBuilder.declareGlobUnionArrayField("filters", List.of(
-                OrFilterType.TYPE, AndFilterType.TYPE, EqualType.TYPE, NotEqualType.TYPE,
-                NotType.TYPE,
-                GreaterOrEqualType.TYPE, StrictlyGreaterType.TYPE,
-                StrictlyLessType.TYPE, LessOrEqualType.TYPE, ContainsType.TYPE, NotContainsType.TYPE, IsNullType.TYPE, IsNotNullType.TYPE
-
-        ));
-        typeBuilder.complete();
+        filters = typeBuilder.declareGlobUnionArrayField("filters", new Supplier[]{
+                () -> OrFilterType.TYPE, () -> AndFilterType.TYPE, () -> EqualType.TYPE, () -> NotEqualType.TYPE,
+                        () -> NotType.TYPE,
+                        () -> GreaterOrEqualType.TYPE, () -> StrictlyGreaterType.TYPE,
+                        () -> StrictlyLessType.TYPE, () -> LessOrEqualType.TYPE, () -> ContainsType.TYPE, () -> NotContainsType.TYPE, () -> IsNullType.TYPE, () -> IsNotNullType.TYPE
+                }
+        );
         typeBuilder.register(WantedField.class, new WantedField() {
                     public void wanted(Glob filter, Consumer<String> wantedUniqueName) {
                         Arrays.stream(filter.getOrEmpty(filters))
@@ -97,5 +96,6 @@ public class OrFilterType {
                         };
                     }
                 });
+        TYPE = typeBuilder.build();
     }
 }

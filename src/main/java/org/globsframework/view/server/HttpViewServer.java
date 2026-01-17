@@ -3,6 +3,9 @@ package org.globsframework.view.server;
 import org.apache.commons.io.FileUtils;
 import org.apache.hc.core5.function.Callback;
 import org.apache.hc.core5.http.impl.bootstrap.AsyncServerBootstrap;
+import org.apache.hc.core5.http2.config.H2Config;
+import org.apache.hc.core5.http2.impl.nio.bootstrap.H2ServerBootstrap;
+import org.apache.hc.core5.reactor.IOReactorConfig;
 import org.globsframework.core.metamodel.GlobType;
 import org.globsframework.core.metamodel.GlobTypeBuilder;
 import org.globsframework.core.metamodel.GlobTypeBuilderFactory;
@@ -18,6 +21,9 @@ import org.globsframework.csv.ExportBySize;
 import org.globsframework.http.GlobFile;
 import org.globsframework.http.HttpServerRegister;
 import org.globsframework.http.HttpTreatment;
+import org.globsframework.http.openapi.model.GlobOpenApi;
+import org.globsframework.http.server.apache.GlobHttpApacheBuilder;
+import org.globsframework.http.server.apache.Server;
 import org.globsframework.view.*;
 import org.globsframework.view.filter.Filter;
 import org.globsframework.view.model.ViewRequestType;
@@ -50,7 +56,7 @@ public class HttpViewServer {
                 .setExceptionCallback(new StdErrorExceptionLogger(LOGGER));
 
         HttpServerRegister httpServerRegister = new HttpServerRegister("viewServer/1.1");
-        httpServerRegister.registerOpenApi();
+        httpServerRegister.registerOpenApi(new GlobOpenApi(httpServerRegister));
         httpServerRegister.register("/sources", null)
                 .get(null, new HttpTreatment() {
                     public CompletableFuture<Glob> consume(Glob body, Glob pathParameters, Glob queryParameters) {
@@ -125,9 +131,15 @@ public class HttpViewServer {
                     }
                 });
 
-        HttpServerRegister.Server httpAsyncServer = httpServerRegister.startAndWaitForStartup(bootstrap, httpPort);
+        H2ServerBootstrap h2ServerBootstrap = H2ServerBootstrap.bootstrap()
+                .setH2Config(H2Config.DEFAULT)
+                .setIOReactorConfig(IOReactorConfig.custom().setSoReuseAddress(true).build());
 
-        port = httpAsyncServer.getPort();
+        GlobHttpApacheBuilder globHttpApacheBuilder = new GlobHttpApacheBuilder(httpServerRegister);
+        final Server server =
+                globHttpApacheBuilder.startAndWaitForStartup(h2ServerBootstrap, httpPort);
+
+        port = server.getPort();
 
         System.out.println("PORT: " + port);
         LOGGER.info("http port : " + port);
@@ -174,12 +186,10 @@ public class HttpViewServer {
 
         static {
             GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("Param");
-            TYPE = typeBuilder.unCompleteType();
             source = typeBuilder.declareStringField("source");
             outputType = typeBuilder.declareStringField("outputType");
             leafOnly = typeBuilder.declareBooleanField("leafOnly");
-            typeBuilder.complete();
-//            GlobTypeLoaderFactory.create(ParamType.class).load();
+            TYPE = typeBuilder.build();
         }
     }
 
@@ -191,10 +201,8 @@ public class HttpViewServer {
 
         static {
             GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("Sources");
-            TYPE = typeBuilder.unCompleteType();
-            sources = typeBuilder.declareGlobArrayField("sources", SourceNameType.TYPE);
-            typeBuilder.complete();
-//            GlobTypeLoaderFactory.create(SourcesType.class).load();
+            sources = typeBuilder.declareGlobArrayField("sources", () -> SourceNameType.TYPE);
+            TYPE = typeBuilder.build();
         }
     }
 
@@ -208,11 +216,9 @@ public class HttpViewServer {
 
         static {
             GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("Options");
-            TYPE = typeBuilder.unCompleteType();
             localViewAddress = typeBuilder.declareStringField("localViewAddress");
             httpPort = typeBuilder.declareIntegerField("httpPort");
-            typeBuilder.complete();
-//            GlobTypeLoaderFactory.create(Options.class).load();
+            TYPE = typeBuilder.build();
         }
     }
 

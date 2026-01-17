@@ -23,10 +23,7 @@ public class IsNotNullType {
 
     static {
         GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("IsNotNull");
-        TYPE = typeBuilder.unCompleteType();
         uniqueName = typeBuilder.declareStringField("uniqueName");
-        typeBuilder.complete();
-//        GlobTypeLoaderFactory.create(IsNotNullType.class)
         typeBuilder
                 .register(WantedField.class, new WantedField() {
                     public void wanted(Glob filter, Consumer<String> wantedUniqueName) {
@@ -43,5 +40,6 @@ public class IsNotNullType {
                                 .anyMatch(g -> g.getValue(field) != null);
                     }
                 });
+        TYPE = typeBuilder.build();
     }
 }

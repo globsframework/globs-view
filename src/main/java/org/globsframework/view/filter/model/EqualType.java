@@ -30,10 +30,8 @@ public class EqualType {
     static {
 //        GlobTypeLoaderFactory.create(EqualType.class)
         GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("Equal");
-        TYPE = typeBuilder.unCompleteType();
         uniqueName = typeBuilder.declareStringField("uniqueName");
         value = typeBuilder.declareStringField("value");
-        typeBuilder.complete();
         typeBuilder
                 .register(WantedField.class, new WantedField() {
                     public void wanted(Glob filter, Consumer<String> wantedUniqueName) {
@@ -98,5 +96,6 @@ public class EqualType {
                         throw new RuntimeException(msg);
                     }
                 });
+        TYPE = typeBuilder.build();
     }
 }
