@@ -7,6 +7,25 @@
     <name>breakdown glob to create views</name>
     <version>5.2-SNAPSHOT</version>
 
+
+    <developers>
+        <developer>
+            <name>Marc Guiot</name>
+            <email>marc.guiot@free.fr</email>
+        </developer>
+    </developers>
+
+    <licenses>
+        <license>
+            <name>Apache License</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
     <repositories>
         <repository>
             <id>github-globsframework</id>
