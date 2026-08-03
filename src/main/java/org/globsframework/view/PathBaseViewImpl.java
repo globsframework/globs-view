@@ -35,8 +35,8 @@ public class PathBaseViewImpl implements View {
     private final Glob viewRequestType;
     private final GlobType breakdownDownType;
     private final GlobType outputType;
-    private final GlobField outputField;
-    private final GlobArrayField childrenField;
+    private final GlobField<?> outputField;
+    private final GlobArrayField<?> childrenField;
     private Node rootNode; // mutated in
     private int nodeCount;
 
@@ -440,10 +440,10 @@ public class PathBaseViewImpl implements View {
             return fillOutput;
         } else {
             Field field = fields[fieldLevel].field;
-            if (field instanceof GlobField) {
-                return new OnGlobFieldOutputScan(scanForOutput(fields, fieldLevel + 1, fillOutput), (GlobField) field);
-            } else if (field instanceof GlobArrayField) {
-                return new OnGlobArrayFieldOutputScan(scanForOutput(fields, fieldLevel + 1, fillOutput), (GlobArrayField) field);
+            if (field instanceof GlobField<?> globField) {
+                return new OnGlobFieldOutputScan(scanForOutput(fields, fieldLevel + 1, fillOutput), globField);
+            } else if (field instanceof GlobArrayField<?> globArrayField) {
+                return new OnGlobArrayFieldOutputScan(scanForOutput(fields, fieldLevel + 1, fillOutput), globArrayField);
             } else {
                 throw new RuntimeException("BUG");
             }
@@ -575,10 +575,10 @@ public class PathBaseViewImpl implements View {
     }
 
     static class OnGlobFieldOutputScan implements OnOutputScan {
-        private final GlobField field;
-        private PathBaseViewImpl.OnOutputScan onOutputScan;
+        private final GlobField<?> field;
+        private final PathBaseViewImpl.OnOutputScan onOutputScan;
 
-        OnGlobFieldOutputScan(OnOutputScan onOutputScan, GlobField field) {
+        OnGlobFieldOutputScan(OnOutputScan onOutputScan, GlobField<?> field) {
             this.onOutputScan = onOutputScan;
             this.field = field;
         }
@@ -592,10 +592,10 @@ public class PathBaseViewImpl implements View {
     }
 
     static class OnGlobArrayFieldOutputScan implements OnOutputScan {
-        private final GlobArrayField field;
-        private PathBaseViewImpl.OnOutputScan onOutputScan;
+        private final GlobArrayField<?> field;
+        private final PathBaseViewImpl.OnOutputScan onOutputScan;
 
-        OnGlobArrayFieldOutputScan(OnOutputScan onOutputScan, GlobArrayField field) {
+        OnGlobArrayFieldOutputScan(OnOutputScan onOutputScan, GlobArrayField<?> field) {
             this.onOutputScan = onOutputScan;
             this.field = field;
         }
@@ -641,13 +641,13 @@ public class PathBaseViewImpl implements View {
             this.path = path;
         }
 
-        public void visitGlob(GlobField field) throws Exception {
+        public void visitGlob(GlobField<?> field) throws Exception {
             type = field.getTargetType();
             previousPath = previousPath.newPath(field.getName(), type);
             path.addLast(Pair.makePair(PathElement.create(field), previousPath));
         }
 
-        public void visitGlobArray(GlobArrayField field) throws Exception {
+        public void visitGlobArray(GlobArrayField<?> field) throws Exception {
             type = field.getTargetType();
             previousPath = previousPath.newPath(field.getName(), type);
             path.addLast(Pair.makePair(PathElement.create(field), previousPath));
@@ -773,10 +773,10 @@ public class PathBaseViewImpl implements View {
                 return new GlobOnField(nodeBuilder);
             } else {
                 Field field = fields[fieldLevel].field;
-                if (field instanceof GlobField) {
-                    return new PathBaseViewImpl.FieldOnField(scan(fields, fieldLevel + 1, stackLevel + 1), (GlobField) field, stackLevel);
-                } else if (field instanceof GlobArrayField) {
-                    return new PathBaseViewImpl.FieldArrayOnField(scan(fields, fieldLevel + 1, stackLevel + 1), (GlobArrayField) field, stackLevel);
+                if (field instanceof GlobField<?> globField ) {
+                    return new PathBaseViewImpl.FieldOnField(scan(fields, fieldLevel + 1, stackLevel + 1), globField, stackLevel);
+                } else if (field instanceof GlobArrayField<?> globArrayField) {
+                    return new PathBaseViewImpl.FieldArrayOnField(scan(fields, fieldLevel + 1, stackLevel + 1), globArrayField, stackLevel);
                 } else if (field instanceof GlobUnionField) {
                     return new PathBaseViewImpl.FieldUnionOnField(scan(fields, fieldLevel + 2, stackLevel + 2),
                             (GlobUnionField) field, stackLevel, fields[fieldLevel + 1].typeName);
@@ -958,10 +958,10 @@ public class PathBaseViewImpl implements View {
 
     static class FieldOnField implements OnField {
         final OnField next;
-        final GlobField field;
+        final GlobField<?> field;
         final int stackLevel;
 
-        FieldOnField(OnField next, GlobField field, int stackLevel) {
+        FieldOnField(OnField next, GlobField<?> field, int stackLevel) {
             this.next = next;
             this.field = field;
             this.stackLevel = stackLevel;
@@ -979,10 +979,10 @@ public class PathBaseViewImpl implements View {
     }
 
     static class FieldUnionOnField implements OnField {
-        final OnField next;
-        final GlobUnionField field;
+        private final OnField next;
+        private final GlobUnionField field;
+        private final GlobType typeName;
         final int stackLevel;
-        private GlobType typeName;
 
         FieldUnionOnField(OnField next, GlobUnionField field, int stackLevel, GlobType typeName) {
             this.next = next;

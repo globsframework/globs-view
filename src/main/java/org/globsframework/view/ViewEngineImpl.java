@@ -54,25 +54,25 @@ public class ViewEngineImpl implements ViewEngine {
                     brk.set(SimpleBreakdown.outputTypeName, DataType.Double.name());
                 }
                 breakdowns.add(brk);
-            } else if (field instanceof GlobArrayField) {
+            } else if (field instanceof GlobArrayField<?> globArrayField) {
                 path.addLast(field.getName());
-                extract(((GlobArrayField) field).getTargetType(), breakdowns, path);
+                extract(globArrayField.getTargetType(), breakdowns, path);
                 path.removeLast();
-            } else if (field instanceof GlobField) {
+            } else if (field instanceof GlobField<?> globField) {
                 path.addLast(field.getName());
-                extract(((GlobField) field).getTargetType(), breakdowns, path);
+                extract(globField.getTargetType(), breakdowns, path);
                 path.removeLast();
-            } else if (field instanceof GlobUnionField) {
+            } else if (field instanceof GlobUnionField globUnionField) {
                 path.addLast(field.getName());
-                for (GlobType targetType : ((GlobUnionField) field).getTargetTypes()) {
+                for (GlobType targetType : globUnionField.getTargetTypes()) {
                     path.addLast(targetType.getName());
                     extract(targetType, breakdowns, path);
                     path.removeLast();
                 }
                 path.removeLast();
-            } else if (field instanceof GlobArrayUnionField) {
+            } else if (field instanceof GlobArrayUnionField globArrayUnionField) {
                 path.addLast(field.getName());
-                for (GlobType targetType : ((GlobArrayUnionField) field).getTargetTypes()) {
+                for (GlobType targetType : globArrayUnionField.getTargetTypes()) {
                     path.addLast(targetType.getName());
                     extract(targetType, breakdowns, path);
                     path.removeLast();

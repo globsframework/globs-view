@@ -38,18 +38,18 @@ public class PathToField {
             for (int i = 0, stringsLength = strings.length; i < stringsLength; i++) {
                 String string = strings[i];
                 Field field = lastType.getField(string);
-                if (field instanceof GlobField) {
+                if (field instanceof GlobField<?> globField) {
                     jumps[i] = glob -> {
-                        Glob ch = glob.get(((GlobField) field));
+                        Glob ch = glob.get(globField);
                         return ch == null ? Stream.empty() : Stream.of(ch);
                     };
-                    lastType = ((GlobField) field).getTargetType();
-                } else if (field instanceof GlobArrayField) {
+                    lastType = globField.getTargetType();
+                } else if (field instanceof GlobArrayField<?> globArrayField) {
                     jumps[i] = glob -> {
-                        Glob[] ch = glob.get(((GlobArrayField) field));
+                        Glob[] ch = glob.get(globArrayField);
                         return ch == null || ch.length == 0 ? Stream.empty() : Stream.of(ch);
                     };
-                    lastType = ((GlobArrayField) field).getTargetType();
+                    lastType = globArrayField.getTargetType();
                 } else {
                     throw new RuntimeException("Navigation in union type no developed " + field.getFullName());
                 }

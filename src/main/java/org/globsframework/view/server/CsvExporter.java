@@ -23,13 +23,13 @@ public class CsvExporter {
     final Consumer<Glob> export;
     final StringField[] breakdownFields;
     final List<Pair<Field, Field>> copy;
-    final GlobField outputField;
+    final GlobField<?> outputField;
     final StringField breakdownField;
-    final GlobArrayField children;
+    final GlobArrayField<?> children;
     final boolean leafOnly;
 
-    CsvExporter(Consumer<Glob> export, StringField[] breakdownFields, List<Pair<Field, Field>> copy, GlobField outputField,
-                StringField breakdownField, GlobArrayField children, boolean leafOnly) {
+    CsvExporter(Consumer<Glob> export, StringField[] breakdownFields, List<Pair<Field, Field>> copy, GlobField<?> outputField,
+                StringField breakdownField, GlobArrayField<?> children, boolean leafOnly) {
         this.export = export;
         this.breakdownFields = breakdownFields;
         this.copy = copy;
@@ -57,7 +57,7 @@ public class CsvExporter {
             breakdownFields[i] = globTypeBuilder.declareStringField(breakdown.get(useField));
         }
         GlobType viewType = root.getType();
-        GlobField outputField = (GlobField) viewType.getField(ViewBuilderImpl.OUTPUT);
+        GlobField<?> outputField = (GlobField<?>) viewType.getField(ViewBuilderImpl.OUTPUT);
         GlobType outputType = outputField.getTargetType();
         List<Pair<Field, Field>> copy = new ArrayList<>();
         for (Glob o : output) {
@@ -72,7 +72,7 @@ public class CsvExporter {
         Consumer<Glob> export = exportBySize.export(writer);
         CsvExporter csvExporter = new CsvExporter(export, breakdownFields, copy, outputField,
                 viewType.getField(ViewBuilderImpl.NAME).asStringField(),
-                (GlobArrayField) viewType.getField(ViewBuilderImpl.CHILD_FIELD_NAME), leafOnly);
+                (GlobArrayField<?>) viewType.getField(ViewBuilderImpl.CHILD_FIELD_NAME), leafOnly);
         csvExporter.scan(csvOutput.instantiate(), root, -1);
     }
 

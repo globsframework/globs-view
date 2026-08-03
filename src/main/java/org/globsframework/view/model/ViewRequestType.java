@@ -12,13 +12,13 @@ public class ViewRequestType {
     public static final GlobType TYPE;
 
     @Target(ViewBreakdown.class)
-    public static final GlobArrayField breakdowns;
+    public static final GlobArrayField<ViewBreakdown> breakdowns;
 
     @Target(ViewOutput.class)
-    public static final GlobArrayField output;
+    public static final GlobArrayField<ViewOutput> output;
 
     @Target(FilterType.class)
-    public static final GlobField filter;
+    public static final GlobField<FilterType> filter;
 
     static {
         GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("ViewRequest");

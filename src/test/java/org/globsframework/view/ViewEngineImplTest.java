@@ -12,7 +12,6 @@ import org.globsframework.core.metamodel.fields.GlobField;
 import org.globsframework.core.metamodel.fields.StringField;
 import org.globsframework.core.model.Glob;
 import org.globsframework.core.model.MutableGlob;
-import org.globsframework.core.utils.Files;
 import org.globsframework.core.utils.exceptions.ItemNotFound;
 import org.globsframework.http.GlobFile;
 import org.globsframework.json.GSonUtils;
@@ -470,7 +469,10 @@ public class ViewEngineImplTest extends TestCase {
             Glob viewAsGlob = view.toGlob();
             Glob result = HttpViewServer.dumpInCsv(viewRequest, viewAsGlob, false);
 
-            String str = Files.read(new FileInputStream(result.get(GlobFile.file)), StandardCharsets.UTF_8);
+            String str;
+            try (FileInputStream fileInputStream = new FileInputStream(result.get(GlobFile.file))) {
+                str = new String(fileInputStream.readAllBytes(), StandardCharsets.UTF_8);
+            }
 
             Assert.assertEquals("""
                     Name1;Name2;total
@@ -492,7 +494,10 @@ public class ViewEngineImplTest extends TestCase {
             Glob viewAsGlob = view.toGlob();
             Glob result = HttpViewServer.dumpInCsv(viewRequest, viewAsGlob, false);
 
-            String str = Files.read(new FileInputStream(result.get(GlobFile.file)), StandardCharsets.UTF_8);
+            String str;
+            try (FileInputStream fileInputStream = new FileInputStream(result.get(GlobFile.file))) {
+                str = new String(fileInputStream.readAllBytes(), StandardCharsets.UTF_8);
+            }
 
             Assert.assertEquals("""
                     Name1;Name2;total
@@ -541,7 +546,10 @@ public class ViewEngineImplTest extends TestCase {
         Glob viewAsGlob = view.toGlob();
         Glob result = HttpViewServer.dumpInCsv(viewRequest, viewAsGlob, true);
 
-        String str = Files.read(new FileInputStream(result.get(GlobFile.file)), StandardCharsets.UTF_8);
+        String str;
+        try (FileInputStream fileInputStream = new FileInputStream(result.get(GlobFile.file))) {
+            str = new String(fileInputStream.readAllBytes(), StandardCharsets.UTF_8);
+        }
 
         Assert.assertEquals("""
                 Name1;Name2;total
@@ -1008,9 +1016,9 @@ public class ViewEngineImplTest extends TestCase {
         public static StringField Name1;
         public static StringField Name2;
         @Target(SubType1.class)
-        public static GlobField SUB1;
+        public static GlobField<SubType1> SUB1;
         @Target(SubType2.class)
-        public static GlobArrayField SUB2;
+        public static GlobArrayField<SubType2> SUB2;
 
         @StringAsDouble_
         public static StringField strValue;
