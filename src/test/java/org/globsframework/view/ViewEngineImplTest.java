@@ -1056,7 +1056,7 @@ public class ViewEngineImplTest extends TestCase {
         public static DoubleField qty;
 
         @Target(SubType3.class)
-        public static GlobArrayField SUB3;
+        public static GlobArrayField<SubType3> SUB3;
 
         static {
             GlobTypeBuilder builder = GlobTypeBuilderFactory.create("SubType2");

@@ -20,7 +20,7 @@ public class DummyType {
     public static StringField n2;
 
     @Target(DummySubType.class)
-    public static GlobArrayField subType;
+    public static GlobArrayField<DummySubType> subType;
 
     static {
         GlobTypeBuilder builder = GlobTypeBuilderFactory.create("DummyType");

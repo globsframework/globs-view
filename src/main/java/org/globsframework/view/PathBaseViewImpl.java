@@ -1007,10 +1007,10 @@ public class PathBaseViewImpl implements View {
 
     static class FieldArrayOnField implements OnField {
         final OnField next;
-        final GlobArrayField field;
+        final GlobArrayField<?> field;
         final int stackLevel;
 
-        FieldArrayOnField(OnField next, GlobArrayField field, int stackLevel) {
+        FieldArrayOnField(OnField next, GlobArrayField<?> field, int stackLevel) {
             this.next = next;
             this.field = field;
             this.stackLevel = stackLevel;

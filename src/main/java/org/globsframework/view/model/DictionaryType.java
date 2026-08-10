@@ -10,7 +10,7 @@ public class DictionaryType {
     public static final GlobType TYPE;
 
     @Target(SimpleBreakdown.class)
-    public static final GlobArrayField breakdowns;
+    public static final GlobArrayField<SimpleBreakdown> breakdowns;
 
     static {
         GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("Dictionary");

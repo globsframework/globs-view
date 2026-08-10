@@ -197,7 +197,7 @@ public class HttpViewServer {
         public static final GlobType TYPE;
 
         @Target(SourceNameType.class)
-        public static final GlobArrayField sources;
+        public static final GlobArrayField<SourceNameType> sources;
 
         static {
             GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("Sources");
