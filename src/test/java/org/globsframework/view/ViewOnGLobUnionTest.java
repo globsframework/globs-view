@@ -5,7 +5,6 @@ import junit.framework.TestCase;
 import org.globsframework.core.metamodel.GlobType;
 import org.globsframework.core.metamodel.GlobTypeBuilder;
 import org.globsframework.core.metamodel.GlobTypeBuilderFactory;
-import org.globsframework.core.metamodel.annotations.Targets;
 import org.globsframework.core.metamodel.fields.GlobUnionField;
 import org.globsframework.core.metamodel.fields.IntegerField;
 import org.globsframework.core.metamodel.fields.StringField;
@@ -166,7 +165,6 @@ public class ViewOnGLobUnionTest extends TestCase {
 
         public static StringField key;
 
-        @Targets({Object1.class, Object2.class})
         public static GlobUnionField data;
 
         static {

@@ -129,7 +129,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.4.1</version>
+                <version>3.5.1</version>
                 <configuration>
                     <excludes>
                         <exclude>**/log4j2.xml</exclude>
@@ -192,55 +192,55 @@
         <dependency>
             <groupId>org.globsframework</groupId>
             <artifactId>globs</artifactId>
-            <version>5.9.0</version>
+            <version>5.13-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.globsframework</groupId>
             <artifactId>globs-gson</artifactId>
-            <version>5.1.0</version>
+            <version>5.4-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.globsframework</groupId>
             <artifactId>globs-xml</artifactId>
-            <version>5.0.0</version>
+            <version>5.3-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.globsframework</groupId>
             <artifactId>globs-sql</artifactId>
-            <version>5.0.0</version>
+            <version>5.3-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.globsframework</groupId>
             <artifactId>globs-csv</artifactId>
-            <version>5.0.0</version>
+            <version>5.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.globsframework</groupId>
             <artifactId>globs-http</artifactId>
-            <version>5.1.0</version>
+            <version>5.3-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.globsframework</groupId>
             <artifactId>globs-commandline</artifactId>
-            <version>5.0.0</version>
+            <version>5.1-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-slf4j2-impl</artifactId>
-            <version>2.25.3</version>
+            <version>2.26.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
-            <version>2.25.3</version>
+            <version>2.26.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
-            <version>2.25.3</version>
+            <version>2.26.1</version>
             <scope>test</scope>
         </dependency>
 <!--        <dependency>-->

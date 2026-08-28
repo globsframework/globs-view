@@ -5,7 +5,6 @@ import junit.framework.TestCase;
 import org.globsframework.core.metamodel.GlobType;
 import org.globsframework.core.metamodel.GlobTypeBuilder;
 import org.globsframework.core.metamodel.GlobTypeBuilderFactory;
-import org.globsframework.core.metamodel.annotations.Target;
 import org.globsframework.core.metamodel.fields.DoubleField;
 import org.globsframework.core.metamodel.fields.GlobArrayField;
 import org.globsframework.core.metamodel.fields.GlobField;
@@ -1015,12 +1014,8 @@ public class ViewEngineImplTest extends TestCase {
         public static GlobType TYPE;
         public static StringField Name1;
         public static StringField Name2;
-        @Target(SubType1.class)
         public static GlobField<SubType1> SUB1;
-        @Target(SubType2.class)
         public static GlobArrayField<SubType2> SUB2;
-
-        @StringAsDouble_
         public static StringField strValue;
 
         static {
@@ -1055,7 +1050,6 @@ public class ViewEngineImplTest extends TestCase {
 
         public static DoubleField qty;
 
-        @Target(SubType3.class)
         public static GlobArrayField<SubType3> SUB3;
 
         static {

@@ -3,7 +3,6 @@ package org.globsframework.view.model;
 import org.globsframework.core.metamodel.GlobType;
 import org.globsframework.core.metamodel.GlobTypeBuilder;
 import org.globsframework.core.metamodel.GlobTypeBuilderFactory;
-import org.globsframework.core.metamodel.annotations.Target;
 import org.globsframework.core.metamodel.fields.GlobArrayField;
 import org.globsframework.core.metamodel.fields.GlobField;
 import org.globsframework.view.filter.model.FilterType;
@@ -11,13 +10,10 @@ import org.globsframework.view.filter.model.FilterType;
 public class ViewRequestType {
     public static final GlobType TYPE;
 
-    @Target(ViewBreakdown.class)
     public static final GlobArrayField<ViewBreakdown> breakdowns;
 
-    @Target(ViewOutput.class)
     public static final GlobArrayField<ViewOutput> output;
 
-    @Target(FilterType.class)
     public static final GlobField<FilterType> filter;
 
     static {

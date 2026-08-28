@@ -5,7 +5,6 @@ import org.globsframework.core.metamodel.GlobType;
 import org.globsframework.core.metamodel.GlobTypeBuilder;
 import org.globsframework.core.metamodel.GlobTypeBuilderFactory;
 import org.globsframework.core.metamodel.GlobTypeResolver;
-import org.globsframework.core.metamodel.annotations.Target;
 import org.globsframework.core.metamodel.fields.GlobArrayField;
 import org.globsframework.core.metamodel.fields.StringField;
 import org.globsframework.core.model.Glob;
@@ -19,7 +18,6 @@ public class DummyType {
 
     public static StringField n2;
 
-    @Target(DummySubType.class)
     public static GlobArrayField<DummySubType> subType;
 
     static {

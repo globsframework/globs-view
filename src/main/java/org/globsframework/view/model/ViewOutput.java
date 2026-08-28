@@ -3,7 +3,7 @@ package org.globsframework.view.model;
 import org.globsframework.core.metamodel.GlobType;
 import org.globsframework.core.metamodel.GlobTypeBuilder;
 import org.globsframework.core.metamodel.GlobTypeBuilderFactory;
-import org.globsframework.core.metamodel.annotations.Comment_;
+import org.globsframework.core.metamodel.annotations.Comment;
 import org.globsframework.core.metamodel.fields.StringField;
 
 public class ViewOutput {
@@ -11,13 +11,12 @@ public class ViewOutput {
 
     public static final StringField uniqueName;
 
-    @Comment_("name in the result")
     public static final StringField name;
 
     static {
         GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("ViewOutput");
         uniqueName = typeBuilder.declareStringField("uniqueName");
-        name = typeBuilder.declareStringField("name");
+        name = typeBuilder.declareStringField("name", Comment.create("name in the result"));
         TYPE = typeBuilder.build();
     }
 }

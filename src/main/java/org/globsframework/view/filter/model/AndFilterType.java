@@ -3,7 +3,6 @@ package org.globsframework.view.filter.model;
 import org.globsframework.core.metamodel.GlobType;
 import org.globsframework.core.metamodel.GlobTypeBuilder;
 import org.globsframework.core.metamodel.GlobTypeBuilderFactory;
-import org.globsframework.core.metamodel.annotations.Targets;
 import org.globsframework.core.metamodel.fields.GlobArrayUnionField;
 import org.globsframework.core.model.Glob;
 import org.globsframework.core.utils.exceptions.ItemNotFound;
@@ -21,9 +20,6 @@ import java.util.function.Supplier;
 public class AndFilterType {
     public static final GlobType TYPE;
 
-    @Targets({OrFilterType.class, AndFilterType.class, EqualType.class, NotEqualType.class,
-            NotType.class, GreaterOrEqualType.class, StrictlyGreaterType.class,
-            StrictlyLessType.class, LessOrEqualType.class, ContainsType.class, NotContainsType.class, IsNullType.class, IsNotNullType.class})
     public static final GlobArrayUnionField filters;
 
     static {

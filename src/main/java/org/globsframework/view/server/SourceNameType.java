@@ -4,7 +4,6 @@ import org.globsframework.core.metamodel.GlobType;
 import org.globsframework.core.metamodel.GlobTypeBuilder;
 import org.globsframework.core.metamodel.GlobTypeBuilderFactory;
 import org.globsframework.core.metamodel.annotations.KeyField;
-import org.globsframework.core.metamodel.annotations.KeyField_;
 import org.globsframework.core.metamodel.fields.StringArrayField;
 import org.globsframework.core.metamodel.fields.StringField;
 import org.globsframework.core.model.Glob;
@@ -12,7 +11,6 @@ import org.globsframework.core.model.Glob;
 public class SourceNameType {
     public static final GlobType TYPE;
 
-    @KeyField_
     public static final StringField ID;
 
     public static final StringArrayField NAME;

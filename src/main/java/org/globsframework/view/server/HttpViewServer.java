@@ -9,8 +9,7 @@ import org.apache.hc.core5.reactor.IOReactorConfig;
 import org.globsframework.core.metamodel.GlobType;
 import org.globsframework.core.metamodel.GlobTypeBuilder;
 import org.globsframework.core.metamodel.GlobTypeBuilderFactory;
-import org.globsframework.core.metamodel.annotations.Comment_;
-import org.globsframework.core.metamodel.annotations.Target;
+import org.globsframework.core.metamodel.annotations.Comment;
 import org.globsframework.core.metamodel.fields.BooleanField;
 import org.globsframework.core.metamodel.fields.GlobArrayField;
 import org.globsframework.core.metamodel.fields.IntegerField;
@@ -178,8 +177,6 @@ public class HttpViewServer {
 
         public static final StringField source;
 
-        //json or csv
-        @Comment_("json or csv")
         public static final StringField outputType;
 
         public static final BooleanField leafOnly;
@@ -187,7 +184,7 @@ public class HttpViewServer {
         static {
             GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("Param");
             source = typeBuilder.declareStringField("source");
-            outputType = typeBuilder.declareStringField("outputType");
+            outputType = typeBuilder.declareStringField("outputType", Comment.create("json or csv"));
             leafOnly = typeBuilder.declareBooleanField("leafOnly");
             TYPE = typeBuilder.build();
         }
@@ -196,7 +193,6 @@ public class HttpViewServer {
     static public class SourcesType {
         public static final GlobType TYPE;
 
-        @Target(SourceNameType.class)
         public static final GlobArrayField<SourceNameType> sources;
 
         static {
