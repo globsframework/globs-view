@@ -252,40 +252,17 @@ public class ViewConstraintVisitor implements ConstraintVisitor {
         isSelected = glob -> !values.contains(glob.getValue(field));
     }
 
-    public void visitContains(Field field, String s, boolean b, boolean startWith, boolean ignoreCase) {
-        if (startWith) {
-            if (b) {
-                if (ignoreCase) {
-                    isSelected = glob -> glob.get(field.asStringField(), "").toLowerCase()
-                            .startsWith(s.toLowerCase());
-                } else {
-                    isSelected = glob -> glob.get(field.asStringField(), "").startsWith(s);
-                }
-            } else {
-                if (ignoreCase) {
-                    isSelected = glob -> !glob.get(field.asStringField(), "").toLowerCase()
-                            .startsWith(s.toLowerCase());
-                } else {
-                    isSelected = glob -> !glob.get(field.asStringField(), "").startsWith(s);
-                }
-            }
-        } else {
-            if (b) {
-                if (ignoreCase) {
-                    isSelected = glob -> glob.get(field.asStringField(), "")
-                            .toLowerCase().contains(s.toLowerCase());
-                } else {
-                    isSelected = glob -> glob.get(field.asStringField(), "").contains(s);
-                }
-            } else {
-                if (ignoreCase) {
-                    isSelected = glob -> !glob.get(field.asStringField(), "").toLowerCase()
-                            .contains(s.toLowerCase());
-                } else {
-                    isSelected = glob -> !glob.get(field.asStringField(), "").contains(s);
-                }
-            }
-        }
+    public void visitContains(Field field, String value, ContainType containType, boolean contains, boolean ignoreCase) {
+        final String expected = ignoreCase ? value.toLowerCase() : value;
+        final java.util.function.Function<Glob, String> actual = ignoreCase
+                ? glob -> glob.get(field.asStringField(), "").toLowerCase()
+                : glob -> glob.get(field.asStringField(), "");
+        final java.util.function.Predicate<Glob> matches = switch (containType) {
+            case startWith -> glob -> actual.apply(glob).startsWith(expected);
+            case endWith -> glob -> actual.apply(glob).endsWith(expected);
+            case contains -> glob -> actual.apply(glob).contains(expected);
+        };
+        isSelected = contains ? matches::test : glob -> !matches.test(glob);
     }
 
     public void visitRegularExpression(Field field, String value, boolean caseInsensitive, boolean not) {
